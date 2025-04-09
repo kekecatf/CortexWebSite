@@ -4,11 +4,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2 class="page-title">Add New Product</h2>
+<h2 class="page-title">Yeni Ürün Ekle</h2>
 
 <div id="success-toast" class="toast-container" style="display: none;">
     <div class="toast-message">
-        Product added successfully!
+        Ürün başarıyla eklendi!
     </div>
 </div>
 
@@ -16,42 +16,42 @@
 {
     <div class="form-container">
         <div class="form-group">
-            @Html.LabelFor(model => model.Name, "Product Name")
+            @Html.LabelFor(model => model.Name, "Ürün Adı")
             @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.Name)
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Brand, "Brand")
+            @Html.LabelFor(model => model.Brand, "Marka")
             @Html.TextBoxFor(model => model.Brand, new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.Brand)
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Category, "Category")
+            @Html.LabelFor(model => model.Category, "Kategori")
             @Html.TextBoxFor(model => model.Category, new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.Category)
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.PhotoPath, "Photo File Name (e.g., f1.jpg)")
-            @Html.TextBoxFor(model => model.PhotoPath, new { @class = "form-control", placeholder = "e.g., f1.jpg" })
+            @Html.LabelFor(model => model.PhotoPath, "Fotoğraf Dosya Adı (örn., f1.jpg)")
+            @Html.TextBoxFor(model => model.PhotoPath, new { @class = "form-control", placeholder = "örn., f1.jpg" })
             @Html.ValidationMessageFor(model => model.PhotoPath)
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Stock, "Stock")
+            @Html.LabelFor(model => model.Stock, "Stok")
             @Html.TextBoxFor(model => model.Stock, new { @class = "form-control", type = "number", min = 0 })
             @Html.ValidationMessageFor(model => model.Stock)
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Price, "Price")
+            @Html.LabelFor(model => model.Price, "Fiyat")
             @Html.TextBoxFor(model => model.Price, new { @class = "form-control", type = "number", step = "0.01", min = "0" })
             @Html.ValidationMessageFor(model => model.Price)
         </div>
 
-        <button type="submit" class="btn btn-primary">Add Product</button>
+        <button type="submit" class="btn btn-primary">Ürün Ekle</button>
     </div>
 }
 
@@ -76,12 +76,12 @@
                             window.location.reload();
                         }, 3000);
                     } else {
-                        alert("Failed to add product. Please try again.");
+                        alert("Ürün eklenemedi. Lütfen tekrar deneyin.");
                     }
                 })
                 .catch((error) => {
                     console.error("Error:", error);
-                    alert("An error occurred. Please try again.");
+                    alert("Bir hata oluştu. Lütfen tekrar deneyin.");
                 });
         });
     });

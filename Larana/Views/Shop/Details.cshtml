@@ -8,40 +8,40 @@
     <div class="product-right">
         <h1 class="product-title">@Model.Name</h1>
         <h2 class="product-price">@string.Format("{0:N}", Model.Price) TL</h2>
-        <h4 class="product-brand">Brand: @Model.Brand</h4>
-        <h4 class="product-category">Category: @Model.Category</h4>
-        <h4 class="product-stock" id="stock-count">Stock: @Model.Stock</h4>
+        <h4 class="product-brand">Marka: @Model.Brand</h4>
+        <h4 class="product-category">Kategori: @Model.Category</h4>
+        <h4 class="product-stock" id="stock-count">Stok: @Model.Stock</h4>
 
         <div class="product-actions">
             @if (User.Identity.IsAuthenticated)
             {
-<button class="btn btn-add-to-cart" onclick="virtualAddToCart(@Model.Id, 1, @Model.Stock)">Add to Cart</button> }
+                <button class="btn btn-add-to-cart" onclick="virtualAddToCart(@Model.Id, 1, @Model.Stock)">Sepete Ekle</button> }
             else
             {
-<button class="btn btn-add-to-cart" disabled>Login to Add to Cart</button>            }
+                <button class="btn btn-add-to-cart" disabled>Sepete Eklemek İçin Giriş Yapın</button>}
         </div>
 
         <div class="product-info-box">
-            <h4>Delivery Information</h4>
-            <p>Fast delivery options available!</p>
+            <h4>Teslimat Bilgileri</h4>
+            <p>Hızlı teslimat seçenekleri mevcut!</p>
         </div>
     </div>
 </div>
 
 <div class="related-products">
-    <h3>Related Products</h3>
+    <h3>İlgili Ürünler</h3>
     <div class="products">
         @foreach (var product in ViewBag.RelatedProducts)
         {
-<div class="product">
-    <a href="@Url.Action("Details", "Shop", new { id = product.Id })">
-        <img class="sneaker" src="@Url.Content("~/" + product.PhotoPath)" alt="@product.Name" />
-        <div class="description">
-            <h5>@product.Name</h5>
-            <h4>@string.Format("{0:N}", product.Price) TL</h4>
-        </div>
-    </a>
-</div>}
+            <div class="product">
+                <a href="@Url.Action("Details", "Shop", new { id = product.Id })">
+                    <img class="sneaker" src="@Url.Content("~/" + product.PhotoPath)" alt="@product.Name" />
+                    <div class="description">
+                        <h5>@product.Name</h5>
+                        <h4>@string.Format("{0:N}", product.Price) TL</h4>
+                    </div>
+                </a>
+            </div>}
     </div>
 </div>
 
@@ -50,18 +50,18 @@
         const stockCountElement = document.getElementById('stock-count');
         const addToCartButton = document.querySelector('.btn-add-to-cart');
 
-        const currentStock = parseInt(stockCountElement.textContent.replace('Stock: ', ''));
+        const currentStock = parseInt(stockCountElement.textContent.replace('Stok: ', ''));
         if (currentStock <= 0 || quantity > currentStock) {
-            alert("This product is out of stock!");
+            alert("Bu ürün stokta yok!");
             return;
         }
 
         const newStock = currentStock - quantity;
-        stockCountElement.textContent = `Stock: ${newStock}`;
+        stockCountElement.textContent = `Stok: ${newStock}`;
 
         if (newStock <= 0) {
             addToCartButton.disabled = true;
-            addToCartButton.textContent = 'Out of Stock';
+            addToCartButton.textContent = 'Stokta Yok';
         }
 
         $.ajax({
@@ -76,7 +76,7 @@
                 }
             },
             error: function () {
-                alert("Failed to add product to cart.");
+                alert("Ürün sepete eklenemedi.");
             }
         });
     }
@@ -297,5 +297,3 @@
         cursor: pointer;
     }
 </style>
-
-

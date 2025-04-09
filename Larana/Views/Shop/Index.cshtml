@@ -2,17 +2,17 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <div class="search-bar-container">
-    <input type="text" id="searchInput" placeholder="Search for products..." />
-    <button id="searchButton" class="btn">Search</button>
+    <input type="text" id="searchInput" placeholder="Ürün ara..." />
+    <button id="searchButton" class="btn">Ara</button>
 </div>
 <section id="shop-page">
     <div class="container">
 
 
         <aside class="sidebar">
-            <h4>Filter</h4>
+            <h4>Filtrele</h4>
             <form id="filterForm" method="get" action="@Url.Action("Index", "Shop")">
-                <h5>Categories</h5>
+                <h5>Kategoriler</h5>
                 @foreach (var category in ViewBag.Categories as List<string>)
                 {
                     var selectedCategories = ViewBag.SelectedCategories as string[];
@@ -23,7 +23,7 @@
                     </div>
                 }
 
-                <h5>Brands</h5>
+                <h5>Markalar</h5>
                 @foreach (var brand in ViewBag.Brands as List<string>)
                 {
                     var selectedBrands = ViewBag.SelectedBrands as string[];
@@ -34,20 +34,20 @@
                     </div>
                 }
 
-                <h5>Price Range</h5>
+                <h5>Fiyat Aralığı</h5>
                 <input type="number" name="minPrice" placeholder="Min" value="@ViewBag.MinPrice" class="price-input" />
                 <input type="number" name="maxPrice" placeholder="Max" value="@ViewBag.MaxPrice" class="price-input" />
 
-                <h5>Sort By</h5>
+                <h5>Sıralama</h5>
                 <select name="sort" class="custom-dropdown">
-                    <option value="newest" @(ViewBag.Sort == "newest" ? "selected" : "")>Newest</option>
-                    <option value="low-to-high" @(ViewBag.Sort == "low-to-high" ? "selected" : "")>Price: Low to High</option>
-                    <option value="high-to-low" @(ViewBag.Sort == "high-to-low" ? "selected" : "")>Price: High to Low</option>
-                    <option value="best-sellers" @(ViewBag.Sort == "best-sellers" ? "selected" : "")>Best Sellers</option>
-                    <option value="new-products" @(ViewBag.Sort == "new-products" ? "selected" : "")>New Products</option>
+                    <option value="newest" @(ViewBag.Sort == "newest" ? "selected" : "")>En Yeni</option>
+                    <option value="low-to-high" @(ViewBag.Sort == "low-to-high" ? "selected" : "")>Fiyat: Düşükten Yükseğe</option>
+                    <option value="high-to-low" @(ViewBag.Sort == "high-to-low" ? "selected" : "")>Fiyat: Yüksekten Düşüğe</option>
+                    <option value="best-sellers" @(ViewBag.Sort == "best-sellers" ? "selected" : "")>En Çok Satanlar</option>
+                    <option value="new-products" @(ViewBag.Sort == "new-products" ? "selected" : "")>Yeni Ürünler</option>
                 </select>
 
-                <button type="submit" class="btn">Apply Filter</button>
+                <button type="submit" class="btn">Filtreyi Uygula</button>
             </form>
         </aside>
 
@@ -108,9 +108,9 @@ $(document).ready(function () {
         $("#product-container").empty();
 
         if (query.length === 0) {
-            $("#product-container").html("<p>Showing all products...</p>");
+            $("#product-container").html("<p>Tüm ürünler gösteriliyor...</p>");
         } else {
-            $("#product-container").html("<p>Loading...</p>");
+            $("#product-container").html("<p>Yükleniyor...</p>");
         }
 
         $.ajax({
@@ -119,7 +119,7 @@ $(document).ready(function () {
             data: { query: query },
             success: function (data) {
                 if (data.length === 0) {
-                    $("#product-container").html("<p>No products found.</p>");
+                    $("#product-container").html("<p>Ürün bulunamadı.</p>");
                     return;
                 }
 
@@ -141,7 +141,7 @@ $(document).ready(function () {
                 $("#product-container").html(html);
             },
             error: function () {
-                alert("An error occurred while searching for products.");
+                alert("Ürün arama sırasında bir hata oluştu.");
             }
         });
     });

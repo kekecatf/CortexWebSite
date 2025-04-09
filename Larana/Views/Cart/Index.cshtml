@@ -1,11 +1,11 @@
 ﻿@model Larana.Models.Cart
 
 <div class="cart-container">
-    <h1 class="cart-title">My Cart</h1>
+    <h1 class="cart-title">Sepetim</h1>
     @if (!Model.CartItems.Any())
     {
         <div class="empty-cart-message">
-            Your cart is empty.
+            Sepetiniz boş.
         </div>
     }
     else
@@ -13,10 +13,10 @@
         <table class="table cart-table">
             <thead>
                 <tr>
-                    <th>Product</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Action</th>
+                    <th>Ürün</th>
+                    <th>Miktar</th>
+                    <th>Fiyat</th>
+                    <th>İşlem</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,28 +34,28 @@
                         <td>@item.Quantity</td>
                         <td>@item.Product.Price.ToString("C")</td>
                         <td>
-                            <button class="btn btn-danger btn-remove" onclick="removeFromCart(@item.ProductId)">Remove</button>
+                            <button class="btn btn-danger btn-remove" onclick="removeFromCart(@item.ProductId)">Kaldır</button>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
 
-        <h3 class="cart-total">Total: @Model.CartItems.Sum(ci => ci.Quantity * ci.Product.Price).ToString("C")</h3>
+        <h3 class="cart-total">Toplam: @Model.CartItems.Sum(ci => ci.Quantity * ci.Product.Price).ToString("C")</h3>
         <div class="text-right">
-            <button class="btn btn-success btn-checkout" onclick="toggleCheckoutForm()">Checkout</button>
+            <button class="btn btn-success btn-checkout" onclick="toggleCheckoutForm()">Satın Al</button>
         </div>
 
         <div id="checkout-form" class="checkout-form-container" style="display: none;">
-            <h3 class="checkout-form-title">Checkout Details</h3>
+            <h3 class="checkout-form-title">Ödeme Bilgileri</h3>
             <form id="checkoutForm">
                 <div class="form-group">
-                    <label for="RecipientName">Recipient Name:</label>
+                    <label for="RecipientName">Alıcı Adı:</label>
                     <input type="text" id="RecipientName" name="RecipientName" class="form-control" required />
                 </div>
 
                 <div class="form-group">
-                    <label for="ShippingCompany">Shipping Company:</label>
+                    <label for="ShippingCompany">Kargo Firması:</label>
                     <select id="ShippingCompany" name="ShippingCompany" class="form-control" required>
                         <option value="Aras Kargo">Aras Kargo</option>
                         <option value="Yurtiçi Kargo">Yurtiçi Kargo</option>
@@ -64,28 +64,28 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="Address">Address:</label>
+                    <label for="Address">Adres:</label>
                     <input type="text" id="Address" name="Address" class="form-control" value="@ViewBag.Address" required />
                 </div>
 
                 <div class="form-group">
-                    <label for="PhoneNumber">Phone Number:</label>
+                    <label for="PhoneNumber">Telefon Numarası:</label>
                     <input type="tel" id="PhoneNumber" name="PhoneNumber" class="form-control" value="@ViewBag.PhoneNumber" required />
                 </div>
 
                 <div class="form-group">
-                    <label for="CardholderName">Cardholder Name:</label>
+                    <label for="CardholderName">Kart Sahibinin Adı:</label>
                     <input type="text" id="CardholderName" name="CardholderName" class="form-control" required />
                 </div>
 
                 <div class="form-group">
-                    <label for="CardInfo">Card Number:</label>
+                    <label for="CardInfo">Kart Numarası:</label>
                     <input type="text" id="CardInfo" name="CardInfo" class="form-control" placeholder="1234-5678-9876-5432" required />
                 </div>
 
                 <div class="form-group">
-                    <label for="ExpirationDate">Expiration Date:</label>
-                    <input type="text" id="ExpirationDate" name="ExpirationDate" class="form-control" placeholder="MM/YY" required />
+                    <label for="ExpirationDate">Son Kullanma Tarihi:</label>
+                    <input type="text" id="ExpirationDate" name="ExpirationDate" class="form-control" placeholder="AA/YY" required />
                 </div>
 
                 <div class="form-group">
@@ -93,7 +93,7 @@
                     <input type="text" id="CVV" name="CVV" class="form-control" placeholder="123" required />
                 </div>
 
-                <button type="button" class="btn btn-primary" onclick="submitCheckout()">Submit</button>
+                <button type="button" class="btn btn-primary" onclick="submitCheckout()">Onayla</button>
             </form>
         </div>
     }
@@ -108,14 +108,14 @@ function removeFromCart(productId) {
         data: { productId: productId },
         success: function (response) {
             if (response.success) {
-                alert("The product has been successfully removed from your cart.");
+                alert("Ürün sepetinizden başarıyla kaldırılmıştır.");
                 location.reload();
             } else {
-                alert("Unable to remove the product: " + response.message);
+                alert("Ürün kaldırılamadı: " + response.message);
             }
         },
         error: function () {
-            alert("An error occurred while removing the product. Please try again later.");
+            alert("Ürün kaldırılırken bir hata oluştu. Lütfen daha sonra tekrar deneyin.");
         }
     });
 }
@@ -139,35 +139,35 @@ function submitCheckout() {
 
     // Client-side validation for all fields
     if (!formData.RecipientName.trim()) {
-        alert("Please enter the recipient's name.");
+        alert("Lütfen alıcının adını girin.");
         return;
     }
     if (!formData.ShippingCompany.trim()) {
-        alert("Please select a shipping company.");
+        alert("Lütfen bir kargo firması seçin.");
         return;
     }
     if (!formData.Address.trim()) {
-        alert("Please provide your delivery address.");
+        alert("Lütfen teslimat adresinizi girin.");
         return;
     }
     if (!formData.PhoneNumber.trim()) {
-        alert("Please provide your phone number.");
+        alert("Lütfen telefon numaranızı girin.");
         return;
     }
     if (!formData.CardholderName.trim()) {
-        alert("Please provide the cardholder's name.");
+        alert("Lütfen kart sahibinin adını girin.");
         return;
     }
     if (!formData.CardInfo.trim() || !/^\d{16}$/.test(formData.CardInfo.replace(/-/g, ""))) {
-        alert("Please provide a valid 16-digit card number.");
+        alert("Lütfen geçerli bir 16 haneli kart numarası girin.");
         return;
     }
     if (!formData.ExpirationDate.trim() || !/^\d{2}\/\d{2}$/.test(formData.ExpirationDate)) {
-        alert("Please provide a valid expiration date in MM/YY format.");
+        alert("Lütfen AA/YY formatında geçerli bir son kullanma tarihi girin.");
         return;
     }
     if (!formData.CVV.trim() || !/^\d{3}$/.test(formData.CVV)) {
-        alert("Please provide a valid 3-digit CVV code.");
+        alert("Lütfen geçerli bir 3 haneli CVV kodu girin.");
         return;
     }
 
@@ -177,14 +177,14 @@ function submitCheckout() {
         data: formData,
         success: function (response) {
             if (response.success) {
-                alert("Your order has been successfully placed. Thank you for shopping with us!");
+                alert("Siparişiniz başarıyla oluşturuldu. Bizden alışveriş yaptığınız için teşekkür ederiz!");
                 window.location.href = '@Url.Action("Index", "Cart")';
             } else {
-                alert("Unable to place your order: " + response.message);
+                alert("Siparişiniz oluşturulamadı: " + response.message);
             }
         },
         error: function () {
-            alert("An error occurred while completing your checkout. Please try again later.");
+            alert("Ödeme tamamlanırken bir hata oluştu. Lütfen daha sonra tekrar deneyin.");
         }
     });
 }

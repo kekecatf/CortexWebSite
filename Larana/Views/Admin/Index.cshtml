@@ -1,43 +1,36 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-<h2 class="page-title">Welcome to the Admin Panel</h2>
-
+<h2 class="page-title">Admin Paneline Hoş Geldiniz</h2>
 <div class="admin-menu">
-    <a href="@Url.Action("CreateUser", "Admin")" class="btn btn-primary">Create Admin User</a>
-    <a href="@Url.Action("Orders", "Admin")" class="btn btn-primary">View Orders</a>
-    <a href="@Url.Action("AddProduct", "Admin")" class="btn btn-primary">Add New Product</a>
-    <button id="edit-product-btn" class="btn btn-primary">Edit Product</button>
+    <a href="@Url.Action("CreateUser", "Admin")" class="btn btn-primary">Admin Kullanıcı Oluştur</a>
+    <a href="@Url.Action("Orders", "Admin")" class="btn btn-primary">Siparişleri Görüntüle</a>
+    <a href="@Url.Action("AddProduct", "Admin")" class="btn btn-primary">Yeni Ürün Ekle</a>
+    <button id="edit-product-btn" class="btn btn-primary">Ürün Düzenle</button>
 </div>
-
 <div id="edit-product-container" style="display: none; margin-top: 20px; text-align: center;">
-    <input type="number" id="product-id-input" class="form-control" placeholder="Enter Product ID" style="max-width: 300px; margin: 10px auto; display: inline-block;" />
-    <button id="go-to-edit-product" class="btn btn-success">Go to Edit Product</button>
+    <input type="number" id="product-id-input" class="form-control" placeholder="Ürün ID'sini Girin" style="max-width: 300px; margin: 10px auto; display: inline-block;" />
+    <button id="go-to-edit-product" class="btn btn-success">Ürün Düzenlemeye Git</button>
 </div>
-
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const editProductBtn = document.getElementById("edit-product-btn");
         const editProductContainer = document.getElementById("edit-product-container");
         const goToEditProductBtn = document.getElementById("go-to-edit-product");
         const productIdInput = document.getElementById("product-id-input");
-
         editProductBtn.addEventListener("click", function () {
             editProductContainer.style.display = editProductContainer.style.display === "none" ? "block" : "none";
         });
-
         goToEditProductBtn.addEventListener("click", function () {
             const productId = productIdInput.value.trim();
             if (productId) {
                 window.location.href = `/Admin/EditProduct/${productId}`;
             } else {
-                alert("Please enter a valid product ID.");
+                alert("Lütfen geçerli bir ürün ID'si girin.");
             }
         });
     });
 </script>
-
 <style>
     body {
         font-family: Arial, sans-serif;

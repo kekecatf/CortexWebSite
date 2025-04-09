@@ -15,79 +15,76 @@
         <div id="nav1">
             <ul id="navbar">
                 <li>
-                    <a class="active" href="~/">Home</a>
+                    <a class="active" href="~/">Ana Sayfa</a>
                 </li>
                 <li>
-                    <a href="~/Shop/Index">Shop</a>
+                    <a href="~/Shop/Index">Mağaza</a>
                 </li>
                 <li>
-                    <a href="~/Contact">Contact</a>
+                    <a href="~/Contact">İletişim</a>
                 </li>
                 <li>
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <a href="~/Account/Logout">Log out</a>
+                        <a href="~/Account/Logout">Çıkış Yap</a>
                     }
                     else
                     {
-                        <a href="~/Account/Login">Login</a>
+                        <a href="~/Account/Login">Giriş Yap</a>
                     }
                 </li>
                 <li>
-                    <a href="~/Account/MyAccount">My Account</a>
+                    <a href="~/Account/MyAccount">Hesabım</a>
                 </li>
                 <li>
                     <a href="~/Cart/Index">
-                        <img src="~/img/cart-icon.png" alt="Cart Icon" width="24" height="20" />
+                        <img src="~/img/cart-icon.png" alt="Sepet İkonu" width="24" height="20" />
                     </a>
                 </li>
             </ul>
         </div>
     </section>
-
     @RenderBody()
-
     <footer>
         <div class="col">
             <img class="logo" width="100%" src="~/img/logo.png" alt="logo" />
-            <h4>Contact</h4>
+            <h4>İletişim</h4>
             <p>
-                <strong>Address:</strong> Ataköy Mahallesi, 34. Sokak No: 12, Bakırköy, Istanbul
+                <strong>Adres:</strong> Ataköy Mahallesi, 34. Sokak No: 12, Bakırköy, İstanbul
             </p>
             <p>
-                <strong>Phone:</strong> +90 212 345 67 89
+                <strong>Telefon:</strong> +90 212 345 67 89
             </p>
             <p>
-                <strong>Hours:</strong> 9:00 - 20:00, Mon - Sat
+                <strong>Çalışma Saatleri:</strong> 9:00 - 20:00, Pts - Cts
             </p>
         </div>
         <div class="col">
-            <h4><strong>About</strong></h4>
-            <a href="~/About"><strong>About us</strong></a>
-            <a href="~/FAQ"><strong>FAQ</strong></a>
+            <h4><strong>Hakkında</strong></h4>
+            <a href="~/About"><strong>Hakkımızda</strong></a>
+            <a href="~/FAQ"><strong>S.S.S</strong></a>
         </div>
         <div class="col">
-            <h4>My Account</h4>
+            <h4>Hesabım</h4>
             @if (User.Identity.IsAuthenticated)
             {
-                <a href="~/Account/MyAccount"><strong>My Account</strong></a>
-                <a href="~/Account/Logout"><strong>Log out</strong></a>
+                <a href="~/Account/MyAccount"><strong>Hesabım</strong></a>
+                <a href="~/Account/Logout"><strong>Çıkış Yap</strong></a>
             }
             else
             {
-                <a href="~/Account/Register"><strong>Register</strong></a>
-                <a href="~/Account/Login"><strong>Login</strong></a>
+                <a href="~/Account/Register"><strong>Kayıt Ol</strong></a>
+                <a href="~/Account/Login"><strong>Giriş Yap</strong></a>
             }
-            <a href="~/Account/ViewOrders"><strong>Track My Order</strong></a>
-            <a href="~/Contact"><strong>Contact</strong></a>
+            <a href="~/Account/ViewOrders"><strong>Siparişimi Takip Et</strong></a>
+            <a href="~/Contact"><strong>İletişim</strong></a>
         </div>
         <div class="col">
-            <h4>Secured Payment Gateways</h4>
-            <img src="~/img/pay/pay.png" alt="Pay" />
+            <h4>Güvenli Ödeme Yöntemleri</h4>
+            <img src="~/img/pay/pay.png" alt="Ödeme" />
         </div>
     </footer>
     <script src="~/scripts/script.js"></script>
-    <script src = "https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 </html>

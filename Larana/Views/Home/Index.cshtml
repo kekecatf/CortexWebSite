@@ -1,17 +1,16 @@
 ﻿<section id="main">
     <div class="content">
-        <h4>New Collection</h4>
-        <h2>Trending Sneakers</h2>
-        <h1>Limited Stock Available</h1>
-        <p>Get ready for shopping with amazing deals!</p>
+        <h4>Yeni Koleksiyon</h4>
+        <h2>Trend Spor Ayakkabılar</h2>
+        <h1>Sınırlı Stok Mevcut</h1>
+        <p>Harika fırsatlarla alışverişe hazır olun!</p>
         <a href="@Url.Action("Index", "Shop")">
-            <button class="btn">Shop Now</button>
+            <button class="btn">Şimdi Alışveriş Yap</button>
         </a>
     </div>
 </section>
-
 <section id="product-section">
-    <h2>New Products</h2>
+    <h2>Yeni Ürünler</h2>
     <div class="products">
         @foreach (var product in ViewBag.NewProducts)
         {
@@ -28,13 +27,11 @@
         }
     </div>
 </section>
-
 <section id="free-shipping-banner">
-    <h2>Free Shipping</h2>
+    <h2>Ücretsiz Kargo</h2>
 </section>
-
 <section id="product-section">
-    <h2>Best Seller</h2>
+    <h2>En Çok Satanlar</h2>
     <div class="products">
         @foreach (var product in ViewBag.BestSellers)
         {
@@ -51,12 +48,10 @@
         }
     </div>
 </section>
-
 <style>
     .product a {
         text-decoration: none;
         color: inherit;
         display: block;
     }
-
 </style>
