@@ -1,0 +1,129 @@
+@{ 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var dukkanId = ViewBag.DukkanId;
+    var dukkanName = ViewBag.DukkanName;
+    var activeTab = ViewBag.ActiveTab;
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar Navigation - Desktop Only -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="card dashboard-sidebar">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">@dukkanName</h5>
+                    <p class="small mb-0 text-white-50">Shop Management</p>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="@Url.Action("Dashboard", "Dukkan", new { id = dukkanId })" 
+                       class="list-group-item list-group-item-action @(activeTab == "dashboard" ? "active" : "")">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="@Url.Action("Profile", "Dukkan", new { id = dukkanId })" 
+                       class="list-group-item list-group-item-action @(activeTab == "profile" ? "active" : "")">
+                        <i class="fas fa-store me-2"></i> Shop Profile
+                    </a>
+                    <a href="@Url.Action("ManageProducts", "Dukkan", new { id = dukkanId })" 
+                       class="list-group-item list-group-item-action @(activeTab == "products" ? "active" : "")">
+                        <i class="fas fa-box me-2"></i> Products
+                    </a>
+                    <a href="@Url.Action("ManageOrders", "Dukkan", new { id = dukkanId })" 
+                       class="list-group-item list-group-item-action @(activeTab == "orders" ? "active" : "")">
+                        <i class="fas fa-shopping-cart me-2"></i> Orders
+                    </a>
+                    <a href="@Url.Action("Analytics", "Dukkan", new { id = dukkanId })" 
+                       class="list-group-item list-group-item-action @(activeTab == "analytics" ? "active" : "")">
+                        <i class="fas fa-chart-bar me-2"></i> Analytics
+                    </a>
+                    <div class="list-group-item">
+                        <div class="d-grid gap-2">
+                            <a href="@Url.Action("Details", "Dukkan", new { id = dukkanId })" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-external-link-alt me-2"></i> View Shop
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab Navigation - Mobile Only -->
+        <div class="col-12 d-lg-none mb-3">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">@dukkanName</h5>
+                </div>
+                <div class="card-body p-0">
+                    <nav class="nav nav-pills nav-fill mobile-nav">
+                        <a href="@Url.Action("Dashboard", "Dukkan", new { id = dukkanId })" 
+                           class="nav-item nav-link @(activeTab == "dashboard" ? "active" : "")">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span class="d-none d-sm-inline">Dashboard</span>
+                        </a>
+                        <a href="@Url.Action("Profile", "Dukkan", new { id = dukkanId })" 
+                           class="nav-item nav-link @(activeTab == "profile" ? "active" : "")">
+                            <i class="fas fa-store"></i>
+                            <span class="d-none d-sm-inline">Profile</span>
+                        </a>
+                        <a href="@Url.Action("ManageProducts", "Dukkan", new { id = dukkanId })" 
+                           class="nav-item nav-link @(activeTab == "products" ? "active" : "")">
+                            <i class="fas fa-box"></i>
+                            <span class="d-none d-sm-inline">Products</span>
+                        </a>
+                        <a href="@Url.Action("ManageOrders", "Dukkan", new { id = dukkanId })" 
+                           class="nav-item nav-link @(activeTab == "orders" ? "active" : "")">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="d-none d-sm-inline">Orders</span>
+                        </a>
+                        <a href="@Url.Action("Analytics", "Dukkan", new { id = dukkanId })" 
+                           class="nav-item nav-link @(activeTab == "analytics" ? "active" : "")">
+                            <i class="fas fa-chart-bar"></i>
+                            <span class="d-none d-sm-inline">Analytics</span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="col-lg-9">
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-success mb-3">
+                    <i class="fas fa-check-circle me-2"></i> @TempData["Message"]
+                </div>
+            }
+            
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger mb-3">
+                    <i class="fas fa-exclamation-circle me-2"></i> @TempData["Error"]
+                </div>
+            }
+            
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-sidebar {
+        position: sticky;
+        top: 20px;
+    }
+    
+    .mobile-nav .nav-link {
+        padding: 10px;
+        text-align: center;
+        border-radius: 0;
+    }
+    
+    .mobile-nav .nav-link i {
+        display: block;
+        font-size: 1.25rem;
+        margin-bottom: 2px;
+    }
+</style>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+} 

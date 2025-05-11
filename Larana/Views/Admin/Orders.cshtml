@@ -2,58 +2,69 @@
 
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 
-<h2 class="page-title">Tüm Siparişler</h2>
+<h2 class="page-title">All Orders</h2>
 
 <div class="order-list">
     @foreach (var order in Model)
     {
-        <div class="order-card">
-            <div class="order-summary">
-                <div class="order-info">
-                    <span class="order-id"><strong>Sipariş ID:</strong> <span class="highlight-id">@order.Id</span></span>
-                    <span class="order-date"><strong>Tarih:</strong> <span class="highlight-date">@order.OrderDate.ToString("MM/dd/yyyy")</span></span>
-                    <span class="order-status"><strong>Durum:</strong> <span class="highlight-status">@order.Status</span></span>
-                    <span class="order-amount"><strong>Toplam:</strong> <span class="highlight-total">@order.TotalAmount.ToString("C")</span></span>
-                </div>
-                <button class="btn btn-primary toggle-details" data-target="#details-@order.Id">Detaylar</button>
+<div class="order-card">
+    <div class="order-summary">
+        <div class="order-info">
+            <span class="order-id"><strong>Order ID:</strong> <span class="highlight-id">@order.Id</span></span>
+            <span class="order-date"><strong>Date:</strong> <span class="highlight-date">@order.OrderDate.ToString("MM/dd/yyyy")</span></span>
+            <span class="order-status"><strong>Status:</strong> <span class="highlight-status">@order.Status</span></span>
+            <span class="order-amount"><strong>Total:</strong> <span class="highlight-total">@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("C") : "$0.00")</span></span>
+            @if (order.IsClickAndCollect)
+            {
+                <span class="order-pickup"><strong>Pickup:</strong> <span class="highlight-pickup">Click & Collect</span></span>
+            }
+        </div>
+        <button class="btn btn-primary toggle-details" data-target="#details-@order.Id">Details</button>
+    </div>
+    <div class="order-details" id="details-@order.Id" style="display: none;">
+        <div class="details-container">
+            <h4>Order Details</h4>
+            <div class="order-recipient">
+                <p><strong>Customer Name:</strong> @order.UserId</p>
+                @if (order.IsClickAndCollect)
+                {
+                    <p><span class="highlight-pickup"><strong>Click & Collect:</strong> Customer will pick up in store</span></p>
+                }
+                else
+                {
+                    <p><strong>Recipient Name:</strong> @order.RecipientName</p>
+                    <p><strong>Shipping Company:</strong> @order.ShippingCompany</p>
+                    <p><strong>Address:</strong> @order.Address</p>
+                    <p><strong>Phone Number:</strong> @order.PhoneNumber</p>
+                }
             </div>
-            <div class="order-details" id="details-@order.Id" style="display: none;">
-                <div class="details-container">
-                    <h4>Sipariş Detayları</h4>
-                    <div class="order-recipient">
-                        <p><strong>Müşteri Adı:</strong> @order.UserId</p>
-                        <p><strong>Alıcı Adı:</strong> @order.RecipientName</p>
-                        <p><strong>Kargo Firması:</strong> @order.ShippingCompany</p>
-                        <p><strong>Adres:</strong> @order.Address</p>
-                        <p><strong>Telefon Numarası:</strong> @order.PhoneNumber</p>
-                    </div>
-                    <h4>Ürünler</h4>
-                    <div class="product-list">
-                        @foreach (var product in order.OrderDetails)
-                        {
-                            <div class="product-item" onclick="location.href='/Shop/Details/@product.ProductId'">
-                                <img src="@Url.Content("~/" + product.PhotoPath)" alt="@product.ProductName" class="product-image" />
-                                <div class="product-info">
-                                    <span class="product-name">@product.ProductName</span>
-                                    <span class="product-quantity">@product.Quantity x @product.UnitPrice.ToString("C")</span>
-                                    <span class="product-total"><strong>Ara Toplam:</strong> @(string.Format("{0:C}", product.Quantity * product.UnitPrice))</span>
-                                </div>
-                            </div>}
-                    </div>
+            <h4>Products</h4>
+            <div class="product-list">
+                @foreach (var product in order.OrderDetails)
+                {
+<div class="product-item" onclick="location.href='/Shop/Details/@product.ProductId'">
+    <img src="@Url.Content("~/" + product.PhotoPath)" alt="@product.ProductName" class="product-image" />
+    <div class="product-info">
+        <span class="product-name">@product.ProductName</span>
+        <span class="product-quantity">@product.Quantity x @product.UnitPrice.ToString("C")</span>
+        <span class="product-total"><strong>Subtotal:</strong> @(string.Format("{0:C}", product.Quantity * product.UnitPrice))</span>
+    </div>
+</div>}
+            </div>
 
-                    <form action="@Url.Action("UpdateOrderStatus", "Admin")" method="post" class="status-form">
-                        <input type="hidden" name="orderId" value="@order.Id" />
-                        <label for="status-@order.Id" class="status-label">Durum:</label>
-                        <select name="newStatus" id="status-@order.Id" class="form-select custom-select">
-                            <option value="Pending" @(order.Status == "Pending" ? "selected" : "")>Beklemede</option>
-                            <option value="Completed" @(order.Status == "Completed" ? "selected" : "")>Tamamlandı</option>
-                            <option value="Cancelled" @(order.Status == "Cancelled" ? "selected" : "")>İptal Edildi</option>
-                        </select>
-                        <button type="submit" class="btn btn-success custom-update-btn">Güncelle</button>
-                    </form>
-                </div>
-            </div>
-        </div>}
+            <form action="@Url.Action("UpdateOrderStatus", "Admin")" method="post" class="status-form">
+                <input type="hidden" name="orderId" value="@order.Id" />
+                <label for="status-@order.Id" class="status-label">Status:</label>
+                <select name="newStatus" id="status-@order.Id" class="form-select custom-select">
+                    <option value="Pending" @(order.Status == "Pending" ? "selected" : "")>Pending</option>
+                    <option value="Completed" @(order.Status == "Completed" ? "selected" : "")>Completed</option>
+                    <option value="Cancelled" @(order.Status == "Cancelled" ? "selected" : "")>Cancelled</option>
+                </select>
+                <button type="submit" class="btn btn-success custom-update-btn">Update</button>
+            </form>
+        </div>
+    </div>
+</div>}
 </div>
 
 
@@ -72,11 +83,11 @@
                     details.style.display = "none";
                 });
                 document.querySelectorAll(".toggle-details").forEach(btn => {
-                    btn.textContent = "Detaylar";
+                    btn.textContent = "Details";
                 });
 
                 detailsRow.style.display = isVisible ? "none" : "block";
-                this.textContent = isVisible ? "Detaylar" : "Detayları Gizle";
+                this.textContent = isVisible ? "Details" : "Hide Details";
             });
         });
     });
@@ -312,5 +323,14 @@
     .product-quantity {
         font-size: 0.9rem;
         color: #555;
+    }
+
+    .highlight-pickup {
+        color: #6f42c1;
+        font-weight: bold;
+    }
+
+    .order-pickup {
+        margin-left: 15px;
     }
 </style>

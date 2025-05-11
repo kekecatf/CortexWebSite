@@ -15,6 +15,14 @@ namespace Larana
 
             routes.MapMvcAttributeRoutes();
 
+            // Add specific route for Product/Create with ID parameter
+            routes.MapRoute(
+                name: "ProductCreate",
+                url: "Product/Create/{id}",
+                defaults: new { controller = "Dukkan", action = "ProductRedirect" },
+                constraints: new { id = @"\d+" }  // Ensure id is a number
+            );
+
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

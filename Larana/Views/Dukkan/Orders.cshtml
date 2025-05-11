@@ -1,0 +1,344 @@
+@model IEnumerable<Larana.Models.Order>
+
+@{
+    ViewBag.Title = "Store Orders";
+}
+
+<div class="container">
+    <div class="store-header">
+        <h1>Store Orders</h1>
+        <div class="store-actions">
+            <a href="@Url.Action("Details", "Dukkan", new { id = ViewBag.DukkanId })" class="btn btn-primary">
+                <i class="fas fa-store"></i> Back to Store
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info">
+            @TempData["Message"]
+        </div>
+    }
+
+    <div class="orders-section">
+        <div class="order-filters">
+            <select id="status-filter" class="form-control">
+                <option value="">All Statuses</option>
+                @foreach (var status in Enum.GetValues(typeof(Larana.Models.OrderStatus)))
+                {
+                    <option value="@status">@status</option>
+                }
+            </select>
+            <select id="delivery-filter" class="form-control">
+                <option value="">All Delivery Types</option>
+                <option value="shipping">Standard Shipping</option>
+                <option value="pickup">Click & Collect</option>
+            </select>
+            <select id="sort-order" class="form-control">
+                <option value="date-desc">Newest First</option>
+                <option value="date-asc">Oldest First</option>
+                <option value="amount-desc">Highest Amount</option>
+                <option value="amount-asc">Lowest Amount</option>
+            </select>
+        </div>
+
+        <div class="orders-list">
+            @foreach (var order in Model)
+            {
+                <div class="order-card" 
+                     data-status="@order.Status"
+                     data-date="@order.OrderDate.Ticks"
+                     data-amount="@(order.TotalAmount.HasValue ? order.TotalAmount.Value : 0)"
+                     data-delivery="@(order.IsClickAndCollect ? "pickup" : "shipping")">
+                    <div class="order-header">
+                        <h3>Order #@order.Id</h3>
+                        <span class="order-date">@order.OrderDate.ToString("MMM dd, yyyy HH:mm")</span>
+                        <span class="order-status @order.Status.ToString().ToLower()">@order.Status</span>
+                        @if (order.IsClickAndCollect)
+                        {
+                            <span class="order-delivery pickup">Click & Collect</span>
+                        }
+                    </div>
+                    <div class="order-details">
+                        <div class="customer-info">
+                            <h4>Customer Information</h4>
+                            @if (order.IsClickAndCollect)
+                            {
+                                <p><strong>Delivery Method:</strong> <span class="pickup-badge">Click & Collect (In-store Pickup)</span></p>
+                                <p><strong>Customer:</strong> @order.User.Username</p>
+                            }
+                            else
+                            {
+                                <p><strong>Name:</strong> @order.RecipientName</p>
+                                <p><strong>Phone:</strong> @order.PhoneNumber</p>
+                                <p><strong>Address:</strong> @order.Address</p>
+                                <p><strong>Shipping:</strong> @order.ShippingCompany</p>
+                            }
+                        </div>
+                        <div class="order-items">
+                            <h4>Order Items</h4>
+                            @if(order.OrderDetails == null || !order.OrderDetails.Any())
+                            {
+                                <div class="alert alert-warning">No order items found for this order.</div>
+                            }
+                            else
+                            {
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Quantity</th>
+                                            <th>Price</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in order.OrderDetails)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @if(item.Product != null)
+                                                    {
+                                                        @item.Product.Name
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-danger">Product unavailable (ID: @item.ProductId)</span>
+                                                    }
+                                                </td>
+                                                <td>@item.Quantity</td>
+                                                <td>$@item.UnitPrice.ToString("F2")</td>
+                                                <td>$@((item.Quantity * item.UnitPrice).ToString("F2"))</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="3" class="text-right"><strong>Total Amount:</strong></td>
+                                            <td><strong>$@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("F2") : "0.00")</strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            }
+                        </div>
+                    </div>
+                    <div class="order-actions">
+                        @if (order.Status == Larana.Models.OrderStatus.Pending)
+                        {
+                            <form action="@Url.Action("UpdateOrderStatus", "Dukkan")" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="orderId" value="@order.Id" />
+                                <input type="hidden" name="status" value="@Larana.Models.OrderStatus.Processing" />
+                                <input type="hidden" name="dukkanId" value="@ViewBag.DukkanId" />
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-check"></i> Process Order
+                                </button>
+                            </form>
+                        }
+                        @if (order.Status == Larana.Models.OrderStatus.Processing)
+                        {
+                            <form action="@Url.Action("UpdateOrderStatus", "Dukkan")" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="orderId" value="@order.Id" />
+                                <input type="hidden" name="status" value="@Larana.Models.OrderStatus.Shipped" />
+                                <input type="hidden" name="dukkanId" value="@ViewBag.DukkanId" />
+                                <button type="submit" class="btn btn-info">
+                                    <i class="fas fa-truck"></i> Mark as Shipped
+                                </button>
+                            </form>
+                        }
+                        @if (order.Status == Larana.Models.OrderStatus.Shipped)
+                        {
+                            <form action="@Url.Action("UpdateOrderStatus", "Dukkan")" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="orderId" value="@order.Id" />
+                                <input type="hidden" name="status" value="@Larana.Models.OrderStatus.Delivered" />
+                                <input type="hidden" name="dukkanId" value="@ViewBag.DukkanId" />
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-check-circle"></i> Mark as Delivered
+                                </button>
+                            </form>
+                        }
+                        @if (order.Status != Larana.Models.OrderStatus.Cancelled && order.Status != Larana.Models.OrderStatus.Delivered)
+                        {
+                            <form action="@Url.Action("UpdateOrderStatus", "Dukkan")" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="orderId" value="@order.Id" />
+                                <input type="hidden" name="status" value="@Larana.Models.OrderStatus.Cancelled" />
+                                <input type="hidden" name="dukkanId" value="@ViewBag.DukkanId" />
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this order?');">
+                                    <i class="fas fa-times"></i> Cancel Order
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .store-header {
+        background-color: #f8f9fa;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .store-actions {
+        margin-top: 1rem;
+    }
+
+    .order-filters {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .form-control {
+        min-width: 200px;
+    }
+
+    .order-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .order-header {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .order-date {
+        color: #6c757d;
+    }
+
+    .order-status {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+
+    .order-status.pending { background-color: #ffc107; color: #000; }
+    .order-status.processing { background-color: #17a2b8; color: #fff; }
+    .order-status.shipped { background-color: #007bff; color: #fff; }
+    .order-status.delivered { background-color: #28a745; color: #fff; }
+    .order-status.cancelled { background-color: #dc3545; color: #fff; }
+
+    .order-details {
+        padding: 1rem;
+    }
+
+    .customer-info {
+        margin-bottom: 1rem;
+    }
+
+    .customer-info h4 {
+        color: #007bff;
+        margin-bottom: 0.5rem;
+    }
+
+    .order-items {
+        margin-top: 1rem;
+    }
+
+    .order-items h4 {
+        color: #007bff;
+        margin-bottom: 0.5rem;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .order-actions {
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn i {
+        margin-right: 0.5rem;
+    }
+
+    .order-delivery.pickup {
+        background-color: #6f42c1;
+        color: #fff;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+
+    .pickup-badge {
+        background-color: #6f42c1;
+        color: #fff;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            function filterOrders() {
+                const status = $('#status-filter').val();
+                const delivery = $('#delivery-filter').val();
+                const sortOrder = $('#sort-order').val();
+
+                $('.order-card').each(function() {
+                    const $card = $(this);
+                    const cardStatus = $card.data('status');
+                    const cardDelivery = $card.data('delivery');
+                    
+                    const statusMatch = !status || cardStatus === status;
+                    const deliveryMatch = !delivery || cardDelivery === delivery;
+                    $card.toggle(statusMatch && deliveryMatch);
+                });
+
+                // Sort orders
+                const $ordersList = $('.orders-list');
+                const $orders = $('.order-card').toArray();
+
+                $orders.sort(function(a, b) {
+                    const $a = $(a);
+                    const $b = $(b);
+
+                    switch(sortOrder) {
+                        case 'date-desc':
+                            return $b.data('date') - $a.data('date');
+                        case 'date-asc':
+                            return $a.data('date') - $b.data('date');
+                        case 'amount-desc':
+                            return $b.data('amount') - $a.data('amount');
+                        case 'amount-asc':
+                            return $a.data('amount') - $b.data('amount');
+                        default:
+                            return 0;
+                    }
+                });
+
+                $ordersList.append($orders);
+            }
+
+            $('#status-filter, #delivery-filter, #sort-order').on('change', filterOrders);
+        });
+    </script>
+} 

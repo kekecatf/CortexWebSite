@@ -6,7 +6,39 @@
             <div class="description">
                 <h5>@product.Name</h5>
                 <h4>@string.Format("{0:N}", product.Price) TL</h4>
+                @if (product.Dukkan != null)
+                {
+                    <span class="shop-name">
+                        <i class="fas fa-store"></i> @product.Dukkan.Name
+                    </span>
+                }
+                @if (product.IsClickAndCollect)
+                {
+                    <span class="click-collect-badge">
+                        <i class="fas fa-shopping-bag"></i> Click & Collect
+                    </span>
+                }
             </div>
         </a>
     </div>
 }
+
+<style>
+    .shop-name {
+        display: block;
+        font-size: 0.85em;
+        color: #666;
+        margin-top: 5px;
+    }
+    
+    .click-collect-badge {
+        display: inline-block;
+        background-color: #6f42c1;
+        color: white;
+        font-size: 0.75em;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-top: 5px;
+        font-weight: bold;
+    }
+</style>

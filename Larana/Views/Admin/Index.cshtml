@@ -1,95 +1,143 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h2 class="page-title">Admin Paneline Hoş Geldiniz</h2>
-<div class="admin-menu">
-    <a href="@Url.Action("CreateUser", "Admin")" class="btn btn-primary">Admin Kullanıcı Oluştur</a>
-    <a href="@Url.Action("Orders", "Admin")" class="btn btn-primary">Siparişleri Görüntüle</a>
-    <a href="@Url.Action("AddProduct", "Admin")" class="btn btn-primary">Yeni Ürün Ekle</a>
-    <button id="edit-product-btn" class="btn btn-primary">Ürün Düzenle</button>
+
+<div class="admin-dashboard">
+    <h2 class="page-title">Admin Dashboard</h2>
+
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <h3>Total Shops</h3>
+            <p class="stat-number">@ViewBag.TotalShops</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Products</h3>
+            <p class="stat-number">@ViewBag.TotalProducts</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Orders</h3>
+            <p class="stat-number">@ViewBag.TotalOrders</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Revenue</h3>
+            <p class="stat-number">@ViewBag.TotalRevenue.ToString("C")</p>
+        </div>
+    </div>
+
+    <div class="admin-menu">
+        <div class="menu-section">
+            <h3>Shop Management</h3>
+            <a href="@Url.Action("Index", "Dukkan")" class="btn btn-primary">Manage Shops</a>
+            <a href="@Url.Action("Create", "Dukkan")" class="btn btn-success">Create New Shop</a>
+        </div>
+
+        <div class="menu-section">
+            <h3>Product Management</h3>
+            <a href="@Url.Action("AddProduct", "Admin")" class="btn btn-primary">Add New Product</a>
+            <button id="edit-product-btn" class="btn btn-warning">Edit Product</button>
+        </div>
+
+        <div class="menu-section">
+            <h3>User Management</h3>
+            <a href="@Url.Action("CreateUser", "Admin")" class="btn btn-primary">Create Admin User</a>
+            <a href="@Url.Action("ManageUsers", "Admin")" class="btn btn-info">Manage Users</a>
+        </div>
+
+        <div class="menu-section">
+            <h3>Order Management</h3>
+            <a href="@Url.Action("Orders", "Admin")" class="btn btn-primary">View All Orders</a>
+        </div>
+    </div>
+
+    <div id="edit-product-container" style="display: none; margin-top: 20px; text-align: center;">
+        <input type="number" id="product-id-input" class="form-control" placeholder="Enter Product ID" style="max-width: 300px; margin: 10px auto; display: inline-block;" />
+        <button id="go-to-edit-product" class="btn btn-success">Go to Edit Product</button>
+    </div>
 </div>
-<div id="edit-product-container" style="display: none; margin-top: 20px; text-align: center;">
-    <input type="number" id="product-id-input" class="form-control" placeholder="Ürün ID'sini Girin" style="max-width: 300px; margin: 10px auto; display: inline-block;" />
-    <button id="go-to-edit-product" class="btn btn-success">Ürün Düzenlemeye Git</button>
-</div>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const editProductBtn = document.getElementById("edit-product-btn");
-        const editProductContainer = document.getElementById("edit-product-container");
-        const goToEditProductBtn = document.getElementById("go-to-edit-product");
-        const productIdInput = document.getElementById("product-id-input");
-        editProductBtn.addEventListener("click", function () {
-            editProductContainer.style.display = editProductContainer.style.display === "none" ? "block" : "none";
-        });
-        goToEditProductBtn.addEventListener("click", function () {
-            const productId = productIdInput.value.trim();
-            if (productId) {
-                window.location.href = `/Admin/EditProduct/${productId}`;
-            } else {
-                alert("Lütfen geçerli bir ürün ID'si girin.");
-            }
-        });
-    });
-</script>
+
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f9f9f9;
-        margin: 0;
-        padding: 0;
+    .admin-dashboard {
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
     }
 
     .page-title {
         text-align: center;
         font-size: 2.5rem;
         color: #333;
-        margin-top: 20px;
         margin-bottom: 30px;
+    }
+
+    .dashboard-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .stat-card h3 {
+        color: #666;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
         font-weight: bold;
+        color: #007bff;
+        margin: 0;
     }
 
     .admin-menu {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 20px;
-        margin-top: 40px;
+    }
+
+    .menu-section {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .menu-section h3 {
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 1.2rem;
     }
 
     .btn {
-        padding: 15px 30px;
-        font-size: 1.1rem;
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 12px;
         border: none;
-        border-radius: 8px;
-        color: #ffffff;
-        text-decoration: none;
+        border-radius: 5px;
+        color: white;
         text-align: center;
-        cursor: pointer;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        transition: background-color 0.3s ease, transform 0.3s ease;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
     }
 
-    .btn-primary {
-        background-color: #007bff;
-    }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-            transform: translateY(-3px);
-        }
-
-    .btn-success {
-        background-color: #28a745;
-    }
-
-        .btn-success:hover {
-            background-color: #218838;
-            transform: translateY(-3px);
-        }
+    .btn-primary { background-color: #007bff; }
+    .btn-success { background-color: #28a745; }
+    .btn-warning { background-color: #ffc107; color: #000; }
+    .btn-info { background-color: #17a2b8; }
 
     .btn:hover {
-        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
     .form-control {
@@ -99,9 +147,31 @@
         width: 100%;
     }
 
-        .form-control:focus {
-            outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
-        }
+    .form-control:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0,123,255,0.3);
+    }
 </style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const editProductBtn = document.getElementById("edit-product-btn");
+        const editProductContainer = document.getElementById("edit-product-container");
+        const goToEditProductBtn = document.getElementById("go-to-edit-product");
+        const productIdInput = document.getElementById("product-id-input");
+
+        editProductBtn.addEventListener("click", function () {
+            editProductContainer.style.display = editProductContainer.style.display === "none" ? "block" : "none";
+        });
+
+        goToEditProductBtn.addEventListener("click", function () {
+            const productId = productIdInput.value.trim();
+            if (productId) {
+                window.location.href = `/Admin/EditProduct/${productId}`;
+            } else {
+                alert("Please enter a valid product ID.");
+            }
+        });
+    });
+</script>
