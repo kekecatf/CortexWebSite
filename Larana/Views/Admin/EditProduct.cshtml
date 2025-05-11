@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2 class="page-title">Manage Product</h2>
+<h2 class="page-title">Ürün Yönetimi</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -22,50 +22,41 @@
 
 <div class="product-container">
     <div class="form-section">
-        <h3>Update Stock & Price</h3>
+        <h3>Stok ve Fiyat Güncelleme</h3>
         @using (Html.BeginForm("EditProduct", "Admin", FormMethod.Post))
         {
-            @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.Id)
             <input type="hidden" name="actionType" value="UpdateStockPrice" />
 
             <div class="form-group">
-                @Html.LabelFor(model => model.Stock, "Stock")
+                @Html.LabelFor(model => model.Stock, "Stok")
                 @Html.TextBoxFor(model => model.Stock, new { @class = "form-control", type = "number", min = 0 })
                 @Html.ValidationMessageFor(model => model.Stock)
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.Price, "Price")
+                @Html.LabelFor(model => model.Price, "Fiyat")
                 @Html.TextBoxFor(model => model.Price, new { @class = "form-control", type = "text", value = Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture) })
                 @Html.ValidationMessageFor(model => model.Price)
             </div>
 
-            <div class="form-group">
-                <div class="custom-control custom-checkbox">
-                    @Html.CheckBoxFor(model => model.IsClickAndCollect, new { @class = "custom-control-input" })
-                    @Html.LabelFor(model => model.IsClickAndCollect, "Enable Click & Collect", new { @class = "custom-control-label" })
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Update Product</button>
+            <button type="submit" class="btn btn-primary">Stok ve Fiyatı Güncelle</button>
         }
     </div>
 
     <div class="form-section">
-        <h3>Sales Information</h3>
-        <p><strong>Total Sales:</strong> @Model.Sales</p>
+        <h3>Satış Bilgileri</h3>
+        <p><strong>Toplam Satış:</strong> @Model.Sales</p>
     </div>
 
     <div class="form-section">
-        <h3>Delete Product</h3>
+        <h3>Ürünü Sil</h3>
         @using (Html.BeginForm("EditProduct", "Admin", FormMethod.Post))
         {
-            @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.Id)
             <input type="hidden" name="actionType" value="DeleteProduct" />
 
-            <button type="submit" class="btn btn-danger">Delete Product</button>
+            <button type="submit" class="btn btn-danger">Ürünü Sil</button>
         }
     </div>
 </div>
@@ -89,128 +80,106 @@
     }
 
     .product-container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
+        max-width: 900px;
+        margin: 30px auto;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+
+        .product-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
 
     .form-section {
-        background: white;
+        margin-bottom: 40px;
         padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f8f9fa;
     }
 
-    .form-section h3 {
-        color: #333;
-        margin-bottom: 20px;
-        font-size: 1.2rem;
-    }
+        .form-section h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #495057;
+            text-transform: uppercase;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
 
     .form-group {
         margin-bottom: 20px;
     }
 
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        color: #666;
-        font-weight: 500;
-    }
-
     .form-control {
         width: 100%;
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        transition: border-color 0.3s;
+        padding: 12px 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+        color: #495057;
+        background-color: #fdfdfd;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .form-control:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 5px rgba(0,123,255,0.3);
-        outline: none;
-    }
-
-    .custom-control {
-        position: relative;
-        display: block;
-        min-height: 1.5rem;
-        padding-left: 1.5rem;
-    }
-
-    .custom-control-input {
-        position: absolute;
-        z-index: -1;
-        opacity: 0;
-    }
-
-    .custom-control-label {
-        position: relative;
-        margin-bottom: 0;
-        vertical-align: top;
-    }
-
-    .custom-control-label::before {
-        position: absolute;
-        top: 0.25rem;
-        left: -1.5rem;
-        display: block;
-        width: 1rem;
-        height: 1rem;
-        pointer-events: none;
-        content: "";
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 0.25rem;
-    }
-
-    .custom-control-input:checked ~ .custom-control-label::before {
-        color: #fff;
-        border-color: #007bff;
-        background-color: #007bff;
-    }
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+        }
 
     .btn {
-        padding: 10px 20px;
+        padding: 12px 20px;
+        font-size: 1.1rem;
+        border-radius: 8px;
         border: none;
-        border-radius: 5px;
-        color: white;
         cursor: pointer;
-        transition: all 0.3s ease;
+        font-weight: bold;
+        transition: background-color 0.3s ease, transform 0.2s ease;
     }
 
     .btn-primary {
         background-color: #007bff;
+        color: white;
     }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: translateY(-3px);
+        }
 
     .btn-danger {
         background-color: #dc3545;
+        color: white;
     }
 
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: translateY(-3px);
+        }
 
     .alert {
         padding: 15px;
+        font-size: 1rem;
+        border-radius: 8px;
         margin-bottom: 20px;
-        border: 1px solid transparent;
-        border-radius: 4px;
+        text-align: center;
+        font-weight: bold;
+        color: #ffffff;
     }
 
     .alert-success {
-        color: #155724;
-        background-color: #d4edda;
-        border-color: #c3e6cb;
+        background-color: #28a745;
+        border: 1px solid #218838;
     }
 
     .alert-danger {
-        color: #721c24;
-        background-color: #f8d7da;
-        border-color: #f5c6cb;
+        background-color: #dc3545;
+        border: 1px solid #c82333;
     }
 
     p {

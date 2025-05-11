@@ -1,19 +1,18 @@
 ﻿<section id="contact-us">
-    <h1>Contact Us</h1>
-    <p>If you have any questions, feel free to send us a message:</p>
+    <h1>Bize Ulaşın</h1>
+    <p>Herhangi bir sorunuz varsa, bize mesaj göndermekten çekinmeyin:</p>
     <form id="contact-form">
-        <label for="subject">Subject:</label>
-        <input type="text" id="subject" class="form-input" placeholder="Enter subject" required>
-        <label for="message">Message:</label>
-        <textarea id="message" class="form-textarea" placeholder="Enter your message" required></textarea>
-        <button type="button" id="send-button" class="form-button" onclick="openEmail()">Send Message</button>
+        <label for="subject">Konu:</label>
+        <input type="text" id="subject" class="form-input" placeholder="Konuyu girin" required>
+        <label for="message">Mesaj:</label>
+        <textarea id="message" class="form-textarea" placeholder="Mesajınızı girin" required></textarea>
+        <button type="button" id="send-button" class="form-button" onclick="openEmail()">Mesaj Gönder</button>
     </form>
 </section>
-
 <script>
     function openEmail() {
         const subject = document.getElementById('subject').value;
         const message = document.getElementById('message').value;
-        window.location.href = `mailto:contact@larana.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+        window.location.href = `mailto:contact@cortex.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
     }
 </script>

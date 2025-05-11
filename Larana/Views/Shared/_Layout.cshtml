@@ -3,262 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @RenderSection("meta", required: false)
-    <title>Larana</title>
-    <link rel="icon" type="image/x-icon" href="~/img/icon1.png" />
-    <link rel="stylesheet" href="~/styles/style.css?v=@DateTime.Now.Ticks" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <script src="~/scripts/jquery-3.7.1.min.js"></script>
-    <script src="~/scripts/jquery.validate.min.js"></script>
-    <script src="~/scripts/jquery.validate.unobtrusive.min.js"></script>
-    <!-- Force clear navigation style -->
-    <style>
-        /* Reset header styling */
-        header {
-            background: #ffffff;
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .header-container {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 0 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .logo-container {
-            flex: 0 0 auto;
-        }
-        
-        .logo-container img {
-            max-width: 150px;
-            height: auto;
-            display: block;
-        }
-        
-        .nav-links {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex: 1 0 auto;
-            padding: 0 20px;
-        }
-        
-        .nav-links ul {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .nav-links li {
-            margin: 0 15px;
-        }
-        
-        .nav-links a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 600;
-            font-size: 16px;
-            padding: 5px 0;
-            position: relative;
-            transition: color 0.3s;
-        }
-        
-        .nav-links a:hover {
-            color: #007BFF;
-        }
-        
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            background: #007BFF;
-            left: 0;
-            bottom: 0;
-            transition: width 0.3s;
-        }
-        
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-        
-        .nav-right {
-            display: flex;
-            align-items: center;
-            flex: 0 0 auto;
-        }
-        
-        .cart-icon {
-            margin-right: 15px;
-        }
-        
-        .cart-icon img {
-            width: 30px;
-            height: 30px;
-            display: block;
-        }
-        
-        .menu-toggle {
-            display: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #333;
-        }
-        
-        @* Escape the @ symbol in @media with @@ *@
-        @@media only screen and (max-width: 800px) {
-            .header-container {
-                flex-wrap: wrap;
-            }
-            
-            .nav-links {
-                flex-basis: 100%;
-                order: 3;
-                display: none;
-                padding: 0;
-                margin-top: 15px;
-            }
-            
-            .nav-links.active {
-                display: block;
-            }
-            
-            .nav-links ul {
-                flex-direction: column;
-            }
-            
-            .nav-links li {
-                margin: 10px 0;
-                text-align: center;
-            }
-            
-            .menu-toggle {
-                display: block;
-            }
-        }
-    </style>
-    <!-- Custom validation configuration -->
-    <script>
-        $(document).ready(function() {
-            // Configure jQuery Validation
-            $.validator.setDefaults({
-                onkeyup: false,
-                onfocusout: false,
-                onsubmit: true,
-                errorClass: 'input-validation-error',
-                validClass: 'input-validation-valid',
-                errorElement: 'span',
-                errorPlacement: function(error, element) {
-                    error.addClass('text-danger');
-                    error.insertAfter(element);
-                }
-            });
-
-            // Clear validation state when input changes
-            $('input, select, textarea').on('input change', function() {
-                var $this = $(this);
-                if ($this.valid()) {
-                    $this.removeClass('input-validation-error');
-                    $this.siblings('.text-danger').hide();
-                }
-            });
-            
-            // Toggle mobile menu
-            $('.menu-toggle').click(function() {
-                $('.nav-links').toggleClass('active');
-            });
-        });
-    </script>
+    <title>Cortex</title>
+    <link rel="icon" type="image/x-icon" href="~/img/LogoCortexSon.png" />
+    <link rel="stylesheet" href="~/styles/style.css" />
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <div class="logo-container">
-                <a href="/"><img src="~/img/logo.png" alt="logo" /></a>
-            </div>
-            
-            <nav class="nav-links">
-                <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/Shop">Products</a></li>
-                    <li><a href="/Dukkan">Shops</a></li>
-                    <li><a href="/About">About</a></li>
-                    <li><a href="/Contact">Contact</a></li>
-                    <li><a href="/Account/Login">Account</a></li>
-                </ul>
-            </nav>
-            
-            <div class="nav-right">
-                <a href="/Cart" class="cart-icon"><img src="~/img/cart-icon.png" alt="Cart" /></a>
-                <span class="menu-toggle">☰</span>
-            </div>
+    <section id="header">
+        <a href="~/Home/Index">
+            <img src="~/img/LogoCortexSon.png" alt="Cortex Logo" width="140" height="50" />
+        </a>
+        <div id="nav1">
+            <ul id="navbar">
+                <li>
+                    <a class="active" href="~/">Ana Sayfa</a>
+                </li>
+                <li>
+                    <a href="~/Shop/Index">Mağaza</a>
+                </li>
+                <li>
+                    <a href="~/Contact">İletişim</a>
+                </li>
+                <li>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a href="~/Account/Logout">Çıkış Yap</a>
+                    }
+                    else
+                    {
+                        <a href="~/Account/Login">Giriş Yap</a>
+                    }
+                </li>
+                <li>
+                    <a href="~/Account/MyAccount">Hesabım</a>
+                </li>
+                <li>
+                    <a href="~/Cart/Index">
+                        <img src="~/img/cart-icon.png" alt="Sepet İkonu" width="24" height="20" />
+                    </a>
+                </li>
+            </ul>
         </div>
-    </header>
-
-    <main>
-        @RenderBody()
-    </main>
-
+    </section>
+    @RenderBody()
     <footer>
         <div class="col">
-            <img class="logo" width="100%" src="~/img/logo.png" alt="logo" />
-            <h4>Contact</h4>
+            <img class="logo" width="100%" src="~/img/" alt="logo" />
+            <h4>İletişim</h4>
             <p>
-                <strong>Address:</strong> Ataköy Mahallesi, 34. Sokak No: 12, Bakırköy, Istanbul
+                <strong>Adres:</strong> Kahramanmaraş/Onikişubat/Sütçüimam Üniversitesi
             </p>
             <p>
-                <strong>Phone:</strong> +90 212 345 67 89
+                <strong>Telefon:</strong> +90 123 123 12 12
             </p>
             <p>
-                <strong>Hours:</strong> 9:00 - 20:00, Mon - Sat
+                <strong>Çalışma Saatleri:</strong> 9:00 - 20:00, Pts - Cts
             </p>
         </div>
         <div class="col">
-            <h4><strong>About</strong></h4>
-            <a href="/About"><strong>About us</strong></a>
-            <a href="/FAQ"><strong>FAQ</strong></a>
+            <h4><strong>Hakkında</strong></h4>
+            <a href="~/About"><strong>Hakkımızda</strong></a>
+            <a href="~/FAQ"><strong>S.S.S</strong></a>
         </div>
         <div class="col">
-            <h4>My Account</h4>
+            <h4>Hesabım</h4>
             @if (User.Identity.IsAuthenticated)
             {
-                <a href="/Account/MyAccount"><strong>My Account</strong></a>
-                
-                if (User.IsInRole("Seller"))
-                {
-                    <a href="/Shop/MyShops"><strong>My Shop</strong></a>
-                }
-                
-                <a href="/Account/Logout"><strong>Log out</strong></a>
+                <a href="~/Account/MyAccount"><strong>Hesabım</strong></a>
+                <a href="~/Account/Logout"><strong>Çıkış Yap</strong></a>
             }
             else
             {
-                <a href="/Account/Register"><strong>Register</strong></a>
-                <a href="/Account/Login"><strong>Login</strong></a>
+                <a href="~/Account/Register"><strong>Kayıt Ol</strong></a>
+                <a href="~/Account/Login"><strong>Giriş Yap</strong></a>
             }
-            <a href="/Account/ViewOrders"><strong>Track My Order</strong></a>
-            <a href="/Contact"><strong>Contact</strong></a>
+            <a href="~/Account/ViewOrders"><strong>Siparişimi Takip Et</strong></a>
+            <a href="~/Contact"><strong>İletişim</strong></a>
         </div>
         <div class="col">
-            <h4>Secured Payment Gateways</h4>
-            <img src="~/img/pay/pay.png" alt="Pay" />
+            <h4>Güvenli Ödeme Yöntemleri</h4>
+            <img src="~/img/pay/pay.png" alt="Ödeme" />
         </div>
     </footer>
     <script src="~/scripts/script.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
-    @RenderSection("Scripts", required: false)
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 </html>

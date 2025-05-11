@@ -1,0 +1,341 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|c:\\users\\kekec\\documents\\workdir\\cortexwebsite\\larana\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\shop\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\shop\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\shop\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\shop\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\shop\\_productlist.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\shop\\_productlist.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\home\\faq.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\home\\faq.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\home\\contact.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\home\\contact.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\home\\about.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\home\\about.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\cart\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\cart\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\admin\\orders.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\admin\\orders.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\admin\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\admin\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\admin\\editproduct.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\admin\\editproduct.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\admin\\createuser.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\admin\\createuser.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\admin\\addproduct.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\admin\\addproduct.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\account\\vieworders.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\account\\vieworders.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\account\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\account\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\account\\myaccount.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\account\\myaccount.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\larana\\views\\account\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\views\\account\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "_ViewStart.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\_ViewStart.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\_ViewStart.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\_ViewStart.cshtml",
+              "RelativeToolTip": "Larana\\Views\\_ViewStart.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T16:11:44.958Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Shop\\Index.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Shop\\Index.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Shop\\Index.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Shop\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHcBAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T16:10:36.169Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Details.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Shop\\Details.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Shop\\Details.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Shop\\Details.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Shop\\Details.cshtml",
+              "ViewState": "AgIAAOwAAAAAAAAAAAAwwCoBAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T16:09:43.277Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "_ProductList.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Shop\\_ProductList.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Shop\\_ProductList.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Shop\\_ProductList.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Shop\\_ProductList.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T16:09:33.739Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAA3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T16:08:55.91Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "FAQ.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Home\\FAQ.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Home\\FAQ.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Home\\FAQ.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Home\\FAQ.cshtml",
+              "ViewState": "AgIAABcAAAAAAAAAAAAwwFUAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T16:07:22.781Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Contact.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Home\\Contact.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Home\\Contact.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Home\\Contact.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Home\\Contact.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T16:06:53.191Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "About.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Home\\About.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Home\\About.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Home\\About.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Home\\About.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T16:06:16.487Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Cart\\Index.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Cart\\Index.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Cart\\Index.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Cart\\Index.cshtml",
+              "ViewState": "AgIAAEkBAAAAAAAAAAAwwIcBAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T16:04:50.026Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Orders.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Admin\\Orders.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Admin\\Orders.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Admin\\Orders.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Admin\\Orders.cshtml",
+              "ViewState": "AgIAAP0AAAAAAAAAAAAwwDsBAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T16:03:34.086Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Admin\\Index.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Admin\\Index.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Admin\\Index.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Admin\\Index.cshtml",
+              "ViewState": "AgIAACwAAAAAAAAAAAAwwGoAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T16:02:58.373Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "EditProduct.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Admin\\EditProduct.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Admin\\EditProduct.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Admin\\EditProduct.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Admin\\EditProduct.cshtml",
+              "ViewState": "AgIAAIQAAAAAAAAAAAAwwMIAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T16:02:08.849Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "CreateUser.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Admin\\CreateUser.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Admin\\CreateUser.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Admin\\CreateUser.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Admin\\CreateUser.cshtml",
+              "ViewState": "AgIAAC8AAAAAAAAAAAAwwG0AAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T15:59:34.369Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "AddProduct.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Admin\\AddProduct.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Admin\\AddProduct.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Admin\\AddProduct.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Admin\\AddProduct.cshtml",
+              "ViewState": "AgIAAGIAAAAAAAAAAAAwwJEAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T15:58:03.93Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "ViewOrders.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Account\\ViewOrders.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Account\\ViewOrders.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Account\\ViewOrders.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Account\\ViewOrders.cshtml",
+              "ViewState": "AgIAAK4AAAAAAAAAAAAwwOwAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T15:57:03.533Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Home\\Index.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Home\\Index.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Home\\Index.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Home\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADgAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T15:52:55.158Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Register.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Account\\Register.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Account\\Register.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Account\\Register.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Account\\Register.cshtml",
+              "ViewState": "AgIAADIAAAAAAAAAAAAwwHAAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T15:55:54.161Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "MyAccount.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Account\\MyAccount.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Account\\MyAccount.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Account\\MyAccount.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Account\\MyAccount.cshtml",
+              "ViewState": "AgIAABYAAAAAAAAAAAAwwFQAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T15:55:02.009Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "Login.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Account\\Login.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Account\\Login.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Account\\Login.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Account\\Login.cshtml",
+              "ViewState": "AgIAACcAAAAAAAAAAAAwwGUAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T15:54:15.694Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Account\\Edit.cshtml",
+              "RelativeDocumentMoniker": "Larana\\Views\\Account\\Edit.cshtml",
+              "ToolTip": "C:\\Users\\kekec\\Documents\\Workdir\\CortexWebSite\\Larana\\Views\\Account\\Edit.cshtml",
+              "RelativeToolTip": "Larana\\Views\\Account\\Edit.cshtml",
+              "ViewState": "AgIAAFkAAAAAAAAAAAAwwJcAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T15:52:45.591Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
