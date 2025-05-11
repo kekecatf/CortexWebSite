@@ -85,32 +85,8 @@
         </div>
     }
 
-    <!-- Ratings and Reviews Section -->
-    <div class="ratings-section mb-4">
-        <div class="card">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h3 class="mb-0">Ratings & Reviews</h3>
-                @if (Request.IsAuthenticated && !isOwner)
-                {
-                    <button class="btn btn-primary" data-toggle="modal" data-target="#rateShopModal">
-                        Rate This Shop
-                    </button>
-                }
-            </div>
-            <div class="card-body">
-                <div id="ratingsContainer">
-                    <div class="text-center py-3">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                        <p class="mt-2">Loading reviews...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="products-section">
+    <!-- Products Section -->
+    <div class="products-section mb-4">
         <h2>Products</h2>
         @if (Model.Products != null && Model.Products.Any())
         {
@@ -156,6 +132,31 @@
                 No products available in this store.
             </div>
         }
+    </div>
+
+    <!-- Ratings and Reviews Section -->
+    <div class="ratings-section">
+        <div class="card">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">Ratings & Reviews</h3>
+                @if (Request.IsAuthenticated && !isOwner)
+                {
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#rateShopModal">
+                        Rate This Shop
+                    </button>
+                }
+            </div>
+            <div class="card-body">
+                <div id="ratingsContainer">
+                    <div class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading reviews...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

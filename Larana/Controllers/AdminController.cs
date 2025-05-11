@@ -286,70 +286,416 @@ namespace Larana.Controllers
         [HttpPost]
         public ActionResult UpdateUser(int id, string username, string email, string userType, bool isActive)
         {
-            var user = db.Users.Find(id);
-            if (user != null)
+            System.Diagnostics.Debug.WriteLine($"UpdateUser çağrıldı. ID={id}");
+
+            try
             {
-                user.Username = username;
-                user.Email = email;
-                
-                if (Enum.TryParse<UserType>(userType, out var type))
+                // Validate the ID parameter
+                if (id <= 0)
                 {
-                    user.UserType = type;
+                    if (Request.IsAjaxRequest())
+                    {
+                        return Json(new { success = false, message = "Geçersiz kullanıcı ID'si." });
+                    }
                     
-                    // Update role based on user type
-                    if (type == UserType.Admin)
+                    TempData["ErrorMessage"] = "Geçersiz kullanıcı ID.";
+                    return RedirectToAction("ManageUsers");
+                }
+
+                // 1. Güncellenmek istenen kullanıcıyı bul
+                var userToUpdate = db.Users.Find(id);
+                if (userToUpdate == null)
+                {
+                    if (Request.IsAjaxRequest())
                     {
-                        user.Role = UserRole.Admin;
-                        user.Roles = "Admin";
+                        return Json(new { success = false, message = "Güncellenecek kullanıcı bulunamadı." });
                     }
-                    else if (type == UserType.Seller)
+                    
+                    TempData["ErrorMessage"] = "Güncellenecek kullanıcı bulunamadı.";
+                    return RedirectToAction("ManageUsers");
+                }
+
+                // 2. İşlemi yapan admin kullanıcısını bul (basit yöntemle)
+                User currentAdmin = null;
+                string adminUsername = User.Identity?.Name;
+
+                if (string.IsNullOrEmpty(adminUsername))
+                {
+                    if (Request.IsAjaxRequest())
                     {
-                        user.Role = UserRole.Seller;
-                        user.Roles = "Seller";
+                        return Json(new { success = false, message = "Oturum bilgisi alınamadı." });
                     }
-                    else
+                    
+                    TempData["ErrorMessage"] = "Oturum bilgisi alınamadı.";
+                    return RedirectToAction("ManageUsers");
+                }
+
+                System.Diagnostics.Debug.WriteLine($"Authenticated user: {adminUsername}");
+
+                // Kullanıcıyı veritabanında bul
+                try
+                {
+                    currentAdmin = db.Users.FirstOrDefault(u => u.Username == adminUsername);
+
+                    if (currentAdmin == null)
                     {
-                        user.Role = UserRole.Customer;
-                        user.Roles = "Customer";
+                        if (Request.IsAjaxRequest())
+                        {
+                            return Json(new { success = false, message = "Yönetici bilgisi bulunamadı." });
+                        }
+                        
+                        System.Diagnostics.Debug.WriteLine("Admin user not found in database");
+                        TempData["ErrorMessage"] = "Yönetici bilgisi bulunamadı.";
+                        return RedirectToAction("ManageUsers");
                     }
                 }
-                
-                user.IsActive = isActive;
+                catch (Exception ex)
+                {
+                    // Log exception
+                    System.Diagnostics.Debug.WriteLine($"Error finding current admin: {ex.Message}");
+                    
+                    if (Request.IsAjaxRequest())
+                    {
+                        return Json(new { success = false, message = "Yönetici bilgisi alınırken hata oluştu: " + ex.Message });
+                    }
+                    
+                    TempData["ErrorMessage"] = "Yönetici bilgisi alınırken hata oluştu.";
+                    return RedirectToAction("ManageUsers");
+                }
+
+                // 3. Kendini güncelliyor mu kontrol et?
+                bool isSelfUpdate = currentAdmin.Id == id;
+                if (isSelfUpdate)
+                {
+                    System.Diagnostics.Debug.WriteLine("Self-update detected!");
+                }
+
+                // 4. Gerekli güncellemeleri yap
+                // Temel bilgiler her zaman güncellenebilir
+                if (!string.IsNullOrEmpty(username))
+                {
+                    userToUpdate.Username = username;
+                }
+
+                if (!string.IsNullOrEmpty(email))
+                {
+                    userToUpdate.Email = email;
+                }
+
+                // 5. Kendi hesabını güncelliyorsa rolü ve durumu değiştirmeye izin verme
+                if (!isSelfUpdate)
+                {
+                    System.Diagnostics.Debug.WriteLine("Updating role/status of another user");
+
+                    // UserType işlemi
+                    if (!string.IsNullOrEmpty(userType))
+                    {
+                        try
+                        {
+                            // string -> enum dönüşümü - format hatası olasılığı var
+                            UserType type;
+                            if (Enum.TryParse(userType, true, out type))
+                            {
+                                userToUpdate.UserType = type;
+
+                                // Buna bağlı olarak Role ve Roles alanlarını da güncelle
+                                switch (type)
+                                {
+                                    case UserType.Admin:
+                                        userToUpdate.Role = UserRole.Admin;
+                                        userToUpdate.Roles = "Admin";
+                                        break;
+                                    case UserType.Seller:
+                                        userToUpdate.Role = UserRole.Seller;
+                                        userToUpdate.Roles = "Seller";
+                                        break;
+                                    default:
+                                    case UserType.Customer:
+                                        userToUpdate.Role = UserRole.Customer;
+                                        userToUpdate.Roles = "Customer";
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Failed to parse user type: {userType}");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Error updating user type: {ex.Message}");
+                            // Hata oluştu ama işleme devam et
+                        }
+                    }
+
+                    // Aktiflik durumu
+                    userToUpdate.IsActive = isActive;
+                }
+
+                // 6. Değişiklikleri kaydet ve sonlandır
                 db.SaveChanges();
+
+                if (Request.IsAjaxRequest())
+                {
+                    var result = new { 
+                        success = true, 
+                        message = isSelfUpdate 
+                            ? "Profil başarıyla güncellendi." 
+                            : "Kullanıcı başarıyla güncellendi.",
+                        userData = new {
+                            id = userToUpdate.Id,
+                            username = userToUpdate.Username,
+                            email = userToUpdate.Email,
+                            userType = userToUpdate.UserType.ToString(),
+                            isActive = userToUpdate.IsActive
+                        }
+                    };
+                    
+                    return Json(result);
+                }
                 
-                TempData["SuccessMessage"] = "User updated successfully.";
+                if (isSelfUpdate)
+                {
+                    TempData["SuccessMessage"] = "Profil başarıyla güncellendi. Not: Yöneticiler kendi rollerini veya durumlarını değiştiremezler.";
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = "Kullanıcı başarıyla güncellendi.";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "User not found.";
+                // Genel hata durumu
+                System.Diagnostics.Debug.WriteLine($"Error updating user: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                
+                if (Request.IsAjaxRequest())
+                {
+                    return Json(new { success = false, message = "Kullanıcı güncellenirken bir hata oluştu: " + ex.Message });
+                }
+                
+                TempData["ErrorMessage"] = "Kullanıcı güncellenirken bir hata oluştu: " + ex.Message;
             }
-            
+
             return RedirectToAction("ManageUsers");
         }
         
         [HttpPost]
         public ActionResult DeleteUser(int id)
         {
-            var user = db.Users.Find(id);
-            if (user != null)
+            System.Diagnostics.Debug.WriteLine($"DeleteUser çağrıldı. ID={id}");
+            
+            try
             {
+                // Parametre kontrolü
+                if (id <= 0)
+                {
+                    if (Request.IsAjaxRequest())
+                    {
+                        return Json(new { success = false, message = "Geçersiz kullanıcı ID'si (0 veya negatif değer)." });
+                    }
+                    
+                    TempData["ErrorMessage"] = "Geçersiz kullanıcı ID'si (0 veya negatif değer).";
+                    return RedirectToAction("ManageUsers");
+                }
+                
+                // 1. Silinmek istenen kullanıcıyı bul 
+                var userToDelete = db.Users.Find(id);
+                if (userToDelete == null)
+                {
+                    if (Request.IsAjaxRequest())
+                    {
+                        return Json(new { success = false, message = "Silinecek kullanıcı bulunamadı." });
+                    }
+                    
+                    TempData["ErrorMessage"] = "Silinecek kullanıcı bulunamadı.";
+                    return RedirectToAction("ManageUsers");
+                }
+                
+                // 2. İşlemi yapan admin kullanıcısını bul (basit yöntemle)
+                User currentAdmin = null;
+                string adminUsername = User.Identity?.Name;
+                
+                if (string.IsNullOrEmpty(adminUsername))
+                {
+                    if (Request.IsAjaxRequest())
+                    {
+                        return Json(new { success = false, message = "Oturum bilgisi alınamadı." });
+                    }
+                    
+                    TempData["ErrorMessage"] = "Oturum bilgisi alınamadı.";
+                    return RedirectToAction("ManageUsers");
+                }
+                
+                System.Diagnostics.Debug.WriteLine($"Authenticated user: {adminUsername}");
+                
+                // Kullanıcıyı veritabanında bul
                 try
                 {
-                    db.Users.Remove(user);
-                    db.SaveChanges();
-                    TempData["SuccessMessage"] = "User deleted successfully.";
+                    currentAdmin = db.Users.FirstOrDefault(u => u.Username == adminUsername);
+                    
+                    if (currentAdmin == null)
+                    {
+                        if (Request.IsAjaxRequest())
+                        {
+                            return Json(new { success = false, message = "Yönetici bilgisi bulunamadı." });
+                        }
+                        
+                        System.Diagnostics.Debug.WriteLine("Admin user not found in database");
+                        TempData["ErrorMessage"] = "Yönetici bilgisi bulunamadı.";
+                        return RedirectToAction("ManageUsers");
+                    }
                 }
                 catch (Exception ex)
                 {
-                    TempData["ErrorMessage"] = $"Unable to delete user: {ex.Message}";
+                    System.Diagnostics.Debug.WriteLine($"Error finding current admin: {ex.Message}");
+                    
+                    if (Request.IsAjaxRequest())
+                    {
+                        return Json(new { success = false, message = "Yönetici bilgisi alınırken hata oluştu: " + ex.Message });
+                    }
+                    
+                    TempData["ErrorMessage"] = "Yönetici bilgisi alınırken hata oluştu.";
+                    return RedirectToAction("ManageUsers");
+                }
+                
+                // 3. Kendini silmeye çalışıyor mu kontrol et?
+                if (currentAdmin.Id == id)
+                {
+                    System.Diagnostics.Debug.WriteLine("Self-delete attempt detected and prevented");
+                    
+                    if (Request.IsAjaxRequest())
+                    {
+                        return Json(new { success = false, message = "Yöneticiler kendi hesaplarını silemezler." });
+                    }
+                    
+                    TempData["ErrorMessage"] = "Yöneticiler kendi hesaplarını silemezler.";
+                    return RedirectToAction("ManageUsers");
+                }
+                
+                // 4. Silme işleminden önce ilişkili kayıtları kontrol et
+                try
+                {
+                    // Kullanıcının siparişlerini kontrol et
+                    var userOrders = ordersDb.Orders.Where(o => o.UserId == id).ToList();
+                    if (userOrders.Any())
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Kullanıcının {userOrders.Count} siparişi var!");
+                        
+                        // Sipariş referansı olan sepetler olduğu için, siparişleri silmeden kullanıcıyı silemeyiz
+                        if (Request.IsAjaxRequest())
+                        {
+                            return Json(new { success = false, message = $"Bu kullanıcı {userOrders.Count} siparişe sahip. Kullanıcıyı silmeden önce siparişleri silmeli veya başka kullanıcıya transfer etmelisiniz." });
+                        }
+                        
+                        TempData["ErrorMessage"] = $"Bu kullanıcı {userOrders.Count} siparişe sahip. Kullanıcıyı silmeden önce siparişleri silmeli veya başka kullanıcıya transfer etmelisiniz.";
+                        return RedirectToAction("ManageUsers");
+                    }
+                    
+                    // Kullanıcının sepetlerini al ve sil (siparişlerden sonra silmeliyiz)
+                    var userCarts = productDb.Carts.Where(c => c.UserId == id).ToList();
+                    if (userCarts.Any())
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Kullanıcının {userCarts.Count} sepeti var, bunlar siliniyor...");
+                        // Sepetleri sil
+                        foreach (var cart in userCarts)
+                        {
+                            productDb.Carts.Remove(cart);
+                        }
+                        productDb.SaveChanges();
+                    }
+                    
+                    // Kullanıcının dükkanlarını al
+                    var userDukkans = productDb.Dukkans.Where(d => d.OwnerId == id).ToList();
+                    if (userDukkans.Any())
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Kullanıcının {userDukkans.Count} dükkanı var, bunlar silinemiyor!");
+                        TempData["ErrorMessage"] = $"Bu kullanıcı {userDukkans.Count} dükkana sahip. Önce dükkanları silmeli veya başka kullanıcıya transfer etmelisiniz.";
+                        return RedirectToAction("ManageUsers");
+                    }
+                    
+                    // Kullanıcının adına kayıtlı rating/değerlendirmeler varsa kontrol et
+                    var userRatings = productDb.Ratings.Where(r => r.UserId == id).ToList();
+                    if (userRatings.Any())
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Kullanıcının {userRatings.Count} değerlendirmesi var, bunlar siliniyor...");
+                        // Değerlendirmeleri sil
+                        foreach (var rating in userRatings)
+                        {
+                            productDb.Ratings.Remove(rating);
+                        }
+                        productDb.SaveChanges();
+                    }
+                    
+                    // 5. Silme işlemini gerçekleştir
+                    db.Users.Remove(userToDelete);
+                    db.SaveChanges();
+                    
+                    if (Request.IsAjaxRequest())
+                    {
+                        return Json(new { success = true, message = "Kullanıcı başarıyla silindi." });
+                    }
+                    
+                    TempData["SuccessMessage"] = "Kullanıcı başarıyla silindi.";
+                }
+                catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
+                {
+                    // Entity Framework DbUpdateException'ı özel olarak yakala
+                    var innerException = ex.InnerException;
+                    string errorDetails = "İç hata: ";
+                    
+                    while (innerException != null)
+                    {
+                        errorDetails += innerException.Message + " "; 
+                        innerException = innerException.InnerException;
+                    }
+                    
+                    System.Diagnostics.Debug.WriteLine("Veritabanı güncelleme hatası: " + ex.Message);
+                    System.Diagnostics.Debug.WriteLine("İç hata detayları: " + errorDetails);
+                    
+                    if (Request.IsAjaxRequest())
+                    {
+                        return Json(new { success = false, message = "Veritabanı güncelleme hatası: " + errorDetails });
+                    }
+                    
+                    TempData["ErrorMessage"] = "Kullanıcı silinirken bir hata oluştu: " + errorDetails;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "User not found.";
+                // Genel hata durumu
+                System.Diagnostics.Debug.WriteLine($"Error deleting user: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                
+                if (ex.InnerException != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                    System.Diagnostics.Debug.WriteLine($"Inner stack trace: {ex.InnerException.StackTrace}");
+                }
+                
+                if (Request.IsAjaxRequest())
+                {
+                    return Json(new { success = false, message = "Kullanıcı silinirken bir hata oluştu: " + GetAllInnerExceptionMessages(ex) });
+                }
+                
+                TempData["ErrorMessage"] = "Kullanıcı silinirken bir hata oluştu: " + GetAllInnerExceptionMessages(ex);
             }
             
             return RedirectToAction("ManageUsers");
+        }
+        
+        private string GetAllInnerExceptionMessages(Exception ex)
+        {
+            var message = ex.Message;
+            var innerEx = ex.InnerException;
+            
+            while (innerEx != null)
+            {
+                message += " İç hata: " + innerEx.Message;
+                innerEx = innerEx.InnerException;
+            }
+            
+            return message;
         }
 
         [HttpPost]
@@ -467,3 +813,4 @@ namespace Larana.Controllers
         }
     }
 }
+

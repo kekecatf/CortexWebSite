@@ -754,7 +754,7 @@ namespace Larana.Controllers
         // GET: Dukkan/Profile
         [Authorize]
         [Route("Profile/{id}")]
-        public ActionResult Profile(int id)
+        public new ActionResult Profile(int id)
         {
             var username = User.Identity.Name;
             var user = db.Users.FirstOrDefault(u => u.Username == username);

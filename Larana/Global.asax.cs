@@ -11,6 +11,8 @@ using System.Linq;
 using System.IO;
 using System.Data.Entity;
 using System.Web.Optimization;
+using System.Globalization;
+using System.Threading;
 
 namespace Larana
 {
@@ -18,6 +20,13 @@ namespace Larana
     {
         protected void Application_Start()
         {
+            // Türkçe karakter desteği için kültür ayarları
+            var cultureInfo = new CultureInfo("tr-TR");
+            Thread.CurrentThread.CurrentCulture = cultureInfo;
+            Thread.CurrentThread.CurrentUICulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
             // Set the DataDirectory path
             AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data"));
 
@@ -158,15 +167,41 @@ namespace Larana
 
         protected void Application_AuthenticateRequest(Object sender, EventArgs e)
         {
-            if (HttpContext.Current.User != null && HttpContext.Current.User.Identity.IsAuthenticated)
+            try
             {
-                var formsIdentity = HttpContext.Current.User.Identity as FormsIdentity;
-                if (formsIdentity != null)
+                if (HttpContext.Current.User != null && HttpContext.Current.User.Identity.IsAuthenticated)
                 {
-                    var roles = formsIdentity.Ticket.UserData.Split(',');
-                    HttpContext.Current.User = new System.Security.Principal.GenericPrincipal(formsIdentity, roles);
+                    var formsIdentity = HttpContext.Current.User.Identity as FormsIdentity;
+                    if (formsIdentity != null && !string.IsNullOrEmpty(formsIdentity.Ticket.UserData))
+                    {
+                        // Split the roles and ensure no empty elements
+                        var roles = formsIdentity.Ticket.UserData
+                            .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                        
+                        if (roles.Length > 0)
+                        {
+                            HttpContext.Current.User = new System.Security.Principal.GenericPrincipal(formsIdentity, roles);
+                        }
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the error but don't throw - authentication error should not break the request
+                System.Diagnostics.Debug.WriteLine($"Authentication error: {ex.Message}");
+            }
+        }
+        
+        protected void Application_BeginRequest(object sender, EventArgs e)
+        {
+            // Her istek başlangıcında kültür ayarlarını yap
+            var cultureInfo = new CultureInfo("tr-TR");
+            Thread.CurrentThread.CurrentCulture = cultureInfo;
+            Thread.CurrentThread.CurrentUICulture = cultureInfo;
+            
+            // Response kodlamasını ayarla
+            HttpContext.Current.Response.ContentEncoding = System.Text.Encoding.UTF8;
+            HttpContext.Current.Response.Charset = "utf-8";
         }
     }
 }
