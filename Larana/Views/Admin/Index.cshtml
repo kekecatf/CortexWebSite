@@ -5,6 +5,20 @@
 <div class="admin-dashboard">
     <h2 class="page-title">Admin Dashboard</h2>
 
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
     <div class="dashboard-stats">
         <div class="stat-card">
             <h3>Total Shops</h3>
@@ -34,6 +48,8 @@
         <div class="menu-section">
             <h3>Product Management</h3>
             <a href="@Url.Action("AddProduct", "Admin")" class="btn btn-primary">Add New Product</a>
+            <a href="@Url.Action("CreateBrand", "Admin")" class="btn btn-success">Create New Brand</a>
+            <a href="@Url.Action("CreateCategory", "Admin")" class="btn btn-info">Create New Category</a>
             <button id="edit-product-btn" class="btn btn-warning">Edit Product</button>
         </div>
 
@@ -151,6 +167,24 @@
         outline: none;
         border-color: #007bff;
         box-shadow: 0 0 5px rgba(0,123,255,0.3);
+    }
+    
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+    }
+    
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
     }
 </style>
 

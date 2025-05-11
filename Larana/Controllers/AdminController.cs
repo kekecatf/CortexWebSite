@@ -100,6 +100,25 @@ namespace Larana.Controllers
                 TempData["ErrorMessage"] = "Product not found.";
                 return RedirectToAction("Index");
             }
+            
+            // Get all unique brands and categories from existing products
+            var brands = productDb.Products
+                .Where(p => !string.IsNullOrEmpty(p.Brand))
+                .Select(p => p.Brand)
+                .Distinct()
+                .OrderBy(b => b)
+                .ToList();
+                
+            var categories = productDb.Products
+                .Where(p => !string.IsNullOrEmpty(p.Category))
+                .Select(p => p.Category)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+                
+            ViewBag.BrandsList = string.Join(",", brands);
+            ViewBag.CategoriesList = string.Join(",", categories);
+                
             return View(product);
         }
 
@@ -117,6 +136,29 @@ namespace Larana.Controllers
             {
                 switch (actionType)
                 {
+                    case "UpdateDetails":
+                        // Remove validation for fields not being updated
+                        ModelState.Remove("Stock");
+                        ModelState.Remove("Price");
+                        ModelState.Remove("PhotoPath");
+                        
+                        if (ModelState.IsValid)
+                        {
+                            existingProduct.Name = product.Name;
+                            existingProduct.Brand = product.Brand;
+                            existingProduct.Category = product.Category;
+                            productDb.SaveChanges();
+                            TempData["SuccessMessage"] = "Product details updated successfully!";
+                        }
+                        else
+                        {
+                            var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                  .Select(e => e.ErrorMessage)
+                                                  .ToList();
+                            TempData["ErrorMessage"] = "Validation Errors: " + string.Join(", ", errors);
+                        }
+                        break;
+                        
                     case "UpdateStockPrice":
                         // Remove non-required fields from validation
                         ModelState.Remove("Name");
@@ -179,6 +221,24 @@ namespace Larana.Controllers
 
         public ActionResult AddProduct()
         {
+            // Get all unique brands and categories from existing products
+            var brands = productDb.Products
+                .Where(p => !string.IsNullOrEmpty(p.Brand))
+                .Select(p => p.Brand)
+                .Distinct()
+                .OrderBy(b => b)
+                .ToList();
+                
+            var categories = productDb.Products
+                .Where(p => !string.IsNullOrEmpty(p.Category))
+                .Select(p => p.Category)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+                
+            ViewBag.BrandsList = string.Join(",", brands);
+            ViewBag.CategoriesList = string.Join(",", categories);
+                
             return View(new Product());
         }
 
@@ -192,8 +252,27 @@ namespace Larana.Controllers
                 productDb.Products.Add(product);
                 productDb.SaveChanges();
 
+                TempData["SuccessMessage"] = "Product added successfully!";
                 return RedirectToAction("Index");
             }
+
+            // If we got this far, redisplay form
+            var brands = productDb.Products
+                .Where(p => !string.IsNullOrEmpty(p.Brand))
+                .Select(p => p.Brand)
+                .Distinct()
+                .OrderBy(b => b)
+                .ToList();
+                
+            var categories = productDb.Products
+                .Where(p => !string.IsNullOrEmpty(p.Category))
+                .Select(p => p.Category)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+                
+            ViewBag.BrandsList = string.Join(",", brands);
+            ViewBag.CategoriesList = string.Join(",", categories);
 
             return View(product);
         }
@@ -271,6 +350,96 @@ namespace Larana.Controllers
             }
             
             return RedirectToAction("ManageUsers");
+        }
+
+        [HttpPost]
+        public ActionResult AddNewBrand(string brandName, string returnUrl)
+        {
+            if (!string.IsNullOrEmpty(brandName))
+            {
+                TempData["NewBrand"] = brandName;
+                TempData["SuccessMessage"] = $"Brand '{brandName}' added successfully!";
+            }
+            
+            return Redirect(returnUrl);
+        }
+        
+        [HttpPost]
+        public ActionResult AddNewCategory(string categoryName, string returnUrl)
+        {
+            if (!string.IsNullOrEmpty(categoryName))
+            {
+                TempData["NewCategory"] = categoryName;
+                TempData["SuccessMessage"] = $"Category '{categoryName}' added successfully!";
+            }
+            
+            return Redirect(returnUrl);
+        }
+
+        public ActionResult CreateBrand()
+        {
+            return View();
+        }
+        
+        [HttpPost]
+        public ActionResult CreateBrand(string brandName)
+        {
+            if (!string.IsNullOrEmpty(brandName))
+            {
+                // Create a dummy product with this brand to establish it in the database
+                var product = new Product
+                {
+                    Name = "Brand Placeholder - " + brandName,
+                    Brand = brandName,
+                    Category = "Placeholder",
+                    PhotoPath = "img/products/placeholder.jpg",
+                    Price = 0.01m,
+                    Stock = 0,
+                    IsActive = false
+                };
+                
+                productDb.Products.Add(product);
+                productDb.SaveChanges();
+                
+                TempData["SuccessMessage"] = $"Brand '{brandName}' has been added successfully!";
+                return RedirectToAction("Index");
+            }
+            
+            TempData["ErrorMessage"] = "Please provide a brand name.";
+            return View();
+        }
+        
+        public ActionResult CreateCategory()
+        {
+            return View();
+        }
+        
+        [HttpPost]
+        public ActionResult CreateCategory(string categoryName)
+        {
+            if (!string.IsNullOrEmpty(categoryName))
+            {
+                // Create a dummy product with this category to establish it in the database
+                var product = new Product
+                {
+                    Name = "Category Placeholder - " + categoryName,
+                    Brand = "Placeholder",
+                    Category = categoryName,
+                    PhotoPath = "img/products/placeholder.jpg",
+                    Price = 0.01m,
+                    Stock = 0,
+                    IsActive = false
+                };
+                
+                productDb.Products.Add(product);
+                productDb.SaveChanges();
+                
+                TempData["SuccessMessage"] = $"Category '{categoryName}' has been added successfully!";
+                return RedirectToAction("Index");
+            }
+            
+            TempData["ErrorMessage"] = "Please provide a category name.";
+            return View();
         }
 
         public class OrderDetailViewModel

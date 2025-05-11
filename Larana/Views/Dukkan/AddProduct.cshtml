@@ -173,7 +173,34 @@
             $("#saveBrandBtn").click(function() {
                 var newBrand = $("#brandInput").val().trim();
                 if (newBrand) {
+                    // Set the brand in the hidden input or directly in the dropdown
+                    var brandExists = false;
+                    
+                    // Check if this brand already exists in the dropdown
+                    $("#brandDropdown option").each(function() {
+                        if ($(this).text().toLowerCase() === newBrand.toLowerCase()) {
+                            brandExists = true;
+                            $("#brandDropdown").val($(this).val());
+                            return false; // Break the loop
+                        }
+                    });
+                    
+                    if (!brandExists) {
+                        // If it doesn't exist, add it to the dropdown and select it
+                        var newOption = $("<option></option>")
+                            .attr("value", newBrand)
+                            .text(newBrand)
+                            .prop("selected", true);
+                        $("#brandDropdown").append(newOption);
+                    }
+                    
+                    // Ensure the form's Brand field is set
                     $("#Brand").val(newBrand);
+                    
+                    // Show confirmation
+                    alert("Brand '" + newBrand + "' will be used.");
+                    
+                    // Hide the input
                     $("#newBrandInput").hide();
                 }
             });
@@ -186,9 +213,56 @@
             $("#saveCategoryBtn").click(function() {
                 var newCategory = $("#categoryInput").val().trim();
                 if (newCategory) {
+                    // Set the category in the hidden input or directly in the dropdown
+                    var categoryExists = false;
+                    
+                    // Check if this category already exists in the dropdown
+                    $("#categoryDropdown option").each(function() {
+                        if ($(this).text().toLowerCase() === newCategory.toLowerCase()) {
+                            categoryExists = true;
+                            $("#categoryDropdown").val($(this).val());
+                            return false; // Break the loop
+                        }
+                    });
+                    
+                    if (!categoryExists) {
+                        // If it doesn't exist, add it to the dropdown and select it
+                        var newOption = $("<option></option>")
+                            .attr("value", newCategory)
+                            .text(newCategory)
+                            .prop("selected", true);
+                        $("#categoryDropdown").append(newOption);
+                    }
+                    
+                    // Ensure the form's Category field is set
                     $("#Category").val(newCategory);
+                    
+                    // Show confirmation
+                    alert("Category '" + newCategory + "' will be used.");
+                    
+                    // Hide the input
                     $("#newCategoryInput").hide();
                 }
+            });
+            
+            // Validate the form before submission to ensure brand and category are set
+            $("form").submit(function(e) {
+                var brand = $("#Brand").val().trim();
+                var category = $("#Category").val().trim();
+                
+                if (!brand) {
+                    alert("Please select or add a brand.");
+                    e.preventDefault();
+                    return false;
+                }
+                
+                if (!category) {
+                    alert("Please select or add a category.");
+                    e.preventDefault();
+                    return false;
+                }
+                
+                return true;
             });
         });
     </script>

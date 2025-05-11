@@ -22,6 +22,34 @@
 
 <div class="product-container">
     <div class="form-section">
+        <h3>Update Product Details</h3>
+        @using (Html.BeginForm("EditProduct", "Admin", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.Id)
+            <input type="hidden" name="actionType" value="UpdateDetails" />
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Name, "Product Name")
+                @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Name)
+            </div>
+
+            <div class="form-group">
+                <label for="Brand">Brand (just type a new one to add)</label>
+                <input type="text" name="Brand" id="Brand" class="form-control" value="@Model.Brand" required />
+            </div>
+
+            <div class="form-group">
+                <label for="Category">Category (just type a new one to add)</label>
+                <input type="text" name="Category" id="Category" class="form-control" value="@Model.Category" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Details</button>
+        }
+    </div>
+
+    <div class="form-section">
         <h3>Update Stock & Price</h3>
         @using (Html.BeginForm("EditProduct", "Admin", FormMethod.Post))
         {
@@ -223,4 +251,272 @@
         p strong {
             color: #007bff;
         }
+
+    .brand-container, .category-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-left: 5px;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        transform: none;
+    }
+
+    /* Update button styles to be more obvious */
+    #use-brand, #use-category {
+        background-color: #28a745;
+        color: white;
+        font-weight: bold;
+        margin-right: 5px;
+        min-width: 120px;
+    }
+    
+    #use-brand:hover, #use-category:hover {
+        background-color: #218838;
+        cursor: pointer;
+    }
+    
+    /* Additional styling for input containers */
+    #brand-input-container, #category-input-container {
+        margin-top: 5px;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+
+    /* Additional styles for brand/category controls */
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+    
+    .validation-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        display: block;
+        margin-top: 5px;
+    }
+    
+    .selected-value {
+        display: inline-block;
+        background-color: #e9ecef;
+        padding: 5px 10px;
+        border-radius: 3px;
+        margin-top: 5px;
+        border: 1px solid #ced4da;
+    }
+
+    /* New styles for brand/category */
+    .alert-info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        border-radius: 4px;
+    }
+    
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+    
+    .mt-2 {
+        margin-top: 10px;
+    }
+    
+    .card {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    
+    .p-3 {
+        padding: 15px;
+    }
+    
+    .bg-light {
+        background-color: #f8f9fa;
+    }
+
+    /* New styles */
+    small {
+        font-weight: normal;
+        color: #6c757d;
+        font-size: 80%;
+    }
 </style>
+
+<script>
+    // Simple direct functions for brand and category handling
+    function handleBrandChange() {
+        var dropdown = document.getElementById('brandDropdown');
+        var hiddenInput = document.getElementById('brandHiddenInput');
+        
+        if (dropdown.value === 'ADD_NEW') {
+            document.getElementById('newBrandContainer').style.display = 'block';
+            document.getElementById('newBrandInput').focus();
+        } else if (dropdown.value) {
+            hiddenInput.value = dropdown.value;
+            document.getElementById('brandValidation').textContent = 'Selected: ' + dropdown.value;
+            document.getElementById('brandValidation').className = 'selected-value';
+        }
+    }
+    
+    function saveNewBrand() {
+        var newBrandInput = document.getElementById('newBrandInput');
+        var brandValue = newBrandInput.value.trim();
+        var hiddenInput = document.getElementById('brandHiddenInput');
+        var dropdown = document.getElementById('brandDropdown');
+        
+        if (!brandValue) {
+            alert('Please enter a brand name');
+            return;
+        }
+        
+        // Add to dropdown if not exists
+        var exists = false;
+        for (var i = 0; i < dropdown.options.length; i++) {
+            if (dropdown.options[i].value === brandValue) {
+                exists = true;
+                dropdown.selectedIndex = i;
+                break;
+            }
+        }
+        
+        if (!exists) {
+            var option = document.createElement('option');
+            option.text = brandValue;
+            option.value = brandValue;
+            // Insert before the "Add New" option
+            dropdown.add(option, dropdown.options.length - 1);
+            dropdown.value = brandValue;
+        }
+        
+        // Set the hidden input
+        hiddenInput.value = brandValue;
+        
+        // Update validation message
+        document.getElementById('brandValidation').textContent = 'Selected: ' + brandValue;
+        document.getElementById('brandValidation').className = 'selected-value';
+        
+        // Hide the new brand container
+        document.getElementById('newBrandContainer').style.display = 'none';
+        
+        alert('Brand "' + brandValue + '" has been added!');
+    }
+    
+    function cancelNewBrand() {
+        document.getElementById('newBrandContainer').style.display = 'none';
+        document.getElementById('brandDropdown').selectedIndex = 0;
+    }
+    
+    function handleCategoryChange() {
+        var dropdown = document.getElementById('categoryDropdown');
+        var hiddenInput = document.getElementById('categoryHiddenInput');
+        
+        if (dropdown.value === 'ADD_NEW') {
+            document.getElementById('newCategoryContainer').style.display = 'block';
+            document.getElementById('newCategoryInput').focus();
+        } else if (dropdown.value) {
+            hiddenInput.value = dropdown.value;
+            document.getElementById('categoryValidation').textContent = 'Selected: ' + dropdown.value;
+            document.getElementById('categoryValidation').className = 'selected-value';
+        }
+    }
+    
+    function saveNewCategory() {
+        var newCategoryInput = document.getElementById('newCategoryInput');
+        var categoryValue = newCategoryInput.value.trim();
+        var hiddenInput = document.getElementById('categoryHiddenInput');
+        var dropdown = document.getElementById('categoryDropdown');
+        
+        if (!categoryValue) {
+            alert('Please enter a category name');
+            return;
+        }
+        
+        // Add to dropdown if not exists
+        var exists = false;
+        for (var i = 0; i < dropdown.options.length; i++) {
+            if (dropdown.options[i].value === categoryValue) {
+                exists = true;
+                dropdown.selectedIndex = i;
+                break;
+            }
+        }
+        
+        if (!exists) {
+            var option = document.createElement('option');
+            option.text = categoryValue;
+            option.value = categoryValue;
+            // Insert before the "Add New" option
+            dropdown.add(option, dropdown.options.length - 1);
+            dropdown.value = categoryValue;
+        }
+        
+        // Set the hidden input
+        hiddenInput.value = categoryValue;
+        
+        // Update validation message
+        document.getElementById('categoryValidation').textContent = 'Selected: ' + categoryValue;
+        document.getElementById('categoryValidation').className = 'selected-value';
+        
+        // Hide the new category container
+        document.getElementById('newCategoryContainer').style.display = 'none';
+        
+        alert('Category "' + categoryValue + '" has been added!');
+    }
+    
+    function cancelNewCategory() {
+        document.getElementById('newCategoryContainer').style.display = 'none';
+        document.getElementById('categoryDropdown').selectedIndex = 0;
+    }
+    
+    // Initialize on page load
+    document.addEventListener("DOMContentLoaded", function() {
+        // Set initial values if they exist
+        var brandDropdown = document.getElementById('brandDropdown');
+        var categoryDropdown = document.getElementById('categoryDropdown');
+        var brandHiddenInput = document.getElementById('brandHiddenInput');
+        var categoryHiddenInput = document.getElementById('categoryHiddenInput');
+        
+        if (brandDropdown.value) {
+            brandHiddenInput.value = brandDropdown.value;
+            document.getElementById('brandValidation').textContent = 'Selected: ' + brandDropdown.value;
+            document.getElementById('brandValidation').className = 'selected-value';
+        }
+        
+        if (categoryDropdown.value) {
+            categoryHiddenInput.value = categoryDropdown.value;
+            document.getElementById('categoryValidation').textContent = 'Selected: ' + categoryDropdown.value;
+            document.getElementById('categoryValidation').className = 'selected-value';
+        }
+    });
+</script>
