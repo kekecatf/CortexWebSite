@@ -1,11 +1,15 @@
 ﻿@model Larana.Models.User
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h2 class="page-title">Admin Kullanıcı Oluştur</h2>
+
+<h2 class="page-title">Create Admin User</h2>
+
 <div class="form-container">
     @using (Html.BeginForm("CreateUser", "Admin", FormMethod.Post))
     {
+        @Html.AntiForgeryToken()
         <div class="form-group">
             @Html.LabelFor(model => model.Username, null, new { @class = "form-label" })
             @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
@@ -21,11 +25,13 @@
             @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.Password, null, new { @class = "validation-message" })
         </div>
+
         <div class="form-actions">
-            <button type="submit" class="btn btn-success">Admin Kullanıcı Oluştur</button>
+            <button type="submit" class="btn btn-success">Create Admin User</button>
         </div>
     }
 </div>
+
 <style>
     body {
         font-family: Arial, sans-serif;

@@ -1,0 +1,78 @@
+@{
+    ViewBag.Title = "Become a Seller";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="m-0">@ViewBag.Title</h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h4>Join Our Seller Community</h4>
+                        <p class="text-muted">Start selling your products on our marketplace and reach thousands of customers.</p>
+                    </div>
+
+                    @if (ViewBag.Message != null)
+                    {
+                        <div class="alert alert-info">
+                            @ViewBag.Message
+                        </div>
+                    }
+                    
+                    @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+
+                    @using (Html.BeginForm("BecomeASeller", "Account", FormMethod.Post, new { @class = "seller-form" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label for="shopName" class="form-label">Shop Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="shopName" name="shopName" required
+                                   placeholder="Enter your shop name">
+                            <div class="form-text">This will be the name of your shop visible to customers</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="shopDescription" class="form-label">Shop Description</label>
+                            <textarea class="form-control" id="shopDescription" name="shopDescription" rows="4"
+                                      placeholder="Describe your shop and what you sell"></textarea>
+                            <div class="form-text">Tell customers what makes your shop special</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                                <label class="form-check-label" for="termsCheck">
+                                    I agree to the seller terms and conditions
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            By becoming a seller, your account will be upgraded and you'll be able to manage products, orders, and your shop profile.
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Create My Shop</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .seller-form label {
+        font-weight: 500;
+    }
+    
+    .form-text {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+</style> 

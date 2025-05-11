@@ -1,0 +1,303 @@
+@model Larana.Models.Product
+
+@{
+    ViewBag.Title = "Add New Product";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4>Add New Product to @ViewBag.DukkanName</h4>
+                </div>
+                <div class="card-body">
+                    <form action="@Url.Action("Create", "Product", new { id = ViewBag.DukkanId })" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="DukkanId" value="@ViewBag.DukkanId" />
+                        
+                        @if (ViewBag.ErrorMessage != null)
+                        {
+                            <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+                        }
+                        
+                        <div class="form-group row mb-3">
+                            <label for="Name" class="col-sm-3 col-form-label">Product Name *</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="Name" name="Name" required />
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row mb-3">
+                            <label for="Description" class="col-sm-3 col-form-label">Description</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" id="Description" name="Description" rows="4"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row mb-3">
+                            <label for="Brand" class="col-sm-3 col-form-label">Brand *</label>
+                            <div class="col-sm-9">
+                                <!-- Brand selection -->
+                                <div class="brand-selection-container">
+                                    <div class="card mb-2">
+                                        <div class="card-header bg-light">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="brandOption" id="newBrandRadio" value="new" checked>
+                                                <label class="form-check-label" for="newBrandRadio">
+                                                    <strong>Create new brand</strong>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="card-body" id="newBrandCard">
+                                            <input type="text" class="form-control" id="newBrandInput" placeholder="Type new brand name">
+                                        </div>
+                                    </div>
+                                    
+                                    @if (ViewBag.Brands != null && ((SelectList)ViewBag.Brands).Count() > 0)
+                                    {
+                                        <div class="card">
+                                            <div class="card-header bg-light">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="brandOption" id="existingBrandRadio" value="existing">
+                                                    <label class="form-check-label" for="existingBrandRadio">
+                                                        <strong>Select existing brand</strong>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="card-body" id="existingBrandCard">
+                                                <select class="form-control" id="existingBrandSelect" disabled>
+                                                    <option value="">-- Select a brand --</option>
+                                                    @foreach (var item in (SelectList)ViewBag.Brands)
+                                                    {
+                                                        <option value="@item.Value">@item.Text</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    }
+                                    
+                                    <!-- Hidden field for actual brand value submission -->
+                                    <input type="hidden" name="Brand" id="finalBrandValue" required>
+                                    
+                                    <div class="mt-2">
+                                        <div class="alert alert-success" id="brandConfirmation" style="display:none; padding: 0.5rem;">
+                                            Selected brand: <strong id="selectedBrandDisplay"></strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row mb-3">
+                            <label for="Category" class="col-sm-3 col-form-label">Category *</label>
+                            <div class="col-sm-9">
+                                <!-- Category selection -->
+                                <div class="category-selection-container">
+                                    <div class="card mb-2">
+                                        <div class="card-header bg-light">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="categoryOption" id="newCategoryRadio" value="new" checked>
+                                                <label class="form-check-label" for="newCategoryRadio">
+                                                    <strong>Create new category</strong>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="card-body" id="newCategoryCard">
+                                            <input type="text" class="form-control" id="newCategoryInput" placeholder="Type new category name">
+                                        </div>
+                                    </div>
+                                    
+                                    @if (ViewBag.Categories != null && ((SelectList)ViewBag.Categories).Count() > 0)
+                                    {
+                                        <div class="card">
+                                            <div class="card-header bg-light">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="categoryOption" id="existingCategoryRadio" value="existing">
+                                                    <label class="form-check-label" for="existingCategoryRadio">
+                                                        <strong>Select existing category</strong>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="card-body" id="existingCategoryCard">
+                                                <select class="form-control" id="existingCategorySelect" disabled>
+                                                    <option value="">-- Select a category --</option>
+                                                    @foreach (var item in (SelectList)ViewBag.Categories)
+                                                    {
+                                                        <option value="@item.Value">@item.Text</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    }
+                                    
+                                    <!-- Hidden field for actual category value submission -->
+                                    <input type="hidden" name="Category" id="finalCategoryValue" required>
+                                    
+                                    <div class="mt-2">
+                                        <div class="alert alert-success" id="categoryConfirmation" style="display:none; padding: 0.5rem;">
+                                            Selected category: <strong id="selectedCategoryDisplay"></strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row mb-3">
+                            <label for="Price" class="col-sm-3 col-form-label">Price *</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" id="Price" name="Price" min="0.01" step="0.01" required />
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row mb-3">
+                            <label for="Stock" class="col-sm-3 col-form-label">Stock</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" id="Stock" name="Stock" min="0" value="0" />
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row mb-3">
+                            <label class="col-sm-3 col-form-label">Options</label>
+                            <div class="col-sm-9">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="IsClickAndCollect" name="IsClickAndCollect" value="true" />
+                                    <label class="form-check-label" for="IsClickAndCollect">
+                                        Is Click & Collect available
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row mb-3">
+                            <label for="productImage" class="col-sm-3 col-form-label">Product Image</label>
+                            <div class="col-sm-9">
+                                <input type="file" class="form-control-file" id="productImage" name="productImage" />
+                                <small class="form-text text-muted">Upload a photo of your product (optional)</small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row">
+                            <div class="col-sm-9 offset-sm-3">
+                                <button type="submit" class="btn btn-primary">Add Product</button>
+                                <a href="@Url.Action("Products", "Dukkan", new { id = ViewBag.DukkanId })" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Brand handling
+            function updateBrandSelection() {
+                if ($("#newBrandRadio").is(":checked")) {
+                    // New brand option selected
+                    $("#newBrandInput").prop("disabled", false);
+                    $("#existingBrandSelect").prop("disabled", true);
+                    
+                    var newBrandValue = $("#newBrandInput").val().trim();
+                    if (newBrandValue) {
+                        $("#finalBrandValue").val(newBrandValue);
+                        $("#selectedBrandDisplay").text(newBrandValue);
+                        $("#brandConfirmation").show();
+                    } else {
+                        $("#finalBrandValue").val("");
+                        $("#brandConfirmation").hide();
+                    }
+                } else {
+                    // Existing brand option selected
+                    $("#newBrandInput").prop("disabled", true);
+                    $("#existingBrandSelect").prop("disabled", false);
+                    
+                    var selectedBrand = $("#existingBrandSelect").val();
+                    if (selectedBrand) {
+                        var selectedText = $("#existingBrandSelect option:selected").text();
+                        $("#finalBrandValue").val(selectedText);
+                        $("#selectedBrandDisplay").text(selectedText);
+                        $("#brandConfirmation").show();
+                    } else {
+                        $("#finalBrandValue").val("");
+                        $("#brandConfirmation").hide();
+                    }
+                }
+            }
+            
+            // Category handling
+            function updateCategorySelection() {
+                if ($("#newCategoryRadio").is(":checked")) {
+                    // New category option selected
+                    $("#newCategoryInput").prop("disabled", false);
+                    $("#existingCategorySelect").prop("disabled", true);
+                    
+                    var newCategoryValue = $("#newCategoryInput").val().trim();
+                    if (newCategoryValue) {
+                        $("#finalCategoryValue").val(newCategoryValue);
+                        $("#selectedCategoryDisplay").text(newCategoryValue);
+                        $("#categoryConfirmation").show();
+                    } else {
+                        $("#finalCategoryValue").val("");
+                        $("#categoryConfirmation").hide();
+                    }
+                } else {
+                    // Existing category option selected
+                    $("#newCategoryInput").prop("disabled", true);
+                    $("#existingCategorySelect").prop("disabled", false);
+                    
+                    var selectedCategory = $("#existingCategorySelect").val();
+                    if (selectedCategory) {
+                        var selectedText = $("#existingCategorySelect option:selected").text();
+                        $("#finalCategoryValue").val(selectedText);
+                        $("#selectedCategoryDisplay").text(selectedText);
+                        $("#categoryConfirmation").show();
+                    } else {
+                        $("#finalCategoryValue").val("");
+                        $("#categoryConfirmation").hide();
+                    }
+                }
+            }
+            
+            // Radio button event handlers
+            $("input[name='brandOption']").change(updateBrandSelection);
+            $("input[name='categoryOption']").change(updateCategorySelection);
+            
+            // Input field event handlers
+            $("#newBrandInput").on("input", updateBrandSelection);
+            $("#existingBrandSelect").change(updateBrandSelection);
+            
+            $("#newCategoryInput").on("input", updateCategorySelection);
+            $("#existingCategorySelect").change(updateCategorySelection);
+            
+            // Initialize selections
+            updateBrandSelection();
+            updateCategorySelection();
+            
+            // Form submission validation
+            $("form").submit(function(e) {
+                // Ensure brand is selected
+                if (!$("#finalBrandValue").val().trim()) {
+                    e.preventDefault();
+                    alert("Please enter or select a brand");
+                    return false;
+                }
+                
+                // Ensure category is selected
+                if (!$("#finalCategoryValue").val().trim()) {
+                    e.preventDefault();
+                    alert("Please enter or select a category");
+                    return false;
+                }
+                
+                // Log values for debugging
+                console.log("Form submitted with brand: " + $("#finalBrandValue").val());
+                console.log("Form submitted with category: " + $("#finalCategoryValue").val());
+                
+                return true;
+            });
+        });
+    </script>
+} 

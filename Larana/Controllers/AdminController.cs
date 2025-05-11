@@ -16,6 +16,12 @@ namespace Larana.Controllers
 
         public ActionResult Index()
         {
+            ViewBag.TotalUsers = db.Users.Count();
+            ViewBag.TotalProducts = productDb.Products.Count();
+            ViewBag.TotalOrders = ordersDb.Orders.Count();
+            ViewBag.TotalRevenue = ordersDb.Orders.Any() ? 
+                ordersDb.Orders.Sum(o => o.TotalAmount ?? 0) : 0;
+
             return View();
         }
 
@@ -29,6 +35,7 @@ namespace Larana.Controllers
         {
             if (ModelState.IsValid)
             {
+                user.Role = UserRole.Admin;
                 user.Roles = "Admin";
                 db.Users.Add(user);
                 db.SaveChanges();
@@ -44,14 +51,14 @@ namespace Larana.Controllers
                 .Select(o => new OrderViewModel
                 {
                     Id = o.Id,
-                    UserId = o.UserId,
+                    UserId = o.UserId.ToString(),
                     Address = o.Address,
                     PhoneNumber = o.PhoneNumber,
                     RecipientName = o.RecipientName,
                     ShippingCompany = o.ShippingCompany,
                     OrderDate = o.OrderDate,
                     TotalAmount = o.TotalAmount,
-                    Status = o.Status,
+                    Status = o.Status.ToString(),
                     OrderDetails = o.OrderDetails.Select(od => new OrderDetailViewModel
                     {
                         ProductId = od.ProductId,
@@ -85,8 +92,6 @@ namespace Larana.Controllers
             return View(orders);
         }
 
-
-
         public ActionResult EditProduct(int id)
         {
             var product = productDb.Products.FirstOrDefault(p => p.Id == id);
@@ -105,57 +110,56 @@ namespace Larana.Controllers
             if (existingProduct == null)
             {
                 TempData["ErrorMessage"] = "Product not found.";
-                return RedirectToAction("EditProduct", new { id = product.Id });
+                return RedirectToAction("Index");
             }
 
             try
             {
-                if (actionType == "UpdateStockPrice")
+                switch (actionType)
                 {
-                    if (ModelState.IsValid)
-                    {
-                        existingProduct.Stock = product.Stock;
+                    case "UpdateStockPrice":
+                        // Remove non-required fields from validation
+                        ModelState.Remove("Name");
+                        ModelState.Remove("Brand");
+                        ModelState.Remove("Category");
+                        ModelState.Remove("Description");
+                        ModelState.Remove("PhotoPath");
 
-                        string correctedPrice = product.Price.ToString().Replace(',', '.');
-                        if (decimal.TryParse(correctedPrice, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal parsedPrice))
+                        if (ModelState.IsValid)
                         {
-                            existingProduct.Price = parsedPrice;
+                            existingProduct.Stock = product.Stock;
+                            existingProduct.Price = product.Price;
+                            existingProduct.IsClickAndCollect = product.IsClickAndCollect;
+                            productDb.SaveChanges();
+                            TempData["SuccessMessage"] = "Product updated successfully!";
                         }
                         else
                         {
-                            TempData["ErrorMessage"] = "Invalid price format.";
-                            return RedirectToAction("EditProduct", new { id = product.Id });
+                            var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                  .Select(e => e.ErrorMessage)
+                                                  .ToList();
+                            TempData["ErrorMessage"] = "Validation Errors: " + string.Join(", ", errors);
                         }
+                        break;
 
+                    case "DeleteProduct":
+                        productDb.Products.Remove(existingProduct);
                         productDb.SaveChanges();
-                        TempData["SuccessMessage"] = "Stock and price updated successfully!";
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = "Validation failed for Stock or Price.";
-                    }
-                }
-                else if (actionType == "DeleteProduct")
-                {
-                    productDb.Products.Remove(existingProduct);
-                    productDb.SaveChanges();
-                    TempData["SuccessMessage"] = "Product deleted successfully!";
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "Invalid action type.";
+                        TempData["SuccessMessage"] = "Product deleted successfully!";
+                        return RedirectToAction("Index");
+
+                    default:
+                        TempData["ErrorMessage"] = "Invalid action type.";
+                        break;
                 }
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+                TempData["ErrorMessage"] = $"An unexpected error occurred: {ex.Message}";
             }
 
             return RedirectToAction("EditProduct", new { id = product.Id });
         }
-
-
 
         [HttpPost]
         public ActionResult UpdateOrderStatus(int orderId, string newStatus)
@@ -163,8 +167,11 @@ namespace Larana.Controllers
             var order = ordersDb.Orders.FirstOrDefault(o => o.Id == orderId);
             if (order != null)
             {
-                order.Status = newStatus;
-                ordersDb.SaveChanges();
+                if (Enum.TryParse<OrderStatus>(newStatus, out var status))
+                {
+                    order.Status = status;
+                    ordersDb.SaveChanges();
+                }
             }
 
             return RedirectToAction("Orders");
@@ -191,6 +198,80 @@ namespace Larana.Controllers
             return View(product);
         }
 
+        public ActionResult ManageUsers()
+        {
+            var users = db.Users.ToList();
+            return View(users);
+        }
+
+        [HttpPost]
+        public ActionResult UpdateUser(int id, string username, string email, string userType, bool isActive)
+        {
+            var user = db.Users.Find(id);
+            if (user != null)
+            {
+                user.Username = username;
+                user.Email = email;
+                
+                if (Enum.TryParse<UserType>(userType, out var type))
+                {
+                    user.UserType = type;
+                    
+                    // Update role based on user type
+                    if (type == UserType.Admin)
+                    {
+                        user.Role = UserRole.Admin;
+                        user.Roles = "Admin";
+                    }
+                    else if (type == UserType.Seller)
+                    {
+                        user.Role = UserRole.Seller;
+                        user.Roles = "Seller";
+                    }
+                    else
+                    {
+                        user.Role = UserRole.Customer;
+                        user.Roles = "Customer";
+                    }
+                }
+                
+                user.IsActive = isActive;
+                db.SaveChanges();
+                
+                TempData["SuccessMessage"] = "User updated successfully.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "User not found.";
+            }
+            
+            return RedirectToAction("ManageUsers");
+        }
+        
+        [HttpPost]
+        public ActionResult DeleteUser(int id)
+        {
+            var user = db.Users.Find(id);
+            if (user != null)
+            {
+                try
+                {
+                    db.Users.Remove(user);
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = "User deleted successfully.";
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = $"Unable to delete user: {ex.Message}";
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "User not found.";
+            }
+            
+            return RedirectToAction("ManageUsers");
+        }
 
         public class OrderDetailViewModel
         {
@@ -210,12 +291,10 @@ namespace Larana.Controllers
             public string Address { get; set; }
             public string PhoneNumber { get; set; }
             public DateTime OrderDate { get; set; }
-            public decimal TotalAmount { get; set; }
+            public decimal? TotalAmount { get; set; }
             public string Status { get; set; }
+            public bool IsClickAndCollect { get; set; }
             public List<OrderDetailViewModel> OrderDetails { get; set; }
         }
-
-
-
     }
 }

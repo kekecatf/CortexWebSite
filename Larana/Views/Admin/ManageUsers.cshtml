@@ -1,0 +1,363 @@
+@model List<Larana.Models.User>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="admin-dashboard">
+    <h2 class="page-title">Manage Users</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="user-management">
+        <div class="actions-container">
+            <a href="@Url.Action("Index", "Admin")" class="btn btn-secondary mb-3">
+                <i class="fa fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <a href="@Url.Action("CreateUser", "Admin")" class="btn btn-success mb-3 float-right">
+                <i class="fa fa-plus"></i> Create New User
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr data-id="@user.Id">
+                            <td>@user.Id</td>
+                            <td class="edit-username">@user.Username</td>
+                            <td class="edit-email">@user.Email</td>
+                            <td class="edit-role">@user.UserType</td>
+                            <td>
+                                <span class="badge @(user.IsActive ? "badge-success" : "badge-danger")">
+                                    @(user.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </td>
+                            <td>@user.CreatedAt.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning edit-user-btn">Edit</button>
+                                <button class="btn btn-sm btn-danger delete-user-btn">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="editUserForm" action="@Url.Action("UpdateUser", "Admin")" method="post">
+                <div class="modal-body">
+                    <input type="hidden" id="editUserId" name="id" />
+                    <div class="form-group">
+                        <label for="editUsername">Username</label>
+                        <input type="text" class="form-control" id="editUsername" name="username" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email</label>
+                        <input type="email" class="form-control" id="editEmail" name="email" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="editUserType">User Type</label>
+                        <select class="form-control" id="editUserType" name="userType" required>
+                            <option value="Customer">Customer</option>
+                            <option value="Seller">Seller</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="editIsActive" name="isActive">
+                            <label class="custom-control-label" for="editIsActive">Active</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete User Modal -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" role="dialog" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteUserModalLabel">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this user? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <form id="deleteUserForm" action="@Url.Action("DeleteUser", "Admin")" method="post">
+                    <input type="hidden" id="deleteUserId" name="id" />
+                    <button type="submit" class="btn btn-danger">Delete User</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-dashboard {
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .page-title {
+        text-align: center;
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 30px;
+    }
+
+    .user-management {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .actions-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    .table th,
+    .table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table th {
+        background-color: #f8f9fa;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .table tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    .badge {
+        padding: 6px 10px;
+        border-radius: 30px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .badge-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .badge-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        color: #212529;
+        border: none;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+        border: none;
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #e9ecef;
+        padding: 1rem;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #e9ecef;
+        padding: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .custom-control {
+        position: relative;
+        display: block;
+        min-height: 1.5rem;
+        padding-left: 1.5rem;
+    }
+
+    .custom-control-input {
+        position: absolute;
+        z-index: -1;
+        opacity: 0;
+    }
+
+    .custom-control-label {
+        position: relative;
+        margin-bottom: 0;
+        vertical-align: top;
+    }
+
+    .custom-control-label::before {
+        position: absolute;
+        top: 0.25rem;
+        left: -1.5rem;
+        display: block;
+        width: 1rem;
+        height: 1rem;
+        pointer-events: none;
+        content: "";
+        background-color: #fff;
+        border: #adb5bd solid 1px;
+    }
+
+    .alert {
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
+
+    .alert-success {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+
+    .alert-danger {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Edit User
+        const editButtons = document.querySelectorAll('.edit-user-btn');
+        const editModal = $('#editUserModal');
+        const editForm = document.getElementById('editUserForm');
+        const editUserId = document.getElementById('editUserId');
+        const editUsername = document.getElementById('editUsername');
+        const editEmail = document.getElementById('editEmail');
+        const editUserType = document.getElementById('editUserType');
+        const editIsActive = document.getElementById('editIsActive');
+
+        editButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const row = this.closest('tr');
+                const id = row.getAttribute('data-id');
+                const username = row.querySelector('.edit-username').textContent;
+                const email = row.querySelector('.edit-email').textContent;
+                const role = row.querySelector('.edit-role').textContent;
+                const isActive = row.querySelector('.badge').classList.contains('badge-success');
+
+                editUserId.value = id;
+                editUsername.value = username;
+                editEmail.value = email;
+                editUserType.value = role;
+                editIsActive.checked = isActive;
+
+                editModal.modal('show');
+            });
+        });
+
+        // Delete User
+        const deleteButtons = document.querySelectorAll('.delete-user-btn');
+        const deleteModal = $('#deleteUserModal');
+        const deleteUserId = document.getElementById('deleteUserId');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const row = this.closest('tr');
+                const id = row.getAttribute('data-id');
+                
+                deleteUserId.value = id;
+                deleteModal.modal('show');
+            });
+        });
+    });
+</script> 

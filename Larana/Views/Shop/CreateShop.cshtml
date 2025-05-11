@@ -1,0 +1,100 @@
+@model Larana.Models.Dukkan
+
+@{
+    ViewBag.Title = "Create New Shop";
+}
+
+<div class="container mt-4">
+    <div class="create-shop-header">
+        <h2>Create New Shop</h2>
+        <p class="subtitle">Set up your online store to start selling products</p>
+    </div>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Name, "Shop Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter your shop name", required = "required" } })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Description, "Description", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = "4", placeholder = "Describe your shop and what you'll be selling", required = "required" })
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Create Shop" class="btn btn-primary" />
+                    <a href="@Url.Action("MyShops", "Shop")" class="btn btn-secondary">Back to My Shops</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .create-shop-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .create-shop-header h2 {
+        color: #007BFF;
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+
+    .subtitle {
+        color: #666;
+        font-size: 18px;
+    }
+
+    .form-horizontal {
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .control-label {
+        font-weight: 600;
+        padding-top: 7px;
+    }
+
+    .btn {
+        padding: 8px 20px;
+        margin-right: 10px;
+    }
+
+    .btn-primary {
+        background-color: #007BFF;
+        border-color: #007BFF;
+    }
+
+    .btn-primary:hover {
+        background-color: #0069d9;
+        border-color: #0062cc;
+    }
+</style>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+} 

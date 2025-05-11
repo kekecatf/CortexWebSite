@@ -1,0 +1,195 @@
+@model Larana.Models.Product
+
+@{
+    ViewBag.Title = "Add New Product";
+}
+
+<div class="container mt-4">
+    <div class="product-create-header">
+        <h2>Add New Product to @ViewBag.DukkanName</h2>
+        <p>Fill in the product details below</p>
+    </div>
+
+    @using (Html.BeginForm("AddProduct", "Dukkan", new { id = ViewBag.DukkanId }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.DukkanId, new { Value = ViewBag.DukkanId })
+
+        <div class="form-horizontal">
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Name, "Product Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", required = "required" } })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Description, "Description", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = "4" })
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Brand, "Brand", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @if (ViewBag.Brands != null)
+                    {
+                        <div class="input-group">
+                            @Html.DropDownListFor(model => model.Brand, ViewBag.Brands as SelectList, "-- Select Brand --", new { @class = "form-control", id = "brandDropdown" })
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-outline-secondary" id="newBrandBtn">New Brand</button>
+                            </div>
+                        </div>
+                        <div id="newBrandInput" style="display: none; margin-top: 10px;">
+                            <input type="text" id="brandInput" class="form-control" placeholder="Enter new brand name" />
+                            <button type="button" class="btn btn-sm btn-primary mt-2" id="saveBrandBtn">Use This Brand</button>
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.EditorFor(model => model.Brand, new { htmlAttributes = new { @class = "form-control", required = "required", placeholder = "Enter brand name" } })
+                    }
+                    @Html.ValidationMessageFor(model => model.Brand, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Category, "Category", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @if (ViewBag.Categories != null)
+                    {
+                        <div class="input-group">
+                            @Html.DropDownListFor(model => model.Category, ViewBag.Categories as SelectList, "-- Select Category --", new { @class = "form-control", id = "categoryDropdown" })
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-outline-secondary" id="newCategoryBtn">New Category</button>
+                            </div>
+                        </div>
+                        <div id="newCategoryInput" style="display: none; margin-top: 10px;">
+                            <input type="text" id="categoryInput" class="form-control" placeholder="Enter new category name" />
+                            <button type="button" class="btn btn-sm btn-primary mt-2" id="saveCategoryBtn">Use This Category</button>
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.EditorFor(model => model.Category, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter category name" } })
+                    }
+                    @Html.ValidationMessageFor(model => model.Category, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Price, "Price", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control", type = "number", step = "0.01", min = "0.01", required = "required" } })
+                    @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Stock, "Stock", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Stock, new { htmlAttributes = new { @class = "form-control", type = "number", min = "0" } })
+                    @Html.ValidationMessageFor(model => model.Stock, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <div class="checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IsClickAndCollect) Is Click & Collect available
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">Product Image</label>
+                <div class="col-md-10">
+                    <input type="file" name="productImage" id="productImage" class="form-control-file" />
+                    <small class="form-text text-muted">Upload a photo of your product (optional)</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Add Product" class="btn btn-primary" />
+                    <a href="/Dukkan/Products/@ViewBag.DukkanId" class="btn btn-secondary">Back to Products</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .product-create-header {
+        margin-bottom: 20px;
+    }
+
+    .product-create-header h2 {
+        color: #007BFF;
+        margin-bottom: 5px;
+    }
+
+    .product-create-header p {
+        color: #666;
+        font-size: 16px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .control-label {
+        font-weight: 600;
+        color: #444;
+    }
+
+    .btn-primary {
+        margin-right: 10px;
+    }
+    
+    .input-group-append {
+        display: flex;
+    }
+</style>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    
+    <script>
+        $(document).ready(function() {
+            // Brand handling
+            $("#newBrandBtn").click(function() {
+                $("#newBrandInput").toggle();
+            });
+            
+            $("#saveBrandBtn").click(function() {
+                var newBrand = $("#brandInput").val().trim();
+                if (newBrand) {
+                    $("#Brand").val(newBrand);
+                    $("#newBrandInput").hide();
+                }
+            });
+            
+            // Category handling
+            $("#newCategoryBtn").click(function() {
+                $("#newCategoryInput").toggle();
+            });
+            
+            $("#saveCategoryBtn").click(function() {
+                var newCategory = $("#categoryInput").val().trim();
+                if (newCategory) {
+                    $("#Category").val(newCategory);
+                    $("#newCategoryInput").hide();
+                }
+            });
+        });
+    </script>
+} 

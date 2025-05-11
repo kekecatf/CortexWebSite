@@ -13,6 +13,7 @@ namespace Larana.Models
         [Required]
         public int CartItemId { get; set; }
 
+        [Required]
         public int ProductId { get; set; }
 
         public int Quantity { get; set; }
@@ -21,5 +22,8 @@ namespace Larana.Models
 
         [ForeignKey("OrderId")]
         public virtual Order Order { get; set; }
+
+        [ForeignKey("ProductId")]
+        public virtual Product Product { get; set; }
     }
 }
