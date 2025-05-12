@@ -73,7 +73,10 @@
                                 <p><strong>Name:</strong> @order.RecipientName</p>
                                 <p><strong>Phone:</strong> @order.PhoneNumber</p>
                                 <p><strong>Address:</strong> @order.Address</p>
+                                <p><strong>Shipping Address:</strong> @order.ShippingAddress</p>
                                 <p><strong>Shipping:</strong> @order.ShippingCompany</p>
+                                <p><strong>Payment Method:</strong> @order.PaymentMethod</p>
+                                <p><strong>Payment Status:</strong> <span class="payment-status @order.PaymentStatus.ToString().ToLower()">@order.PaymentStatus</span></p>
                             }
                         </div>
                         <div class="order-items">
@@ -237,6 +240,17 @@
     .order-status.shipped { background-color: #007bff; color: #fff; }
     .order-status.delivered { background-color: #28a745; color: #fff; }
     .order-status.cancelled { background-color: #dc3545; color: #fff; }
+
+    .payment-status {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+    .payment-status.pending { background-color: #ffc107; color: #000; }
+    .payment-status.processing { background-color: #17a2b8; color: #fff; }
+    .payment-status.completed { background-color: #28a745; color: #fff; }
+    .payment-status.failed { background-color: #dc3545; color: #fff; }
+    .payment-status.refunded { background-color: #6c757d; color: #fff; }
 
     .order-details {
         padding: 1rem;

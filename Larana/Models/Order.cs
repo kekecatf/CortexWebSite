@@ -15,6 +15,15 @@ namespace Larana.Models
         Completed = 5
     }
 
+    public enum PaymentStatus
+    {
+        Pending = 0,
+        Processing = 1,
+        Completed = 2,
+        Failed = 3,
+        Refunded = 4
+    }
+
     public class Order
     {
         public int Id { get; set; }
@@ -28,6 +37,9 @@ namespace Larana.Models
         [StringLength(250)]
         public string Address { get; set; }
 
+        [StringLength(250)]
+        public string ShippingAddress { get; set; }
+
         [StringLength(100)]
         public string ShippingCompany { get; set; }
 
@@ -39,6 +51,10 @@ namespace Larana.Models
 
         [StringLength(50)]
         public string PaymentMethod { get; set; }
+
+        [Required]
+        [EnumDataType(typeof(PaymentStatus))]
+        public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
 
         public DateTime OrderDate { get; set; } = DateTime.Now;
 

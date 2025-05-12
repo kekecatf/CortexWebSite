@@ -148,6 +148,7 @@ namespace Larana.Controllers
         {
             var product = _context.Products
                 .Include("Dukkan")
+                .Include("Reviews.User")
                 .SingleOrDefault(p => p.Id == id);
 
             if (product == null)
@@ -159,6 +160,16 @@ namespace Larana.Controllers
             product.ViewCount += 1;
             _context.SaveChanges();
 
+            // Sıralanmış yorumları ViewBag içine ekle
+            if (product.Reviews != null && product.Reviews.Any())
+            {
+                ViewBag.SortedReviews = product.Reviews.OrderByDescending(r => r.CreatedAt).ToList();
+            }
+            else
+            {
+                ViewBag.SortedReviews = new List<Larana.Models.Review>();
+            }
+
             var relatedProducts = _context.Products
                 .Include("Dukkan")
                 .Where(p => p.Category == product.Category && p.Id != product.Id)
@@ -167,7 +178,74 @@ namespace Larana.Controllers
 
             ViewBag.RelatedProducts = relatedProducts;
 
+            // Check if user has purchased this product
+            bool userCanReview = false;
+            bool hasReviewed = false;
+            
+            if (User.Identity.IsAuthenticated)
+            {
+                int userId = GetCurrentUserId();
+                
+                // Check if user has already reviewed this product
+                hasReviewed = _context.Reviews.Any(r => r.ProductId == id && r.UserId == userId);
+                
+                // Check if user has purchased this product
+                userCanReview = _context.OrderDetails
+                    .Where(od => od.ProductId == id)
+                    .Any(od => od.Order.UserId == userId);
+            }
+            
+            ViewBag.UserCanReview = userCanReview && !hasReviewed;
+            ViewBag.HasReviewed = hasReviewed;
+
             return View(product);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddReview(int productId, int rating, string comment)
+        {
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("Details", new { id = productId });
+            }
+
+            int userId = GetCurrentUserId();
+            
+            // Check if user has already reviewed this product
+            bool hasReviewed = _context.Reviews.Any(r => r.ProductId == productId && r.UserId == userId);
+            if (hasReviewed)
+            {
+                TempData["ErrorMessage"] = "You have already reviewed this product.";
+                return RedirectToAction("Details", new { id = productId });
+            }
+            
+            // Check if user has purchased this product
+            bool hasPurchased = _context.OrderDetails
+                .Where(od => od.ProductId == productId)
+                .Any(od => od.Order.UserId == userId);
+                
+            if (!hasPurchased)
+            {
+                TempData["ErrorMessage"] = "You can only review products you have purchased.";
+                return RedirectToAction("Details", new { id = productId });
+            }
+            
+            var review = new Larana.Models.Review
+            {
+                ProductId = productId,
+                UserId = userId,
+                Rating = rating,
+                Comment = comment,
+                CreatedAt = DateTime.Now
+            };
+            
+            _context.Reviews.Add(review);
+            _context.SaveChanges();
+            
+            TempData["SuccessMessage"] = "Your review has been added successfully.";
+            return RedirectToAction("Details", new { id = productId });
         }
 
         [HttpPost]

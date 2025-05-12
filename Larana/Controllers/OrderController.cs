@@ -1,21 +1,18 @@
 using System;
 using System.Linq;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Web.Mvc;
+using System.Data.Entity;
 using Larana.Data;
 using Larana.Models;
-using Hangfire;
 
 namespace Larana.Controllers
 {
     public class OrderController : Controller
     {
-        private readonly ApplicationDbContext db;
+        private readonly ApplicationDbContext db = new ApplicationDbContext();
 
-        public OrderController(ApplicationDbContext db)
+        public OrderController()
         {
-            this.db = db;
         }
 
         [HttpPost]
@@ -37,8 +34,7 @@ namespace Larana.Controllers
             }
             
             var cart = db.Carts
-                .Include("CartItems")
-                .Include("CartItems.Product")
+                .Include(c => c.CartItems.Select(ci => ci.Product))
                 .FirstOrDefault(c => c.UserId == user.Id);
                 
             if (cart == null || !cart.CartItems.Any())
@@ -56,7 +52,7 @@ namespace Larana.Controllers
                 Status = OrderStatus.Pending,
                 ShippingAddress = model.ShippingAddress,
                 PaymentMethod = model.PaymentMethod,
-                PaymentStatus = "Pending"
+                PaymentStatus = model.PaymentStatus
             };
             
             db.Orders.Add(order);
@@ -99,10 +95,17 @@ namespace Larana.Controllers
             db.CartItems.RemoveRange(cart.CartItems);
             db.SaveChanges();
             
-            // Queue a background job to recalculate ratings
-            Hangfire.BackgroundJob.Enqueue<Services.PopularityService>(x => x.RecalculateShopRatings());
+            // Bu servis şu an kullanılamıyor çünkü Hangfire eksik
+            // Hangfire.BackgroundJob.Enqueue<Services.PopularityService>(x => x.RecalculateShopRatings());
             
             return RedirectToAction("OrderConfirmation", new { orderId = order.Id });
         }
+    }
+    
+    public class OrderViewModel
+    {
+        public string ShippingAddress { get; set; }
+        public string PaymentMethod { get; set; }
+        public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
     }
 } 

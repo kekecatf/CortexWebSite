@@ -1,34 +1,32 @@
 using System.Data.Entity;
 using Larana.Models;
+using Larana.Data;
 
 namespace Larana.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : BaseDbContext
     {
-        public ApplicationDbContext() : base("DefaultConnection")
+        public ApplicationDbContext()
+            : base("LaranaConnection")
         {
-            // Disable proxy creation for better performance
-            this.Configuration.ProxyCreationEnabled = false;
-            
-            // Don't initialize database here - it's handled in Global.asax.cs
-            Database.SetInitializer<ApplicationDbContext>(null);
         }
 
-        public DbSet<User> Users { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<Dukkan> Dukkans { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Dukkan> Dukkans { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Rating> Ratings { get; set; }
+        public DbSet<Larana.Models.Review> Reviews { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // User - Dukkan relationship (corrected to use Owner)
+            // User - Dukkan relationship
             modelBuilder.Entity<Dukkan>()
                 .HasRequired(d => d.Owner)
                 .WithMany(u => u.Dukkans)
@@ -48,46 +46,39 @@ namespace Larana.Data
                 .HasForeignKey(r => r.UserId)
                 .WillCascadeOnDelete(false);
 
-            // Configure table names and schema
-            modelBuilder.Entity<Dukkan>().ToTable("Dukkans", "dbo");
-            modelBuilder.Entity<User>().ToTable("Users", "dbo");
-            modelBuilder.Entity<Product>().ToTable("Products", "dbo");
-            modelBuilder.Entity<Cart>().ToTable("Carts", "dbo");
-            modelBuilder.Entity<CartItem>().ToTable("CartItems", "dbo");
-            modelBuilder.Entity<Order>().ToTable("Orders", "dbo");
-            modelBuilder.Entity<OrderDetail>().ToTable("OrderDetails", "dbo");
-            modelBuilder.Entity<Role>().ToTable("Roles", "dbo");
-            modelBuilder.Entity<Rating>().ToTable("Ratings", "dbo");
-
-            // Dukkan - Product relationship
-            modelBuilder.Entity<Product>()
-                .HasRequired(p => p.Dukkan)
-                .WithMany(d => d.Products)
-                .HasForeignKey(p => p.DukkanId)
+            // Configure Review relationships
+            modelBuilder.Entity<Larana.Models.Review>()
+                .HasRequired(r => r.Product)
+                .WithMany(p => p.Reviews)
+                .HasForeignKey(r => r.ProductId)
                 .WillCascadeOnDelete(false);
 
-            // User - Cart relationship
+            modelBuilder.Entity<Larana.Models.Review>()
+                .HasRequired(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .WillCascadeOnDelete(false);
+
+            // Configure Cart relationships
             modelBuilder.Entity<Cart>()
                 .HasRequired(c => c.User)
                 .WithMany(u => u.Carts)
                 .HasForeignKey(c => c.UserId)
                 .WillCascadeOnDelete(false);
 
-            // Cart - CartItem relationship
             modelBuilder.Entity<CartItem>()
                 .HasRequired(ci => ci.Cart)
                 .WithMany(c => c.CartItems)
                 .HasForeignKey(ci => ci.CartId)
                 .WillCascadeOnDelete(true);
 
-            // Product - CartItem relationship
             modelBuilder.Entity<CartItem>()
                 .HasRequired(ci => ci.Product)
                 .WithMany()
                 .HasForeignKey(ci => ci.ProductId)
                 .WillCascadeOnDelete(false);
 
-            // Configure Order entity
+            // Configure Order relationships
             modelBuilder.Entity<Order>()
                 .HasRequired(o => o.User)
                 .WithMany()
@@ -100,7 +91,12 @@ namespace Larana.Data
                 .HasForeignKey(o => o.CartId)
                 .WillCascadeOnDelete(false);
 
-            // Configure OrderDetail entity
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.OrderDetails)
+                .WithRequired(od => od.Order)
+                .HasForeignKey(od => od.OrderId)
+                .WillCascadeOnDelete(true);
+
             modelBuilder.Entity<OrderDetail>()
                 .HasRequired(od => od.Order)
                 .WithMany(o => o.OrderDetails)
@@ -121,6 +117,18 @@ namespace Larana.Data
                 .Property(r => r.Name)
                 .IsRequired()
                 .HasMaxLength(50);
+
+            // Configure table names
+            modelBuilder.Entity<Dukkan>().ToTable("Dukkans", "dbo");
+            modelBuilder.Entity<User>().ToTable("Users", "dbo");
+            modelBuilder.Entity<Product>().ToTable("Products", "dbo");
+            modelBuilder.Entity<Cart>().ToTable("Carts", "dbo");
+            modelBuilder.Entity<CartItem>().ToTable("CartItems", "dbo");
+            modelBuilder.Entity<Order>().ToTable("Orders", "dbo");
+            modelBuilder.Entity<OrderDetail>().ToTable("OrderDetails", "dbo");
+            modelBuilder.Entity<Role>().ToTable("Roles", "dbo");
+            modelBuilder.Entity<Rating>().ToTable("Ratings", "dbo");
+            modelBuilder.Entity<Larana.Models.Review>().ToTable("Reviews", "dbo");
         }
     }
 } 

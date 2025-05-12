@@ -149,8 +149,17 @@
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\DukkanController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\RatingController.cs" />
     <Compile Include="Controllers\ShopController.cs" />
+    <Compile Include="Controllers\ShopProductController.cs" />
+    <Compile Include="Data\ApplicationDbContext.cs" />
+    <Compile Include="Data\BaseDbContext.cs" />
+    <Compile Include="Data\DatabaseInitializer.cs" />
+    <Compile Include="Data\DbAccount.cs" />
+    <Compile Include="Data\DbContextFactory.cs" />
+    <Compile Include="Data\ReviewTableInitializer.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -163,8 +172,8 @@
     <Compile Include="Models\OrdersDbContext.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Rating.cs" />
+    <Compile Include="Models\Review.cs" />
     <Compile Include="Models\Role.cs" />
-    <Compile Include="Models\ApplicationDbContext..cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

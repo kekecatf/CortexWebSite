@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -53,6 +54,8 @@ namespace Larana.Models
         [ForeignKey("DukkanId")]
         public virtual Dukkan Dukkan { get; set; }
 
+        public virtual ICollection<Review> Reviews { get; set; }
+
         public Product()
         {
             Sales = 0;
@@ -62,6 +65,7 @@ namespace Larana.Models
             ViewCount = 0;
             OrderCount = 0;
             CreatedAt = DateTime.Now;
+            Reviews = new HashSet<Review>();
         }
     }
 }

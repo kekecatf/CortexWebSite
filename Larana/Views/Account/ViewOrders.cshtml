@@ -27,7 +27,10 @@
                             <p><strong>Recipient Name:</strong> @order.RecipientName</p>
                             <p><strong>Shipping Company:</strong> @order.ShippingCompany</p>
                             <p><strong>Address:</strong> @order.Address</p>
+                            <p><strong>Shipping Address:</strong> @order.ShippingAddress</p>
                             <p><strong>Phone Number:</strong> @order.PhoneNumber</p>
+                            <p><strong>Payment Method:</strong> @order.PaymentMethod</p>
+                            <p><strong>Payment Status:</strong> <span class="highlight-payment-status @order.PaymentStatus">@order.PaymentStatus</span></p>
                         </div>
                         <h4 class="details-title">Products</h4>
                         <div class="product-list">
@@ -160,6 +163,30 @@
         .highlight-status.Cancelled {
             color: #dc3545;
         }
+
+    .highlight-payment-status {
+        font-weight: bold;
+    }
+
+    .highlight-payment-status.Pending {
+        color: #ffc107;
+    }
+
+    .highlight-payment-status.Processing {
+        color: #17a2b8;
+    }
+
+    .highlight-payment-status.Completed {
+        color: #28a745;
+    }
+
+    .highlight-payment-status.Failed {
+        color: #dc3545;
+    }
+
+    .highlight-payment-status.Refunded {
+        color: #6c757d;
+    }
 
     .highlight-total {
         color: #dc3545;

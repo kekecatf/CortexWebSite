@@ -35,7 +35,10 @@
                     <p><strong>Recipient Name:</strong> @order.RecipientName</p>
                     <p><strong>Shipping Company:</strong> @order.ShippingCompany</p>
                     <p><strong>Address:</strong> @order.Address</p>
+                    <p><strong>Shipping Address:</strong> @order.ShippingAddress</p>
                     <p><strong>Phone Number:</strong> @order.PhoneNumber</p>
+                    <p><strong>Payment Method:</strong> @order.PaymentMethod</p>
+                    <p><strong>Payment Status:</strong> <span class="highlight-payment-status">@order.PaymentStatus</span></p>
                 }
             </div>
             <h4>Products</h4>
@@ -326,8 +329,15 @@
     }
 
     .highlight-pickup {
-        color: #6f42c1;
+        color: #007bff;
         font-weight: bold;
+    }
+
+    .highlight-payment-status {
+        font-weight: bold;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        background-color: #f8f9fa;
     }
 
     .order-pickup {

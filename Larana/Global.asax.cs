@@ -2,17 +2,12 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using System;
 using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
 using System.Web.Security;
 using Larana.Models;
 using Larana.Data;
-using System.Linq;
-using System.IO;
-using System.Data.Entity;
-using System.Web.Optimization;
 using System.Globalization;
 using System.Threading;
+using System.Web.Optimization;
 
 namespace Larana
 {
@@ -20,149 +15,70 @@ namespace Larana
     {
         protected void Application_Start()
         {
-            // Türkçe karakter desteği için kültür ayarları
-            var cultureInfo = new CultureInfo("tr-TR");
-            Thread.CurrentThread.CurrentCulture = cultureInfo;
-            Thread.CurrentThread.CurrentUICulture = cultureInfo;
-            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-
-            // Set the DataDirectory path
-            AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data"));
-
-            // Use CreateDatabaseIfNotExists for all context types
-            Database.SetInitializer(new CreateDatabaseIfNotExists<ApplicationDbContext>());
-            Database.SetInitializer(new CreateDatabaseIfNotExists<DbAccount>());
-            Database.SetInitializer(new CreateDatabaseIfNotExists<OrdersDbContext>());
+            // Initialize database and seed data
+            DatabaseInitializer.Initialize();
             
-            try
+            // Create Reviews table using direct SQL
+            try 
             {
-                // Initialize database contexts
-                using (var context = new ApplicationDbContext())
+                var connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["LaranaConnection"].ConnectionString;
+                using (var connection = new System.Data.SqlClient.SqlConnection(connectionString))
                 {
-                    // Force database creation
-                    if (!context.Database.Exists())
+                    connection.Open();
+                    
+                    // Check if table exists
+                    bool tableExists = false;
+                    using (var cmd = new System.Data.SqlClient.SqlCommand("SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Reviews'", connection))
                     {
-                        context.Database.Create();
+                        var result = cmd.ExecuteScalar();
+                        tableExists = Convert.ToInt32(result) > 0;
                     }
                     
-                    // Apply the fix for the FK constraint issue
-                    var script = @"
-                        -- Drop existing FK constraint if it exists
-                        IF EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_dbo.Ratings_dbo.Users_UserId')
-                        BEGIN
-                            ALTER TABLE [dbo].[Ratings] DROP CONSTRAINT [FK_dbo.Ratings_dbo.Users_UserId]
-                            ALTER TABLE [dbo].[Ratings] ADD CONSTRAINT [FK_dbo.Ratings_dbo.Users_UserId] 
-                            FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([Id]) 
-                            ON DELETE NO ACTION ON UPDATE NO ACTION
-                        END
-
-                        -- Drop existing FK constraint if it exists for DukkanId
-                        IF EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_dbo.Ratings_dbo.Dukkans_DukkanId')
-                        BEGIN
-                            ALTER TABLE [dbo].[Ratings] DROP CONSTRAINT [FK_dbo.Ratings_dbo.Dukkans_DukkanId]
-                            ALTER TABLE [dbo].[Ratings] ADD CONSTRAINT [FK_dbo.Ratings_dbo.Dukkans_DukkanId] 
-                            FOREIGN KEY ([DukkanId]) REFERENCES [dbo].[Dukkans] ([Id]) 
-                            ON DELETE NO ACTION ON UPDATE NO ACTION
-                        END
-                    ";
-                    
-                    try
+                    if (!tableExists)
                     {
-                        // Execute SQL only if database exists and has tables
-                        if (context.Database.Exists())
+                        // Create table if it doesn't exist
+                        string createTableSql = @"
+                        CREATE TABLE [dbo].[Reviews] (
+                            [Id] INT IDENTITY(1,1) NOT NULL,
+                            [ProductId] INT NOT NULL,
+                            [UserId] INT NOT NULL,
+                            [Rating] INT NOT NULL,
+                            [Comment] NVARCHAR(500) NOT NULL,
+                            [CreatedAt] DATETIME NOT NULL,
+                            CONSTRAINT [PK_Reviews] PRIMARY KEY ([Id]),
+                            CONSTRAINT [FK_Reviews_Products] FOREIGN KEY ([ProductId]) REFERENCES [dbo].[Products] ([Id]),
+                            CONSTRAINT [FK_Reviews_Users] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([Id])
+                        )";
+                        
+                        using (var cmd = new System.Data.SqlClient.SqlCommand(createTableSql, connection))
                         {
-                            context.Database.ExecuteSqlCommand(script);
+                            cmd.ExecuteNonQuery();
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        // Just log error - tables might not exist yet
-                        System.Diagnostics.Debug.WriteLine($"FK constraint script error: {ex.Message}");
-                    }
-                }
-                
-                // Initialize other contexts
-                using (var db = new DbAccount())
-                {
-                    if (!db.Database.Exists())
-                    {
-                        db.Database.Create();
-                    }
-                }
-                
-                using (var ordersDb = new OrdersDbContext())
-                {
-                    if (!ordersDb.Database.Exists())
-                    {
-                        ordersDb.Database.Create();
+                        
+                        // Create indexes
+                        string createIndexesSql = @"
+                        CREATE INDEX [IX_Reviews_ProductId] ON [dbo].[Reviews]([ProductId]);
+                        CREATE INDEX [IX_Reviews_UserId] ON [dbo].[Reviews]([UserId]);";
+                        
+                        using (var cmd = new System.Data.SqlClient.SqlCommand(createIndexesSql, connection))
+                        {
+                            cmd.ExecuteNonQuery();
+                        }
+                        
+                        System.Diagnostics.Debug.WriteLine("Reviews table created successfully.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                // Log any database initialization errors
-                System.Diagnostics.Debug.WriteLine($"Database initialization error: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine("Error creating Reviews table: " + ex.Message);
+                // Hatayı kontrol et ama uygulamanın çalışmasını engelleme
             }
 
+            // Register areas, routes and bundles
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            SeedDatabase();
-        }
-
-        private void SeedDatabase()
-        {
-            using (var db = new ApplicationDbContext())
-            {
-                try
-                {
-                    // Create default roles if they don't exist
-                    SeedRole(db, "Admin");
-                    SeedRole(db, "Customer");
-                    SeedRole(db, "Seller");
-
-                    // Create admin user if it doesn't exist
-                    if (!db.Users.Any(u => u.Username == "admin"))
-                    {
-                        var admin = new User
-                        {
-                            Username = "admin",
-                            Email = "admin@larana.com",
-                            CreatedAt = DateTime.Now,
-                            IsActive = true,
-                            UserType = UserType.Admin,
-                            Role = UserRole.Admin,
-                            Roles = "Admin"
-                        };
-                        admin.SetPassword("admin");
-                        db.Users.Add(admin);
-                        db.SaveChanges();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // Log the error or handle it appropriately
-                    System.Diagnostics.Debug.WriteLine($"Database seeding error: {ex.Message}");
-                }
-            }
-        }
-
-        private void SeedRole(ApplicationDbContext context, string roleName)
-        {
-            try
-            {
-                if (!context.Roles.Any(r => r.Name == roleName))
-                {
-                    context.Roles.Add(new Larana.Models.Role { Name = roleName });
-                    context.SaveChanges();
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log the error
-                System.Diagnostics.Debug.WriteLine($"Error seeding role {roleName}: {ex.Message}");
-            }
         }
 
         protected void Application_AuthenticateRequest(Object sender, EventArgs e)

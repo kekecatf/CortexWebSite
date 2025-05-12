@@ -1,59 +1,24 @@
+// Bu dosya artık kullanılmayacak ve Data/DbAccount.cs dosyası kullanılacak.
+// Tüm işlevsellik oraya taşındı.
+// Bu dosya silinebilir.
+
 using System.Data.Entity;
 using Larana.Models;
+using Larana.Data;
 
 namespace Larana.Models
 {
-    public class DbAccount : DbContext
+    // Not needed as a separate context - all functionality merged into ApplicationDbContext
+    public class DbAccount : BaseDbContext
     {
-        public DbAccount() : base("DbAccount")
+        public DbAccount() : base("LaranaConnection") // Use the same connection as ApplicationDbContext
         {
-            // Disable proxy creation
-            this.Configuration.ProxyCreationEnabled = false;
-            
-            // Don't initialize database here - it's handled in Global.asax.cs
-            Database.SetInitializer<DbAccount>(null);
         }
 
+        // These DbSets are for backward compatibility only - we should eventually
+        // remove this context and use ApplicationDbContext for all entities
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
-
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            // Configure User entity
-            modelBuilder.Entity<User>()
-                .HasKey(u => u.Id);
-
-            modelBuilder.Entity<User>()
-                .Property(u => u.Username)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            modelBuilder.Entity<User>()
-                .Property(u => u.Email)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            modelBuilder.Entity<User>()
-                .Property(u => u.Password)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            modelBuilder.Entity<User>()
-                .Property(u => u.Roles)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            // Configure Role entity
-            modelBuilder.Entity<Role>()
-                .HasKey(r => r.Id);
-
-            modelBuilder.Entity<Role>()
-                .Property(r => r.Name)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            base.OnModelCreating(modelBuilder);
-        }
     }
 }
 

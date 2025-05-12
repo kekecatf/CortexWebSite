@@ -75,6 +75,106 @@
     </div>
 </div>
 
+<div class="product-reviews">
+    <h3>Customer Reviews</h3>
+    
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    
+    @if (ViewBag.UserCanReview)
+    {
+        <div class="review-form">
+            <h4>Write a Review</h4>
+            @using (Html.BeginForm("AddReview", "Shop", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="productId" value="@Model.Id" />
+                
+                <div class="form-group">
+                    <label for="rating">Rating</label>
+                    <div class="rating-input">
+                        <input type="radio" id="star5" name="rating" value="5" required />
+                        <label for="star5" title="5 stars">&#9733;</label>
+                        <input type="radio" id="star4" name="rating" value="4" />
+                        <label for="star4" title="4 stars">&#9733;</label>
+                        <input type="radio" id="star3" name="rating" value="3" />
+                        <label for="star3" title="3 stars">&#9733;</label>
+                        <input type="radio" id="star2" name="rating" value="2" />
+                        <label for="star2" title="2 stars">&#9733;</label>
+                        <input type="radio" id="star1" name="rating" value="1" />
+                        <label for="star1" title="1 star">&#9733;</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="comment">Your Review</label>
+                    <textarea id="comment" name="comment" class="form-control" rows="4" required maxlength="500"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+            }
+        </div>
+    }
+    else if (ViewBag.HasReviewed)
+    {
+        <div class="alert alert-info">
+            You have already reviewed this product.
+        </div>
+    }
+    else if (User.Identity.IsAuthenticated)
+    {
+        <div class="alert alert-warning">
+            You can only review products you have purchased.
+        </div>
+    }
+    
+    <div class="reviews-container">
+        @if (ViewBag.SortedReviews != null && ViewBag.SortedReviews.Count > 0)
+        {
+            foreach (var review in ViewBag.SortedReviews)
+            {
+                <div class="review">
+                    <div class="review-header">
+                        <div class="review-stars">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= review.Rating)
+                                {
+                                    <span class="star filled">&#9733;</span>
+                                }
+                                else
+                                {
+                                    <span class="star">&#9734;</span>
+                                }
+                            }
+                        </div>
+                        <span class="review-date">@review.CreatedAt.ToString("MMMM dd, yyyy")</span>
+                    </div>
+                    <div class="review-author">@review.User.Username</div>
+                    <div class="review-text">@review.Comment</div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="no-reviews">
+                <p>This product has no reviews yet.</p>
+            </div>
+        }
+    </div>
+</div>
+
 <script>
     function virtualAddToCart(productId, quantity, initialStock) {
         const stockCountElement = document.getElementById('stock-count');
@@ -438,6 +538,177 @@
         color: #007BFF;
         margin-right: 4px;
     }
+
+    /* Review Styles */
+    .product-reviews {
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .product-reviews h3 {
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #333;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 10px;
+    }
+    
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+    
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .alert-info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+    
+    .alert-warning {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+    }
+    
+    .review-form {
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        border: 1px solid #eee;
+    }
+    
+    .review-form h4 {
+        margin-bottom: 15px;
+        color: #333;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        resize: vertical;
+    }
+    
+    .rating-input {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+    }
+    
+    .rating-input input {
+        display: none;
+    }
+    
+    .rating-input label {
+        font-size: 30px;
+        color: #ddd;
+        cursor: pointer;
+        margin-right: 5px;
+    }
+    
+    .rating-input label:hover,
+    .rating-input label:hover ~ label,
+    .rating-input input:checked ~ label {
+        color: #ffcc00;
+    }
+    
+    .reviews-container {
+        margin-top: 20px;
+    }
+    
+    .review {
+        border-bottom: 1px solid #eee;
+        padding: 15px 0;
+    }
+    
+    .review:last-child {
+        border-bottom: none;
+    }
+    
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+    
+    .review-stars {
+        display: flex;
+    }
+    
+    .star {
+        font-size: 20px;
+        color: #ddd;
+    }
+    
+    .star.filled {
+        color: #ffcc00;
+    }
+    
+    .review-date {
+        font-size: 14px;
+        color: #777;
+    }
+    
+    .review-author {
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #007BFF;
+    }
+    
+    .review-text {
+        line-height: 1.5;
+        color: #333;
+    }
+    
+    .no-reviews {
+        text-align: center;
+        padding: 20px;
+        color: #777;
+    }
 </style>
+
+@section Scripts {
+    <script>
+        // Existing scripts...
+        
+        // Clear form after submission
+        $(document).ready(function() {
+            if (@(TempData["SuccessMessage"] != null ? "true" : "false")) {
+                $("#comment").val("");
+                $("input[name='rating']").prop("checked", false);
+            }
+        });
+    </script>
+}
 
 
