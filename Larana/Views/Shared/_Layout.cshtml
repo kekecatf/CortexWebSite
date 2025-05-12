@@ -147,6 +147,29 @@
             .menu-toggle {
                 display: block;
             }
+            
+            .logout-button {
+                margin-right: 10px;
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* Logout button styles */
+        .logout-button {
+            padding: 3px 10px;
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .logout-button:hover {
+            background-color: #dc3545;
+            color: white;
+            text-decoration: none;
         }
     </style>
     <!-- Custom validation configuration -->
@@ -196,12 +219,23 @@
                     <li><a href="/Dukkan">Shops</a></li>
                     <li><a href="/About">About</a></li>
                     <li><a href="/Contact">Contact</a></li>
-                    <li><a href="/Account/Login">Account</a></li>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li><a href="/Account/MyAccount">My Account</a></li>
+                    }
+                    else
+                    {
+                        <li><a href="/Account/Login">Login</a></li>
+                    }
                 </ul>
             </nav>
             
             <div class="nav-right">
                 <a href="/Cart" class="cart-icon"><img src="~/img/cart-icon.png" alt="Cart" /></a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a href="/Account/Logout" class="logout-button btn btn-sm btn-outline-danger ml-2">Logout</a>
+                }
                 <span class="menu-toggle">☰</span>
             </div>
         </div>
