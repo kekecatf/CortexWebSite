@@ -1,0 +1,184 @@
+@model dynamic
+
+@{
+    ViewBag.Title = "Remove Products From Your Store";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Use regular layout, not dashboard
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h1 class="h3 mb-0">Remove Products From Your Store</h1>
+        </div>
+        <div class="card-body">
+            <p class="lead">This page allows you to remove products that you've added from other stores.</p>
+            
+            <div class="alert alert-info">
+                <strong>Store:</strong> @Model.ShopName
+                <br>
+                <strong>Products from other stores:</strong> @Model.ShopProducts.Count
+            </div>
+            
+            <p>Choose one of the following options:</p>
+            
+            <div class="d-grid gap-3">
+                <a href="@Url.Action("DiagnoseShopProducts", "Dukkan", new { dukkanId = Model.ShopId })" class="btn btn-primary">
+                    <i class="fas fa-list me-2"></i> View Products to Remove
+                </a>
+                
+                <a href="@Url.Action("ManageProducts", "Dukkan", new { id = Model.ShopId })" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Return to Manage Products
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <h2>Quick Removal</h2>
+        <p>Enter the ID of the product you want to remove:</p>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="shopProductId" class="form-label">ShopProduct ID:</label>
+                            <input type="number" id="shopProductId" class="form-control" value="1">
+                        </div>
+                        
+                        <button type="button" id="removeProductButton" class="btn btn-danger">
+                            <i class="fas fa-trash-alt me-2"></i> Remove Product
+                        </button>
+                        
+                        <div id="resultMessage" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Your Products From Other Stores</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.ShopProducts.Count > 0)
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Product</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var product in Model.ShopProducts)
+                                        {
+                                            <tr>
+                                                <td>@product.Id</td>
+                                                <td>@(product.Product?.Name ?? "Unknown")</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-danger quick-remove" 
+                                                            data-id="@product.Id" 
+                                                            data-name="@(product.Product?.Name ?? "Unknown")">
+                                                        Remove
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted">You don't have any products from other stores.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function() {
+            // Handle quick remove buttons
+            $('.quick-remove').click(function() {
+                var id = $(this).data('id');
+                var name = $(this).data('name');
+                
+                if (confirm('Are you sure you want to remove "' + name + '" from your store?')) {
+                    removeProduct(id, $(this));
+                }
+            });
+            
+            // Handle main remove button
+            $('#removeProductButton').click(function() {
+                var id = $('#shopProductId').val();
+                
+                if (!id || id <= 0) {
+                    showResult('Please enter a valid product ID', 'danger');
+                    return;
+                }
+                
+                if (confirm('Are you sure you want to remove product #' + id + ' from your store?')) {
+                    removeProduct(id, $(this));
+                }
+            });
+            
+            // Function to remove product
+            function removeProduct(shopProductId, $button) {
+                // Save original button state
+                var originalHtml = $button.html();
+                $button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Removing...');
+                
+                $.ajax({
+                    url: '@Url.Action("RemoveShopProductAsync", "Dukkan")',
+                    type: 'POST',
+                    data: {
+                        shopProductId: shopProductId,
+                        dukkanId: @Model.ShopId
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showResult('Product removed successfully!', 'success');
+                            
+                            // Remove the row if this was from the table
+                            if ($button.hasClass('quick-remove')) {
+                                $button.closest('tr').fadeOut(400, function() {
+                                    $(this).remove();
+                                    
+                                    // Reload if no more products
+                                    if ($('table tbody tr').length === 0) {
+                                        location.reload();
+                                    }
+                                });
+                            } else {
+                                // Reset the button
+                                $button.prop('disabled', false).html(originalHtml);
+                            }
+                        } else {
+                            showResult('Error: ' + response.message, 'danger');
+                            $button.prop('disabled', false).html(originalHtml);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        showResult('Error: ' + status, 'danger');
+                        console.error(xhr, status, error);
+                        $button.prop('disabled', false).html(originalHtml);
+                    }
+                });
+            }
+            
+            // Show result message
+            function showResult(message, type) {
+                $('#resultMessage').html(
+                    '<div class="alert alert-' + type + '">' + message + '</div>'
+                );
+            }
+        });
+    </script>
+} 

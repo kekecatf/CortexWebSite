@@ -5,7 +5,7 @@ namespace Larana.Data
 {
     public class DbAccount : DbContext
     {
-        public DbAccount() : base("DbAccount")
+        public DbAccount() : base("LaranaConnection")
         {
             // Disable proxy creation
             this.Configuration.ProxyCreationEnabled = false;

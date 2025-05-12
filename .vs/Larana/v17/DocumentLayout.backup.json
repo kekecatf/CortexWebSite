@@ -7,7 +7,7 @@
       "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\global.asax.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|c:\\users\\thede\\documents\\workdir\\web\\cortexwebsite\\larana\\models\\review.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|C:\\Users\\thede\\Documents\\Workdir\\Web\\CortexWebSite\\larana\\models\\review.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B66590C4-3E61-4986-9A23-36D71AF01EE9}|Larana\\Larana.csproj|solutionrelative:larana\\models\\review.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -162,7 +162,7 @@
               "RelativeDocumentMoniker": "Larana\\Global.asax.cs",
               "ToolTip": "C:\\Users\\thede\\Documents\\Workdir\\Web\\CortexWebSite\\Larana\\Global.asax.cs",
               "RelativeToolTip": "Larana\\Global.asax.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEsAAAANAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-12T09:18:38.286Z",
               "EditorCaption": ""
@@ -177,8 +177,7 @@
               "RelativeToolTip": "Larana\\Models\\Review.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-12T09:08:38.805Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-12T09:08:38.805Z"
             },
             {
               "$type": "Document",
@@ -252,9 +251,9 @@
             {
               "$type": "Document",
               "DocumentIndex": 5,
-              "Title": "dbo.Users.sql",
+              "Title": "dbo.Users [Data]",
               "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/LaranaDB/True/SqlTable/dbo.Users.sql",
-              "ToolTip": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/LaranaDB/True/SqlTable/dbo.Users.sql",
+              "ToolTip": "dbo.Users [Data]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
               "WhenOpened": "2025-05-11T18:36:54.186Z"
             },

@@ -1,22 +1,22 @@
 @model IEnumerable<Larana.Models.Dukkan>
 
 @{
-    ViewBag.Title = "Shops";
+    ViewBag.Title = "Mağazalar";
     var viewMode = Request.Cookies["ShopViewMode"]?.Value ?? "grid";
 }
 
 @section meta {
-    <meta name="description" content="Browse our marketplace shops - find unique products from our seller community.">
-    <meta property="og:title" content="Larana Marketplace - All Shops">
-    <meta property="og:description" content="Browse our marketplace shops and find unique products from our seller community.">
+    <meta name="description" content="Pazaryerimizdeki mağazalara göz atın - satıcı topluluğumuzdan benzersiz ürünler bulun.">
+    <meta property="og:title" content="Larana Pazaryeri - Tüm Mağazalar">
+    <meta property="og:description" content="Pazaryerimizdeki mağazalara göz atın ve satıcı topluluğumuzdan benzersiz ürünler bulun.">
     <meta property="og:type" content="website">
     <link rel="canonical" href="@Request.Url.AbsoluteUri">
 }
 
 <div class="container mt-5 mb-5">
     <div class="shops-header mb-4">
-        <h1 class="h2 mb-3">Browse All Shops</h1>
-        <p class="subtitle mb-4">Discover unique products from our seller community</p>
+        <h1 class="h2 mb-3">Tüm Mağazalara Göz At</h1>
+        <p class="subtitle mb-4">Satıcı topluluğumuzdan benzersiz ürünleri keşfedin</p>
     </div>
 
     @if (User.Identity.IsAuthenticated)
@@ -27,13 +27,13 @@
                 @if (User.IsInRole("Seller"))
                 {
                     <a href="@Url.Action("MyShops", "Shop")" class="btn btn-primary btn-lg">
-                        <i class="fa fa-store"></i> My Shop
+                        <i class="fa fa-store"></i> Mağazam
                     </a>
                 }
                 @if (User.IsInRole("Admin"))
                 {
                     <a href="@Url.Action("Create", "Dukkan")" class="btn btn-success btn-lg ml-3">
-                        <i class="fa fa-plus"></i> Create New Shop
+                        <i class="fa fa-plus"></i> Yeni Mağaza Oluştur
                     </a>
                 }
             </div>
@@ -41,25 +41,25 @@
         else
         {
             <div class="seller-prompt alert alert-info mb-5 p-4">
-                <i class="fa fa-info-circle"></i> Want to become a seller? <a href="@Url.Action("BecomeASeller", "Account")">Register as a seller</a> to create your own shop!
+                <i class="fa fa-info-circle"></i> Satıcı olmak ister misiniz? Kendi mağazanızı oluşturmak için <a href="@Url.Action("BecomeASeller", "Account")">satıcı olarak kaydolun</a>!
             </div>
         }
     }
 
     <div class="row">
         <div class="col-md-3">
-            <!-- Filters Panel -->
+            <!-- Filtreler Paneli -->
             <div class="card filters-card mb-4 shadow-sm">
                 <div class="card-header bg-primary text-white py-3">
-                    <h5 class="mb-0">Filters</h5>
+                    <h5 class="mb-0">Filtreler</h5>
                 </div>
                 <div class="card-body p-4">
                     <form id="shop-filter-form" method="get">
-                        <!-- Search -->
+                        <!-- Arama -->
                         <div class="form-group mb-4">
-                            <label for="search" class="mb-2 font-weight-bold">Search</label>
+                            <label for="search" class="mb-2 font-weight-bold">Ara</label>
                             <div class="input-group">
-                                <input type="text" id="search" name="search" class="form-control" value="@ViewBag.Search" placeholder="Search shops...">
+                                <input type="text" id="search" name="search" class="form-control" value="@ViewBag.Search" placeholder="Mağaza ara...">
                                 <div class="input-group-append">
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fas fa-search"></i>
@@ -68,11 +68,11 @@
                             </div>
                         </div>
                         
-                        <!-- Category Filter -->
+                        <!-- Kategori Filtresi -->
                         <div class="form-group mb-4">
-                            <label for="category" class="mb-2 font-weight-bold">Category</label>
+                            <label for="category" class="mb-2 font-weight-bold">Kategori</label>
                             <select id="category" name="category" class="form-control">
-                                <option value="">All Categories</option>
+                                <option value="">Tüm Kategoriler</option>
                                 @foreach (var category in ViewBag.Categories)
                                 {
                                     <option value="@category" @(ViewBag.Category == category ? "selected" : "")>@category</option>
@@ -80,11 +80,11 @@
                             </select>
                         </div>
                         
-                        <!-- Location Filter -->
+                        <!-- Konum Filtresi -->
                         <div class="form-group mb-4">
-                            <label for="location" class="mb-2 font-weight-bold">Location</label>
+                            <label for="location" class="mb-2 font-weight-bold">Konum</label>
                             <select id="location" name="location" class="form-control">
-                                <option value="">All Locations</option>
+                                <option value="">Tüm Konumlar</option>
                                 @foreach (var location in ViewBag.Locations)
                                 {
                                     <option value="@location" @(ViewBag.Location == location ? "selected" : "")>@location</option>
@@ -92,19 +92,19 @@
                             </select>
                         </div>
                         
-                        <!-- Sort Order -->
+                        <!-- Sıralama Düzeni -->
                         <div class="form-group mb-4">
-                            <label for="sort" class="mb-2 font-weight-bold">Sort By</label>
+                            <label for="sort" class="mb-2 font-weight-bold">Sıralama</label>
                             <select id="sort" name="sort" class="form-control">
-                                <option value="newest" @(ViewBag.Sort == "newest" ? "selected" : "")>Newest</option>
-                                <option value="popular" @(ViewBag.Sort == "popular" ? "selected" : "")>Most Popular</option>
-                                <option value="rating" @(ViewBag.Sort == "rating" ? "selected" : "")>Highest Rated</option>
+                                <option value="newest" @(ViewBag.Sort == "newest" ? "selected" : "")>En Yeni</option>
+                                <option value="popular" @(ViewBag.Sort == "popular" ? "selected" : "")>En Popüler</option>
+                                <option value="rating" @(ViewBag.Sort == "rating" ? "selected" : "")>En Yüksek Puan</option>
                             </select>
                         </div>
                         
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-block mb-2">Apply Filters</button>
-                            <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-block">Reset Filters</a>
+                            <button type="submit" class="btn btn-primary btn-block mb-2">Filtreleri Uygula</button>
+                            <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-block">Filtreleri Sıfırla</a>
                         </div>
                     </form>
                 </div>
@@ -112,27 +112,27 @@
         </div>
         
         <div class="col-md-9">
-            <!-- Shops Results -->
+            <!-- Mağaza Sonuçları -->
             <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded">
                 <div class="results-count">
-                    <span class="font-weight-bold">Showing @Model.Count() shop(s)</span>
+                    <span class="font-weight-bold">@Model.Count() mağaza gösteriliyor</span>
                 </div>
                 <div class="view-options">
-                    <button class="btn btn-sm @(viewMode == "grid" ? "btn-primary" : "btn-outline-primary") view-mode-btn" data-mode="grid" title="Grid View">
+                    <button class="btn btn-sm @(viewMode == "grid" ? "btn-primary" : "btn-outline-primary") view-mode-btn" data-mode="grid" title="Izgara Görünümü">
                         <i class="fas fa-th-large"></i>
                     </button>
-                    <button class="btn btn-sm @(viewMode == "list" ? "btn-primary" : "btn-outline-primary") view-mode-btn" data-mode="list" title="List View">
+                    <button class="btn btn-sm @(viewMode == "list" ? "btn-primary" : "btn-outline-primary") view-mode-btn" data-mode="list" title="Liste Görünümü">
                         <i class="fas fa-list"></i>
                     </button>
                 </div>
             </div>
             
             <div id="shops-container" class="row @(viewMode == "list" ? "shops-list-view" : "")">
-                <!-- Shop Items -->
+                <!-- Mağaza Öğeleri -->
                 @Html.Partial("_ShopList", Model)
             </div>
             
-            <!-- Pagination / Load More -->
+            <!-- Sayfalama / Daha Fazla Yükle -->
             @if (ViewBag.CurrentPage < ViewBag.TotalPages)
             {
                 <div class="text-center mt-5 mb-4">
@@ -143,15 +143,15 @@
                             data-location="@ViewBag.Location" 
                             data-sort="@ViewBag.Sort"
                             data-pagesize="@ViewBag.PageSize">
-                        Load More Shops
+                        Daha Fazla Mağaza Yükle
                     </button>
                 </div>
             }
             
-            <!-- Loading Indicator -->
+            <!-- Yükleniyor Göstergesi -->
             <div id="loading-indicator" class="text-center my-5 d-none">
                 <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-                    <span class="sr-only">Loading...</span>
+                    <span class="visually-hidden">Yükleniyor...</span>
                 </div>
             </div>
         </div>
@@ -221,7 +221,7 @@
         margin-bottom: 1rem;
     }
     
-    /* List view styles */
+    /* Liste görünümü stilleri */
     .shops-list-view .shop-item {
         width: 100%;
         max-width: 100%;
@@ -267,7 +267,7 @@
         justify-content: flex-end;
     }
     
-    /* Skeleton loader */
+    /* İskelet yükleyici */
     .skeleton-loader {
         background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
         background-size: 200% 100%;
@@ -284,7 +284,7 @@
         }
     }
     
-    /* Responsive adjustments */
+    /* Duyarlı ayarlamalar */
     @@media (max-width: 767.98px) {
         .shops-list-view .shop-card .card-body {
             flex-direction: column;
@@ -323,7 +323,7 @@
 @section Scripts {
     <script>
         $(document).ready(function() {
-            // Lazy loading for images
+            // Görseller için tembel yükleme
             function lazyLoadImages() {
                 $('.lazy-load').each(function() {
                     if ($(this).offset().top < window.innerHeight + window.scrollY + 200) {
@@ -334,34 +334,34 @@
                 });
             }
             
-            // Initial load
+            // İlk yükleme
             lazyLoadImages();
             
-            // On scroll
+            // Kaydırma sırasında
             $(window).on('scroll', function() {
                 lazyLoadImages();
             });
             
-            // View mode switching
+            // Görünüm modu değiştirme
             $('.view-mode-btn').click(function() {
                 var mode = $(this).data('mode');
                 
-                // Update buttons
+                // Butonları güncelle
                 $('.view-mode-btn').removeClass('btn-primary').addClass('btn-outline-primary');
                 $(this).removeClass('btn-outline-primary').addClass('btn-primary');
                 
-                // Update view
+                // Görünümü güncelle
                 if (mode === 'list') {
                     $('#shops-container').addClass('shops-list-view');
                 } else {
                     $('#shops-container').removeClass('shops-list-view');
                 }
                 
-                // Store preference in cookie
+                // Çerez içinde tercihi sakla
                 document.cookie = "ShopViewMode=" + mode + "; path=/; max-age=31536000";
             });
             
-            // Load more functionality
+            // Daha fazla yükleme işlevi
             $('#load-more-btn').click(function() {
                 var btn = $(this);
                 var page = parseInt(btn.data('page'));
@@ -371,11 +371,11 @@
                 var location = btn.data('location');
                 var sort = btn.data('sort');
                 
-                // Show loading indicator
+                // Yükleme göstergesini göster
                 $('#loading-indicator').removeClass('d-none');
                 btn.prop('disabled', true);
                 
-                // Ajax request to load more shops
+                // Daha fazla mağaza yüklemek için Ajax isteği
                 $.ajax({
                     url: '@Url.Action("LoadMoreShops")',
                     type: 'GET',
@@ -388,25 +388,25 @@
                         sort: sort
                     },
                     success: function(data) {
-                        // Append new shops
+                        // Yeni mağazaları ekle
                         $('#shops-container').append(data);
                         
-                        // Update button with next page
+                        // Butonu sonraki sayfayla güncelle
                         btn.data('page', page + 1);
                         
-                        // Check if we've reached the last page
+                        // Son sayfaya ulaşıp ulaşmadığımızı kontrol et
                         if (page >= @ViewBag.TotalPages) {
                             btn.parent().remove();
                         }
                         
-                        // Run lazy loading for new images
+                        // Yeni görseller için tembel yüklemeyi çalıştır
                         lazyLoadImages();
                     },
                     error: function() {
-                        alert('Error loading more shops. Please try again.');
+                        alert('Daha fazla mağaza yüklenirken hata oluştu. Lütfen tekrar deneyin.');
                     },
                     complete: function() {
-                        // Hide loading indicator
+                        // Yükleme göstergesini gizle
                         $('#loading-indicator').addClass('d-none');
                         btn.prop('disabled', false);
                     }

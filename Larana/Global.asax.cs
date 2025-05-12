@@ -88,15 +88,31 @@ namespace Larana
                 if (HttpContext.Current.User != null && HttpContext.Current.User.Identity.IsAuthenticated)
                 {
                     var formsIdentity = HttpContext.Current.User.Identity as FormsIdentity;
-                    if (formsIdentity != null && !string.IsNullOrEmpty(formsIdentity.Ticket.UserData))
+                    if (formsIdentity != null)
                     {
-                        // Split the roles and ensure no empty elements
-                        var roles = formsIdentity.Ticket.UserData
-                            .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                        // Ticket UserData kısmı boş olabilir, hata verdiği için boş kontrolü ekleyelim
+                        string userData = formsIdentity.Ticket?.UserData;
                         
-                        if (roles.Length > 0)
+                        if (!string.IsNullOrEmpty(userData))
                         {
-                            HttpContext.Current.User = new System.Security.Principal.GenericPrincipal(formsIdentity, roles);
+                            // Split the roles and ensure no empty elements
+                            var roles = userData
+                                .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                            
+                            // Oturum bilgilerini loglayalım - sorun tespiti için
+                            System.Diagnostics.Debug.WriteLine($"User authenticated: {formsIdentity.Name}, Roles: {userData}");
+                            
+                            if (roles.Length > 0)
+                            {
+                                HttpContext.Current.User = new System.Security.Principal.GenericPrincipal(formsIdentity, roles);
+                            }
+                        }
+                        else
+                        {
+                            // UserData boş ise, varsayılan rolü Customer olarak ayarlayalım
+                            string[] defaultRoles = { "Customer" };
+                            HttpContext.Current.User = new System.Security.Principal.GenericPrincipal(formsIdentity, defaultRoles);
+                            System.Diagnostics.Debug.WriteLine($"User authenticated with empty roles: {formsIdentity.Name}");
                         }
                     }
                 }

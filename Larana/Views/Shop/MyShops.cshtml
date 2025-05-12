@@ -1,21 +1,21 @@
 @model IEnumerable<Larana.Models.Dukkan>
 
 @{
-    ViewBag.Title = "My Shops";
+    ViewBag.Title = "Mağazalarım";
 }
 
 <div class="container mt-4">
     <div class="my-shops-header">
-        <h2>My Shops</h2>
-        <p class="subtitle">Manage your online stores</p>
+        <h2>Mağazalarım</h2>
+        <p class="subtitle">Çevrimiçi mağazalarınızı yönetin</p>
     </div>
 
     @if (!Model.Any())
     {
         <div class="no-shops-message">
-            <p>You don't have any shops yet.</p>
+            <p>Henüz bir mağazanız bulunmuyor.</p>
             <a href="@Url.Action("CreateShop", "Shop")" class="btn btn-primary">
-                <i class="fa fa-plus"></i> Create New Shop
+                <i class="fa fa-plus"></i> Yeni Mağaza Oluştur
             </a>
         </div>
     }
@@ -28,22 +28,22 @@
                     <div class="shop-card">
                         <div class="shop-card-body">
                             <div class="shop-status @(shop.IsActive ? "active" : "inactive")">
-                                <span>@(shop.IsActive ? "Active" : "Inactive")</span>
+                                <span>@(shop.IsActive ? "Aktif" : "Pasif")</span>
                             </div>
                             <h3 class="shop-name">@shop.Name</h3>
                             <div class="shop-meta">
-                                <span>Since @shop.CreatedAt.ToString("MMM yyyy")</span>
+                                <span>@shop.CreatedAt.ToString("MMM yyyy")'den beri</span>
                             </div>
                             <p class="shop-description">@shop.Description</p>
                             <div class="shop-actions">
                                 <a href="@Url.Action("Details", "Dukkan", new { id = shop.Id })" class="btn btn-primary">
-                                    <i class="fa fa-eye"></i> View Shop
+                                    <i class="fa fa-eye"></i> Mağazayı Görüntüle
                                 </a>
                                 <a href="@Url.Action("Products", "Dukkan", new { id = shop.Id })" class="btn btn-success">
-                                    <i class="fa fa-box"></i> Manage Products
+                                    <i class="fa fa-box"></i> Ürünleri Yönet
                                 </a>
                                 <a href="@Url.Action("Edit", "Dukkan", new { id = shop.Id })" class="btn btn-secondary">
-                                    <i class="fa fa-edit"></i> Edit Shop
+                                    <i class="fa fa-edit"></i> Mağazayı Düzenle
                                 </a>
                             </div>
                         </div>

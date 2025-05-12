@@ -4,30 +4,30 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2 class="page-title">Create Admin User</h2>
+<h2 class="page-title">Yönetici Kullanıcı Oluştur</h2>
 
 <div class="form-container">
     @using (Html.BeginForm("CreateUser", "Admin", FormMethod.Post))
     {
         @Html.AntiForgeryToken()
         <div class="form-group">
-            @Html.LabelFor(model => model.Username, null, new { @class = "form-label" })
+            @Html.LabelFor(model => model.Username, "Kullanıcı Adı", new { @class = "form-label" })
             @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.Username, null, new { @class = "validation-message" })
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.Email, null, new { @class = "form-label" })
+            @Html.LabelFor(model => model.Email, "E-posta", new { @class = "form-label" })
             @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.Email, null, new { @class = "validation-message" })
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.Password, null, new { @class = "form-label" })
+            @Html.LabelFor(model => model.Password, "Şifre", new { @class = "form-label" })
             @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.Password, null, new { @class = "validation-message" })
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-success">Create Admin User</button>
+            <button type="submit" class="btn btn-success">Yönetici Kullanıcı Oluştur</button>
         </div>
     }
 </div>

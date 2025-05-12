@@ -5,6 +5,55 @@
             <img class="sneaker" src="@Url.Content("~/" + product.PhotoPath)" alt="@product.Name" />
             <div class="description">
                 <h5>@product.Name</h5>
+                
+                <!-- Ürün Değerlendirme Yıldızları -->
+                <div class="product-rating">
+                    @{ 
+                        decimal avgRating = 0;
+                        int reviewCount = 0;
+                        
+                        if (product.Reviews != null && product.Reviews.Count > 0) 
+                        {
+                            var reviewsList = product.Reviews;
+                            reviewCount = reviewsList.Count;
+                            var validReviews = new List<Larana.Models.Review>();
+                            foreach (var review in reviewsList)
+                            {
+                                if (review != null)
+                                {
+                                    validReviews.Add(review);
+                                }
+                            }
+                            int sum = 0;
+                            foreach (var r in validReviews)
+                            {
+                                sum += r.Rating;
+                            }
+                            avgRating = reviewCount > 0 ? Math.Round((decimal)sum / reviewCount, 1) : 0;
+                        }
+                    }
+                    
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= Math.Floor(avgRating))
+                        {
+                            <i class="fas fa-star text-warning"></i>
+                        }
+                        else if ((decimal)(i - 0.5) <= avgRating)
+                        {
+                            <i class="fas fa-star-half-alt text-warning"></i>
+                        }
+                        else
+                        {
+                            <i class="far fa-star text-warning"></i>
+                        }
+                    }
+                    @if (reviewCount > 0)
+                    {
+                        <span class="rating-count">@avgRating.ToString("0.0") (@reviewCount)</span>
+                    }
+                </div>
+                
                 <h4>@string.Format("{0:N}", product.Price) TL</h4>
                 @if (product.Dukkan != null)
                 {
@@ -15,7 +64,7 @@
                 @if (product.IsClickAndCollect)
                 {
                     <span class="click-collect-badge">
-                        <i class="fas fa-shopping-bag"></i> Click & Collect
+                        <i class="fas fa-shopping-bag"></i> Tıkla & Topla
                     </span>
                 }
             </div>
@@ -40,5 +89,21 @@
         border-radius: 4px;
         margin-top: 5px;
         font-weight: bold;
+    }
+    
+    .product-rating {
+        margin-bottom: 5px;
+        font-size: 0.9em;
+    }
+    
+    .product-rating i {
+        color: #ffc107;
+        margin-right: 2px;
+    }
+    
+    .rating-count {
+        color: #666;
+        font-size: 0.85em;
+        margin-left: 5px;
     }
 </style>

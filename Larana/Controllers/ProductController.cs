@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Data.Entity;
 using Larana.Data;
 using Larana.Models;
 
@@ -451,6 +452,60 @@ namespace Larana.Controllers
             return RedirectToAction("Products", "Dukkan", new { id = product.DukkanId });
         }
         
+        [AllowAnonymous]
+        public ActionResult Details(int id)
+        {
+            // Get the main product
+            var product = _context.Products.FirstOrDefault(p => p.Id == id);
+            if (product == null)
+            {
+                return HttpNotFound("Product not found");
+            }
+
+            // Get all stores that sell this product
+            var storeProducts = _context.ShopProducts
+                .Where(sp => sp.ProductId == id)
+                .Include(sp => sp.Dukkan)
+                .ToList();
+
+            // Create a viewmodel with the product and store options
+            var viewModel = new ProductDetailsViewModel
+            {
+                Product = product,
+                StoreOptions = storeProducts.Select(sp => new StoreProductOption
+                {
+                    StoreId = sp.DukkanId,
+                    StoreName = sp.Dukkan.Name,
+                    Price = sp.Price,
+                    Stock = sp.Stock,
+                    IsClickAndCollect = sp.IsClickAndCollect,
+                    ProductId = sp.ProductId,
+                    ShopProductId = sp.Id
+                }).ToList()
+            };
+
+            // Add the original store to options if not already included
+            if (product.DukkanId.HasValue && !viewModel.StoreOptions.Any(so => so.StoreId == product.DukkanId.Value))
+            {
+                var originalStore = _context.Dukkans.FirstOrDefault(d => d.Id == product.DukkanId.Value);
+                if (originalStore != null)
+                {
+                    viewModel.StoreOptions.Add(new StoreProductOption
+                    {
+                        StoreId = originalStore.Id,
+                        StoreName = originalStore.Name,
+                        Price = product.Price,
+                        Stock = product.Stock,
+                        IsClickAndCollect = product.IsClickAndCollect,
+                        ProductId = product.Id,
+                        ShopProductId = null // This indicates it's from the original product
+                    });
+                }
+            }
+
+            return View(viewModel);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

@@ -1,19 +1,19 @@
 @{
-    ViewBag.Title = "Search Results for \"" + ViewBag.SearchQuery + "\"";
+    ViewBag.Title = "\"" + ViewBag.SearchQuery + "\" için Arama Sonuçları";
 }
 
 @section meta {
     <meta name="robots" content="noindex, follow">
-    <meta name="description" content="Search results for @ViewBag.SearchQuery - Larana Marketplace">
+    <meta name="description" content="@ViewBag.SearchQuery için arama sonuçları - Larana Pazaryeri">
 }
 
 <div class="container mt-4 mb-5">
     <div class="search-header mb-4">
-        <h1 class="h3">Search Results</h1>
+        <h1 class="h3">Arama Sonuçları</h1>
         <p class="lead text-muted">
-            Found @ViewBag.ResultCount results for 
-            <span class="font-weight-bold">@ViewBag.SearchQuery</span> 
-            in @(ViewBag.SearchType == "shops" ? "Shops" : "Products")
+            <span class="font-weight-bold">@ViewBag.SearchQuery</span> için
+            @ViewBag.ResultCount sonuç bulundu
+            (@(ViewBag.SearchType == "shops" ? "Mağazalar" : "Ürünler"))
         </p>
         
         <div class="search-form-container mt-3 mb-4">
@@ -21,14 +21,14 @@
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <select name="searchType" class="form-control search-type">
-                            <option value="products" @(ViewBag.SearchType == "products" ? "selected" : "")>Products</option>
-                            <option value="shops" @(ViewBag.SearchType == "shops" ? "selected" : "")>Shops</option>
+                            <option value="products" @(ViewBag.SearchType == "products" ? "selected" : "")>Ürünler</option>
+                            <option value="shops" @(ViewBag.SearchType == "shops" ? "selected" : "")>Mağazalar</option>
                         </select>
                     </div>
-                    <input type="text" name="q" class="form-control" value="@ViewBag.SearchQuery" placeholder="Search again..." aria-label="Search" required>
+                    <input type="text" name="q" class="form-control" value="@ViewBag.SearchQuery" placeholder="Tekrar ara..." aria-label="Ara" required>
                     <div class="input-group-append">
                         <button class="btn btn-primary" type="submit">
-                            <i class="fas fa-search"></i> Search
+                            <i class="fas fa-search"></i> Ara
                         </button>
                     </div>
                 </div>
@@ -39,17 +39,17 @@
     @if (ViewBag.ResultCount == 0)
     {
         <div class="alert alert-info">
-            <h4 class="alert-heading">No results found</h4>
-            <p>We couldn't find any @(ViewBag.SearchType == "shops" ? "shops" : "products") matching your search criteria.</p>
+            <h4 class="alert-heading">Sonuç bulunamadı</h4>
+            <p>Arama kriterlerinize uyan @(ViewBag.SearchType == "shops" ? "mağaza" : "ürün") bulamadık.</p>
             <hr>
-            <p class="mb-0">Try using different keywords or check out our 
+            <p class="mb-0">Farklı anahtar kelimeler kullanmayı deneyin veya 
                 @if (ViewBag.SearchType == "shops")
                 {
-                    <a href="@Url.Action("Index", "Dukkan")">shops directory</a>
+                    <a href="@Url.Action("Index", "Dukkan")">mağaza rehberimize</a> göz atın
                 }
                 else
                 {
-                    <a href="@Url.Action("Index", "Shop")">products catalog</a>
+                    <a href="@Url.Action("Index", "Shop")">ürün kataloğumuza</a> göz atın
                 }
             </p>
         </div>
@@ -58,7 +58,7 @@
     {
         if (ViewBag.SearchType == "shops")
         {
-            <!-- Shop search results -->
+            <!-- Mağaza arama sonuçları -->
             <div class="row shops-grid">
                 @foreach (var shop in ViewBag.SearchResults)
                 {
@@ -93,7 +93,7 @@
                                 </p>
                                 
                                 <a href="@Url.Action("Details", "Dukkan", new { id = shop.Id })" class="btn btn-outline-primary mt-auto">
-                                    View Shop
+                                    Mağazayı Görüntüle
                                 </a>
                             </div>
                         </div>
@@ -103,7 +103,7 @@
         }
         else
         {
-            <!-- Product search results -->
+            <!-- Ürün arama sonuçları -->
             <div class="row products-grid">
                 @foreach (var product in ViewBag.SearchResults)
                 {
@@ -125,7 +125,7 @@
                                 <div class="product-info">
                                     <span class="product-brand">@product.Brand</span>
                                     <h5 class="product-name">@product.Name</h5>
-                                    <div class="product-price">@string.Format("${0:N2}", product.Price)</div>
+                                    <div class="product-price">@string.Format("{0:N2} TL", product.Price)</div>
                                     @if (product.Dukkan != null)
                                     {
                                         <div class="shop-name mt-2">
@@ -145,7 +145,7 @@
 </div>
 
 <style>
-    /* Search Form Styles */
+    /* Arama Formu Stilleri */
     .search-form-container {
         max-width: 700px;
     }
@@ -156,7 +156,7 @@
         width: 120px;
     }
     
-    /* Shop Card Styles */
+    /* Mağaza Kartı Stilleri */
     .shop-card {
         border: 1px solid #eee;
         border-radius: 8px;
@@ -189,7 +189,7 @@
         margin-bottom: 10px;
     }
     
-    /* Product Card Styles */
+    /* Ürün Kartı Stilleri */
     .product-card {
         border: 1px solid #eee;
         border-radius: 8px;

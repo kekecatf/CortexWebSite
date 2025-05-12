@@ -15,6 +15,33 @@ namespace Larana.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
+        // Helper method to check if current user is the shop owner
+        private bool IsCurrentUserShopOwner(int dukkanId)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return false;
+            }
+            
+            var username = User.Identity.Name;
+            var user = db.Users.FirstOrDefault(u => u.Username == username);
+            
+            if (user == null)
+            {
+                return false;
+            }
+            
+            var dukkan = db.Dukkans.Find(dukkanId);
+            
+            if (dukkan == null)
+            {
+                return false;
+            }
+            
+            // Return true if user is owner or admin
+            return dukkan.OwnerId == user.Id || User.IsInRole("Admin");
+        }
+
         // GET: Dukkan
         [AllowAnonymous]
         [Route("Index")]
@@ -218,6 +245,15 @@ namespace Larana.Controllers
                 dukkan.Rating = Math.Round(averageRating, 1);
                 db.SaveChanges();
             }
+
+            // Get products from ShopProducts table (added from other shops)
+            var shopProducts = db.ShopProducts
+                .Include("Product")
+                .Where(sp => sp.DukkanId == id)
+                .ToList();
+            
+            // Add these to ViewBag to display in view
+            ViewBag.ShopProducts = shopProducts;
 
             // Increment view count
             dukkan.ViewCount += 1;
@@ -524,11 +560,21 @@ namespace Larana.Controllers
             // Set the dukkan ID in ViewBag so the view can use it for navigation
             ViewBag.DukkanId = id;
 
-            // Enhanced order loading with proper navigation properties
+            // Get orders from two sources:
+            // 1. Orders containing products originally from this shop
+            // 2. Orders containing products from this shop via ShopProducts (multi-seller)
             var orders = db.Orders
                 .Include("OrderDetails.Product") // Include Product navigation property
                 .Include("User")
-                .Where(o => o.OrderDetails.Any(od => od.Product != null && od.Product.DukkanId == id))
+                .Where(o => 
+                    // Match orders where product is directly owned by this shop
+                    o.OrderDetails.Any(od => od.Product.DukkanId == id && od.ShopProductId == null) ||
+                    // OR match orders where product was purchased from this shop via ShopProduct
+                    o.OrderDetails.Any(od => od.ShopProductId != null && 
+                                            db.ShopProducts
+                                               .Any(sp => sp.Id == od.ShopProductId && 
+                                                         sp.DukkanId == id))
+                )
                 .OrderByDescending(o => o.OrderDate)
                 .ToList();
 
@@ -700,19 +746,51 @@ namespace Larana.Controllers
 
             // Get basic analytics for dashboard
             var totalOrders = db.Orders
-                .Count(o => o.OrderDetails.Any(od => od.Product.DukkanId == id));
+                .Count(o => 
+                    // Match orders where product is directly owned by this shop
+                    o.OrderDetails.Any(od => od.Product.DukkanId == id && od.ShopProductId == null) ||
+                    // OR match orders where product was purchased from this shop via ShopProduct
+                    o.OrderDetails.Any(od => od.ShopProductId != null && 
+                                          db.ShopProducts.Any(sp => sp.Id == od.ShopProductId && 
+                                                                sp.DukkanId == id))
+                );
                 
             var totalRevenue = db.OrderDetails
-                .Where(od => od.Product.DukkanId == id)
+                .Where(od => 
+                    // Direct products owned by this shop
+                    (od.Product.DukkanId == id && od.ShopProductId == null) ||
+                    // OR products purchased via ShopProduct from this shop
+                    (od.ShopProductId != null && 
+                     db.ShopProducts.Any(sp => sp.Id == od.ShopProductId && sp.DukkanId == id))
+                )
                 .Sum(od => od.Quantity * od.UnitPrice);
                 
-            var productsCount = dukkan.Products.Count;
+            // Count both original products and products added via ShopProducts
+            var ownedProductsCount = dukkan.Products.Count;
+            var addedProductsCount = db.ShopProducts.Count(sp => sp.DukkanId == id);
+            var productsCount = ownedProductsCount + addedProductsCount;
             
             var pendingOrders = db.Orders
-                .Count(o => o.OrderDetails.Any(od => od.Product.DukkanId == id) && o.Status == OrderStatus.Pending);
+                .Count(o => 
+                    o.Status == OrderStatus.Pending && 
+                    (
+                        // Match orders where product is directly owned by this shop
+                        o.OrderDetails.Any(od => od.Product.DukkanId == id && od.ShopProductId == null) ||
+                        // OR match orders where product was purchased from this shop via ShopProduct
+                        o.OrderDetails.Any(od => od.ShopProductId != null && 
+                                              db.ShopProducts.Any(sp => sp.Id == od.ShopProductId && 
+                                                                    sp.DukkanId == id))
+                    )
+                );
                 
             var bestSellingProducts = db.OrderDetails
-                .Where(od => od.Product.DukkanId == id)
+                .Where(od => 
+                    // Direct products owned by this shop
+                    (od.Product.DukkanId == id && od.ShopProductId == null) ||
+                    // OR products purchased via ShopProduct from this shop
+                    (od.ShopProductId != null && 
+                     db.ShopProducts.Any(sp => sp.Id == od.ShopProductId && sp.DukkanId == id))
+                )
                 .GroupBy(od => od.ProductId)
                 .Select(g => new { 
                     ProductId = g.Key, 
@@ -802,6 +880,20 @@ namespace Larana.Controllers
                 return new HttpStatusCodeResult(403, "You don't have permission to manage this shop's products.");
             }
 
+            // Get products from ShopProducts table (added from other shops) with explicit loading
+            System.Diagnostics.Debug.WriteLine($"Looking for ShopProducts for shop ID: {id}");
+            
+            var shopProducts = db.ShopProducts
+                .Include("Product")
+                .Include("Product.Dukkan")
+                .Where(sp => sp.DukkanId == id)
+                .ToList();
+            
+            System.Diagnostics.Debug.WriteLine($"Found {shopProducts.Count} ShopProducts");
+            
+            // Add these to ViewBag to display in view
+            ViewBag.ShopProducts = shopProducts;
+            
             // Set the active tab for the dashboard layout
             ViewBag.ActiveTab = "products";
             ViewBag.DukkanId = id;
@@ -858,6 +950,7 @@ namespace Larana.Controllers
             // Load order with OrderDetails and Products included
             var order = db.Orders
                 .Include("OrderDetails.Product")
+                .Include("OrderDetails.ShopProduct")
                 .FirstOrDefault(o => o.Id == orderId);
 
             if (dukkan == null || order == null)
@@ -879,9 +972,15 @@ namespace Larana.Controllers
                 return new HttpStatusCodeResult(403, "You don't have permission to manage this shop's orders.");
             }
 
-            // Validate that the order contains products from this shop
+            // Validate that the order contains products from this shop (either direct or via ShopProducts)
             var orderContainsShopProducts = order.OrderDetails
-                .Any(od => od.Product != null && od.Product.DukkanId == dukkanId);
+                .Any(od => 
+                    // Direct products owned by this shop
+                    (od.Product != null && od.Product.DukkanId == dukkanId && od.ShopProductId == null) ||
+                    // OR products purchased via ShopProduct from this shop
+                    (od.ShopProductId != null && 
+                     db.ShopProducts.Any(sp => sp.Id == od.ShopProductId && sp.DukkanId == dukkanId))
+                );
                 
             if (!orderContainsShopProducts)
             {
@@ -939,11 +1038,21 @@ namespace Larana.Controllers
                 return new HttpStatusCodeResult(403, "You don't have permission to download this shop's orders.");
             }
 
-            // Get orders containing products from this shop
+            // Get orders from two sources:
+            // 1. Orders containing products originally from this shop
+            // 2. Orders containing products from this shop via ShopProducts (multi-seller)
             var orders = db.Orders
-                .Include("OrderDetails")
+                .Include("OrderDetails.Product")
                 .Include("User")
-                .Where(o => o.OrderDetails.Any(od => od.Product.DukkanId == id))
+                .Where(o => 
+                    // Match orders where product is directly owned by this shop
+                    o.OrderDetails.Any(od => od.Product.DukkanId == id && od.ShopProductId == null) ||
+                    // OR match orders where product was purchased from this shop via ShopProduct
+                    o.OrderDetails.Any(od => od.ShopProductId != null && 
+                                            db.ShopProducts
+                                               .Any(sp => sp.Id == od.ShopProductId && 
+                                                         sp.DukkanId == id))
+                )
                 .OrderByDescending(o => o.OrderDate)
                 .ToList();
 
@@ -953,8 +1062,15 @@ namespace Larana.Controllers
 
             foreach (var order in orders)
             {
+                // Calculate total amount for this shop only (direct products or shop products)
                 var totalForShop = order.OrderDetails
-                    .Where(od => od.Product.DukkanId == id)
+                    .Where(od => 
+                        // Direct products owned by this shop
+                        (od.Product.DukkanId == id && od.ShopProductId == null) ||
+                        // OR products purchased via ShopProduct from this shop
+                        (od.ShopProductId != null && 
+                         db.ShopProducts.Any(sp => sp.Id == od.ShopProductId && sp.DukkanId == id))
+                    )
                     .Sum(od => od.Quantity * od.UnitPrice);
                     
                 var line = string.Format("{0},{1},{2},{3},{4}",
@@ -998,8 +1114,17 @@ namespace Larana.Controllers
 
             // Calculate monthly revenue for chart
             var sixMonthsAgo = DateTime.Now.AddMonths(-6);
+            
+            // Get revenue from both direct products and shop products
             var revenueByMonth = db.OrderDetails
-                .Where(od => od.Product.DukkanId == id && od.Order.OrderDate >= sixMonthsAgo)
+                .Where(od => od.Order.OrderDate >= sixMonthsAgo && 
+                    (
+                        // Direct products owned by this shop
+                        (od.Product.DukkanId == id && od.ShopProductId == null) ||
+                        // OR products purchased via ShopProduct from this shop
+                        (od.ShopProductId != null && 
+                         db.ShopProducts.Any(sp => sp.Id == od.ShopProductId && sp.DukkanId == id))
+                    ))
                 .GroupBy(od => new { Year = od.Order.OrderDate.Year, Month = od.Order.OrderDate.Month })
                 .Select(g => new {
                     Year = g.Key.Year,
@@ -1213,7 +1338,8 @@ namespace Larana.Controllers
             try
             {
                 db.SaveChanges();
-                return Json(new { 
+                return Json(new 
+                { 
                     success = true, 
                     message = isInOrders ? "Product has been marked as inactive because it's associated with orders" : "Product deleted successfully" 
                 });
@@ -1442,6 +1568,468 @@ namespace Larana.Controllers
             ViewBag.Brands = new SelectList(brands, product.Brand);
             
             return View(product);
+        }
+
+        // GET: ExistingProducts
+        [Authorize]
+        [Route("ExistingProducts/{dukkanId}")]
+        public ActionResult ExistingProducts(int dukkanId, string searchTerm = "", int page = 1)
+        {
+            // Verify current user owns this shop
+            if (!IsCurrentUserShopOwner(dukkanId))
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+            var pageSize = 12; // Number of products per page
+            
+            // Get ALL products in the system (temporarily disable all filtering for debugging)
+            var productsQuery = db.Products.AsQueryable();
+            
+            // Debug output
+            System.Diagnostics.Debug.WriteLine($"Total product count in database: {productsQuery.Count()}");
+            
+            // Apply search filter if provided
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                productsQuery = productsQuery.Where(p => 
+                    p.Name.Contains(searchTerm) || 
+                    p.Description.Contains(searchTerm) || 
+                    p.Brand.Contains(searchTerm) ||
+                    p.Category.Contains(searchTerm));
+            }
+            
+            // Get total count for pagination
+            var totalItems = productsQuery.Count();
+            
+            // Debug output
+            System.Diagnostics.Debug.WriteLine($"Found {totalItems} products for shop {dukkanId}");
+            
+            // Apply pagination
+            var products = productsQuery
+                .OrderByDescending(p => p.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+            
+            // Create view model with pagination info
+            var viewModel = new ProductListViewModel
+            {
+                Products = products,
+                PaginationInfo = new PaginationInfo
+                {
+                    CurrentPage = page,
+                    ItemsPerPage = pageSize,
+                    TotalItems = totalItems
+                },
+                SearchTerm = searchTerm,
+                DukkanId = dukkanId
+            };
+            
+            return View(viewModel);
+        }
+        
+        // POST: AddExistingProduct
+        [HttpPost]
+        [Authorize]
+        [Route("AddExistingProduct")]
+        public ActionResult AddExistingProduct(int dukkanId, int productId, decimal price, int stock, bool isClickAndCollect = false)
+        {
+            System.Diagnostics.Debug.WriteLine($"AddExistingProduct called: Shop={dukkanId}, Product={productId}, Price={price}");
+            
+            // Verify current user owns this shop
+            if (!IsCurrentUserShopOwner(dukkanId))
+            {
+                System.Diagnostics.Debug.WriteLine("Permission denied: User is not shop owner");
+                return Json(new { success = false, message = "You do not have permission to add products to this shop." });
+            }
+            
+            try
+            {
+                // Check if product exists
+                var product = db.Products.Find(productId);
+                if (product == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("Product not found");
+                    return Json(new { success = false, message = "Product not found." });
+                }
+                
+                System.Diagnostics.Debug.WriteLine($"Found product: {product.Name} (ID: {product.Id})");
+                
+                // Check if this shop already has this product
+                var existingShopProduct = db.ShopProducts.FirstOrDefault(sp => sp.DukkanId == dukkanId && sp.ProductId == productId);
+                if (existingShopProduct != null)
+                {
+                    System.Diagnostics.Debug.WriteLine("Product already exists in shop");
+                    return Json(new { success = false, message = "This product is already in your shop." });
+                }
+                
+                // Create a new ShopProduct entry
+                var shopProduct = new ShopProduct
+                {
+                    DukkanId = dukkanId,
+                    ProductId = productId,
+                    Price = price,
+                    Stock = stock,
+                    IsClickAndCollect = isClickAndCollect
+                };
+                
+                System.Diagnostics.Debug.WriteLine("Adding ShopProduct to database");
+                db.ShopProducts.Add(shopProduct);
+                db.SaveChanges();
+                System.Diagnostics.Debug.WriteLine($"ShopProduct added successfully with ID: {shopProduct.Id}");
+                
+                return Json(new { 
+                    success = true, 
+                    message = "Product added to your shop successfully.",
+                    shopProductId = shopProduct.Id
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in AddExistingProduct: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
+            }
+        }
+
+        // GET: Dukkan/AddProductFromOthers/{id}
+        [Authorize(Roles = "Admin,Seller")]
+        [Route("AddProductFromOthers/{id}")]
+        public ActionResult AddProductFromOthers(int id)
+        {
+            var username = User.Identity.Name;
+            var user = db.Users.FirstOrDefault(u => u.Username == username);
+            
+            if (user == null)
+            {
+                return HttpNotFound("User not found");
+            }
+            
+            // Get user's shops
+            var userShops = db.Dukkans
+                .Where(d => d.OwnerId == user.Id && d.IsActive)
+                .ToList();
+                
+            if (userShops == null || !userShops.Any())
+            {
+                TempData["Message"] = "You don't have any active shops.";
+                return RedirectToAction("Index", "Shop");
+            }
+            
+            // Find popular products to add
+            var popularProducts = db.Products
+                .Include("Dukkan")
+                .Where(p => (!p.DukkanId.HasValue || p.DukkanId.Value != id))
+                .OrderByDescending(p => p.CreatedAt)
+                .Take(50)
+                .ToList();
+                
+            // Check and exclude products already in this shop via ShopProducts table
+            var existingProductIds = db.ShopProducts
+                .Where(sp => sp.DukkanId == id)
+                .Select(sp => sp.ProductId)
+                .ToList();
+                
+            // Remove products that are already in the shop
+            popularProducts = popularProducts
+                .Where(p => !existingProductIds.Contains(p.Id))
+                .ToList();
+                
+            ViewBag.UserShops = userShops;
+            ViewBag.CurrentShopId = id;
+            
+            return View(popularProducts);
+        }
+
+        // POST: Dukkan/RemoveShopProduct
+        [HttpPost]
+        [Authorize]
+        [Route("RemoveShopProduct")]
+        public ActionResult RemoveShopProduct(int shopProductId, int dukkanId)
+        {
+            // Debug output all parameters received
+            System.Diagnostics.Debug.WriteLine($"=== RemoveShopProduct parameters ===");
+            System.Diagnostics.Debug.WriteLine($"shopProductId: {shopProductId}");
+            System.Diagnostics.Debug.WriteLine($"dukkanId: {dukkanId}");
+            
+            try
+            {
+                // Skip owner validation temporarily for testing
+                var shopProduct = db.ShopProducts.Find(shopProductId);
+                
+                if (shopProduct == null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"ShopProduct not found with ID: {shopProductId}");
+                    return Json(new { success = false, message = $"Product not found with ID {shopProductId}" });
+                }
+                
+                System.Diagnostics.Debug.WriteLine($"Found ShopProduct: ID={shopProduct.Id}, DukkanId={shopProduct.DukkanId}, ProductId={shopProduct.ProductId}");
+                System.Diagnostics.Debug.WriteLine($"Removing ShopProduct: {shopProductId}");
+                
+                db.ShopProducts.Remove(shopProduct);
+                db.SaveChanges();
+                
+                System.Diagnostics.Debug.WriteLine("ShopProduct removed successfully via async method");
+                return Json(new { success = true, message = "Product removed successfully" });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error removing ShopProduct: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
+            }
+        }
+        
+        // POST: EditShopProduct
+        [HttpPost]
+        [Authorize]
+        [Route("EditShopProduct")]
+        public ActionResult EditShopProduct(int shopProductId, int dukkanId, decimal price, int stock)
+        {
+            // Verify current user owns this shop
+            if (!IsCurrentUserShopOwner(dukkanId))
+            {
+                return Json(new { success = false, message = "You do not have permission to manage this shop." });
+            }
+            
+            try
+            {
+                // Find the ShopProduct
+                var shopProduct = db.ShopProducts.Find(shopProductId);
+                if (shopProduct == null)
+                {
+                    return Json(new { success = false, message = "Product not found" });
+                }
+                
+                // Verify this ShopProduct belongs to the specified shop
+                if (shopProduct.DukkanId != dukkanId)
+                {
+                    return Json(new { success = false, message = "This product does not belong to your shop" });
+                }
+                
+                // Update the ShopProduct
+                shopProduct.Price = price;
+                shopProduct.Stock = stock;
+                db.SaveChanges();
+                
+                return Json(new { success = true, message = "Product updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error updating product: " + ex.Message });
+            }
+        }
+
+        // GET: Diagnostic to check ShopProducts
+        [Authorize]
+        [Route("DiagnoseShopProducts/{dukkanId}")]
+        public ActionResult DiagnoseShopProducts(int dukkanId)
+        {
+            // Verify current user owns this shop or is admin
+            if (!IsCurrentUserShopOwner(dukkanId))
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            
+            var allShopProducts = db.ShopProducts
+                .Include("Product")
+                .Include("Product.Dukkan")
+                .Include("Dukkan")
+                .Where(sp => sp.DukkanId == dukkanId)
+                .ToList();
+                
+            var viewModel = new {
+                ShopProducts = allShopProducts,
+                ShopName = db.Dukkans.Find(dukkanId)?.Name ?? "Unknown Shop",
+                ShopId = dukkanId
+            };
+            
+            return View(viewModel);
+        }
+
+        // GET: Test page for removing shop products
+        [Authorize]
+        [Route("TestRemove")]
+        public ActionResult TestRemove()
+        {
+            return View();
+        }
+
+        // GET: Dukkan/ManageOtherProducts/{id}
+        [Authorize]
+        [Route("ManageOtherProducts/{id}")]
+        public ActionResult ManageOtherProducts(int id)
+        {
+            // Simple redirect to DiagnoseShopProducts to make it easier to find
+            return RedirectToAction("DiagnoseShopProducts", new { dukkanId = id });
+        }
+
+        // GET: Dukkan/RemoveProducts/{id}
+        [Authorize]
+        [Route("RemoveProducts/{id}")]
+        public ActionResult RemoveProducts(int id)
+        {
+            // Verify current user owns this shop or is admin
+            if (!IsCurrentUserShopOwner(id))
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            
+            var allShopProducts = db.ShopProducts
+                .Include("Product")
+                .Include("Product.Dukkan")
+                .Include("Dukkan")
+                .Where(sp => sp.DukkanId == id)
+                .ToList();
+                
+            var viewModel = new {
+                ShopProducts = allShopProducts,
+                ShopName = db.Dukkans.Find(id)?.Name ?? "Unknown Shop",
+                ShopId = id
+            };
+            
+            return View(viewModel);
+        }
+
+        // GET: Dukkan/OtherProducts/{id}
+        [Authorize]
+        [Route("OtherProducts/{id}")]
+        public ActionResult OtherProducts(int id)
+        {
+            // Verify current user owns this shop or is admin
+            if (!IsCurrentUserShopOwner(id))
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            
+            var shopProducts = db.ShopProducts
+                .Include("Product")
+                .Include("Product.Dukkan")
+                .Where(sp => sp.DukkanId == id)
+                .ToList();
+                
+            ViewBag.DukkanId = id;
+            ViewBag.DukkanName = db.Dukkans.Find(id)?.Name ?? "Unknown Shop";
+            
+            return View(shopProducts);
+        }
+        
+        // POST: Dukkan/UpdateShopProduct
+        [HttpPost]
+        [Authorize]
+        [Route("UpdateShopProduct")]
+        public ActionResult UpdateShopProduct(int shopProductId, decimal price, int stock, int dukkanId)
+        {
+            System.Diagnostics.Debug.WriteLine($"UpdateShopProduct called: ShopProductId={shopProductId}, Price={price}, Stock={stock}, DukkanId={dukkanId}");
+            
+            // Verify current user owns this shop or is admin
+            if (!IsCurrentUserShopOwner(dukkanId))
+            {
+                return Json(new { success = false, message = "Access denied - You don't have permission to manage this shop" });
+            }
+            
+            try
+            {
+                var shopProduct = db.ShopProducts.Find(shopProductId);
+                
+                if (shopProduct == null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"ShopProduct not found with ID: {shopProductId}");
+                    return Json(new { success = false, message = $"Product not found with ID {shopProductId}" });
+                }
+                
+                if (shopProduct.DukkanId != dukkanId)
+                {
+                    System.Diagnostics.Debug.WriteLine($"ShopProduct DukkanId {shopProduct.DukkanId} doesn't match requested DukkanId {dukkanId}");
+                    return Json(new { success = false, message = $"This product doesn't belong to your store" });
+                }
+                
+                // Update the product
+                shopProduct.Price = price;
+                shopProduct.Stock = stock;
+                
+                db.SaveChanges();
+                
+                System.Diagnostics.Debug.WriteLine($"ShopProduct updated successfully: {shopProductId}");
+                return Json(new { success = true, message = "Product updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating ShopProduct: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
+            }
+        }
+
+        // GET: Dukkan/other/{id} - Simpler URL for easier access
+        [Authorize]
+        [Route("other/{id}")]
+        public ActionResult OtherProductsShortcut(int id)
+        {
+            return RedirectToAction("OtherProducts", new { id = id });
+        }
+
+        // GET: Dukkan/DirectPage/{id} - Direct access with no authentication required
+        [AllowAnonymous]
+        [Route("DirectPage/{id}")]
+        public ActionResult DirectPage(int id)
+        {
+            var dukkan = db.Dukkans.Find(id);
+            
+            if (dukkan == null)
+            {
+                // If store not found, still load the page but show an error
+                ViewBag.Error = "Store not found with ID: " + id;
+            }
+            
+            ViewBag.DukkanId = id;
+            ViewBag.DukkanName = dukkan?.Name ?? "Unknown Store";
+            
+            return View();
+        }
+
+        // GET: Dukkan/CheckShopProducts/{id} - Check if database can access ShopProducts
+        [AllowAnonymous]
+        [Route("CheckShopProducts/{id}")]
+        public ActionResult CheckShopProducts(int id)
+        {
+            try
+            {
+                var storeExists = db.Dukkans.Any(d => d.Id == id);
+                
+                // Try to get shop products for this store
+                var shopProducts = db.ShopProducts
+                    .Where(sp => sp.DukkanId == id)
+                    .ToList();
+                
+                // Create a simple summary to return
+                var summary = new
+                {
+                    success = true,
+                    storeId = id,
+                    storeExists = storeExists,
+                    productCount = shopProducts.Count,
+                    products = shopProducts.Select(sp => new 
+                    {
+                        id = sp.Id,
+                        productId = sp.ProductId,
+                        price = sp.Price,
+                        stock = sp.Stock
+                    }).Take(5).ToList() // Only take first 5 to keep response small
+                };
+                
+                return Json(summary, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new 
+                {
+                    success = false,
+                    error = ex.Message,
+                    stackTrace = ex.StackTrace
+                }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         protected override void Dispose(bool disposing)

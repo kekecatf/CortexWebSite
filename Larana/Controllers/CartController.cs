@@ -69,7 +69,7 @@ namespace Larana.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddToCart(int productId, int quantity = 1)
+        public ActionResult AddToCart(int productId, int? shopProductId, int? storeId, int quantity = 1)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -92,24 +92,222 @@ namespace Larana.Controllers
                 _context.Carts.Add(cart);
             }
 
-            var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
-            if (cartItem != null)
+            // First check if we have enough stock
+            if (shopProductId.HasValue && shopProductId.Value > 0)
             {
-                cartItem.Quantity += quantity;
+                // This is a shop variant product
+                var shopProduct = _context.ShopProducts.Find(shopProductId.Value);
+                if (shopProduct == null)
+                {
+                    return Json(new { success = false, message = "Product not found" });
+                }
+
+                if (shopProduct.Stock < quantity)
+                {
+                    return Json(new { success = false, message = "Not enough stock available" });
+                }
+
+                var cartItem = cart.CartItems.FirstOrDefault(ci => 
+                    ci.ProductId == productId && 
+                    ci.ShopProductId == shopProductId.Value);
+
+                if (cartItem != null)
+                {
+                    // Update existing cart item
+                    if (shopProduct.Stock < cartItem.Quantity + quantity)
+                    {
+                        return Json(new { success = false, message = "Not enough stock available" });
+                    }
+
+                    cartItem.Quantity += quantity;
+                    cartItem.UnitPrice = shopProduct.Price; // Use the shop-specific price
+                }
+                else
+                {
+                    // Create new cart item with shop product info
+                    cartItem = new CartItem
+                    {
+                        CartId = cart.Id,
+                        ProductId = productId,
+                        ShopProductId = shopProductId.Value,
+                        DukkanId = shopProduct.DukkanId,
+                        Quantity = quantity,
+                        UnitPrice = shopProduct.Price // Use the shop-specific price
+                    };
+                    cart.CartItems.Add(cartItem);
+                }
             }
             else
             {
-                cartItem = new CartItem
+                // This is a regular product
+                var product = _context.Products.Find(productId);
+                if (product == null)
                 {
-                    CartId = cart.Id,
-                    ProductId = productId,
-                    Quantity = quantity
-                };
-                cart.CartItems.Add(cartItem);
+                    return Json(new { success = false, message = "Product not found" });
+                }
+
+                if (product.Stock < quantity)
+                {
+                    return Json(new { success = false, message = "Not enough stock available" });
+                }
+
+                var cartItem = cart.CartItems.FirstOrDefault(ci => 
+                    ci.ProductId == productId && 
+                    ci.ShopProductId == null);
+
+                if (cartItem != null)
+                {
+                    // Update existing cart item
+                    if (product.Stock < cartItem.Quantity + quantity)
+                    {
+                        return Json(new { success = false, message = "Not enough stock available" });
+                    }
+
+                    cartItem.Quantity += quantity;
+                    cartItem.UnitPrice = product.Price;
+                }
+                else
+                {
+                    // Create new cart item
+                    cartItem = new CartItem
+                    {
+                        CartId = cart.Id,
+                        ProductId = productId,
+                        DukkanId = product.DukkanId,
+                        Quantity = quantity,
+                        UnitPrice = product.Price
+                    };
+                    cart.CartItems.Add(cartItem);
+                }
             }
 
             _context.SaveChanges();
             return Json(new { success = true, message = "Item added to cart" });
+        }
+
+        // GET version of AddToCart to handle direct links
+        [HttpGet]
+        public ActionResult AddToCart(int productId, int? shopProductId, int quantity = 1)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account", new { returnUrl = Request.Url.ToString() });
+            }
+
+            var userId = GetCurrentUserId();
+            if (userId == -1)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var cart = _context.Carts
+                .Include("CartItems")
+                .FirstOrDefault(c => c.UserId == userId);
+
+            if (cart == null)
+            {
+                cart = new Cart { UserId = userId };
+                _context.Carts.Add(cart);
+            }
+
+            // First check if we have enough stock
+            if (shopProductId.HasValue && shopProductId.Value > 0)
+            {
+                // This is a shop variant product
+                var shopProduct = _context.ShopProducts.Find(shopProductId.Value);
+                if (shopProduct == null)
+                {
+                    TempData["error"] = "Product not found";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                if (shopProduct.Stock < quantity)
+                {
+                    TempData["error"] = "Not enough stock available";
+                    return RedirectToAction("Details", "Product", new { id = productId });
+                }
+
+                var cartItem = cart.CartItems.FirstOrDefault(ci => 
+                    ci.ProductId == productId && 
+                    ci.ShopProductId == shopProductId.Value);
+
+                if (cartItem != null)
+                {
+                    // Update existing cart item
+                    if (shopProduct.Stock < cartItem.Quantity + quantity)
+                    {
+                        TempData["error"] = "Not enough stock available";
+                        return RedirectToAction("Details", "Product", new { id = productId });
+                    }
+
+                    cartItem.Quantity += quantity;
+                    cartItem.UnitPrice = shopProduct.Price; // Use the shop-specific price
+                }
+                else
+                {
+                    // Create new cart item with shop product info
+                    cartItem = new CartItem
+                    {
+                        CartId = cart.Id,
+                        ProductId = productId,
+                        ShopProductId = shopProductId.Value,
+                        DukkanId = shopProduct.DukkanId,
+                        Quantity = quantity,
+                        UnitPrice = shopProduct.Price // Use the shop-specific price
+                    };
+                    cart.CartItems.Add(cartItem);
+                }
+            }
+            else
+            {
+                // This is a regular product
+                var product = _context.Products.Find(productId);
+                if (product == null)
+                {
+                    TempData["error"] = "Product not found";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                if (product.Stock < quantity)
+                {
+                    TempData["error"] = "Not enough stock available";
+                    return RedirectToAction("Details", "Product", new { id = productId });
+                }
+
+                var cartItem = cart.CartItems.FirstOrDefault(ci => 
+                    ci.ProductId == productId && 
+                    ci.ShopProductId == null);
+
+                if (cartItem != null)
+                {
+                    // Update existing cart item
+                    if (product.Stock < cartItem.Quantity + quantity)
+                    {
+                        TempData["error"] = "Not enough stock available";
+                        return RedirectToAction("Details", "Product", new { id = productId });
+                    }
+
+                    cartItem.Quantity += quantity;
+                    cartItem.UnitPrice = product.Price;
+                }
+                else
+                {
+                    // Create new cart item
+                    cartItem = new CartItem
+                    {
+                        CartId = cart.Id,
+                        ProductId = productId,
+                        DukkanId = product.DukkanId,
+                        Quantity = quantity,
+                        UnitPrice = product.Price
+                    };
+                    cart.CartItems.Add(cartItem);
+                }
+            }
+
+            _context.SaveChanges();
+            TempData["success"] = "Item added to cart";
+            return RedirectToAction("Index", "Cart");
         }
 
         [HttpPost]
@@ -153,11 +351,11 @@ namespace Larana.Controllers
 
             _context.SaveChanges();
             
-            decimal total = cart.CartItems.Sum(ci => ci.Quantity * _context.Products.First(p => p.Id == ci.ProductId).Price);
+            decimal total = cart.CartItems.Sum(ci => ci.Quantity * ci.UnitPrice);
             
             return Json(new { 
                 success = true, 
-                itemTotal = (cartItem.Quantity * _context.Products.First(p => p.Id == cartItem.ProductId).Price).ToString("C"),
+                itemTotal = (cartItem.Quantity * cartItem.UnitPrice).ToString("C"),
                 cartTotal = total.ToString("C")
             });
         }
@@ -185,7 +383,7 @@ namespace Larana.Controllers
                 return Json(new { totalFormatted = "$0.00" }, JsonRequestBehavior.AllowGet);
             }
 
-            decimal total = cart.CartItems.Sum(ci => ci.Quantity * ci.Product.Price);
+            decimal total = cart.CartItems.Sum(ci => ci.Quantity * ci.UnitPrice);
             
             return Json(new { totalFormatted = total.ToString("C") }, JsonRequestBehavior.AllowGet);
         }
@@ -265,86 +463,173 @@ namespace Larana.Controllers
                 return Json(new { success = false, message = "Please login to checkout" });
             }
 
-            var cart = _context.Carts
-                .Include(c => c.CartItems.Select(ci => ci.Product))
-                .FirstOrDefault(c => c.UserId == userId);
-
-            if (cart == null || !cart.CartItems.Any())
+            try
             {
-                return Json(new { success = false, message = "Your cart is empty." });
-            }
+                // Get cart with all necessary includes to avoid lazy loading
+                var cart = _context.Carts
+                    .Include(c => c.CartItems.Select(ci => ci.Product))
+                    .FirstOrDefault(c => c.UserId == userId);
 
-            try 
-            {
-                // Update product stock and sales directly in the database
+                if (cart == null || !cart.CartItems.Any())
+                {
+                    return Json(new { success = false, message = "Your cart is empty." });
+                }
+
+                // Verify stock availability in a separate operation
                 foreach (var cartItem in cart.CartItems)
                 {
-                    var product = _context.Products.FirstOrDefault(p => p.Id == cartItem.ProductId);
-                    if (product == null || product.Stock < cartItem.Quantity)
+                    var product = _context.Products.Find(cartItem.ProductId);
+                    if (product == null)
+                    {
+                        return Json(new { success = false, message = $"Product not found: {cartItem.Product.Name}" });
+                    }
+                    if (product.Stock < cartItem.Quantity)
                     {
                         return Json(new { success = false, message = $"Insufficient stock for product: {cartItem.Product.Name}" });
                     }
-
-                    product.Stock -= cartItem.Quantity;
-                    product.Sales += cartItem.Quantity;
-                }
-                _context.SaveChanges();
-
-                // Create the order
-                var order = new Order
-                {
-                    UserId = userId,
-                    CartId = cart.Id,
-                    OrderDate = DateTime.Now,
-                    TotalAmount = cart.CartItems.Sum(ci => ci.Quantity * ci.Product.Price),
-                    Status = OrderStatus.Pending,
-                    IsClickAndCollect = IsClickAndCollect
-                };
-
-                // Set shipping details based on order type
-                if (!IsClickAndCollect)
-                {
-                    order.Address = Address;
-                    order.ShippingCompany = ShippingCompany;
-                    order.PhoneNumber = PhoneNumber;
-                    order.RecipientName = RecipientName;
-                }
-                else
-                {
-                    // Set default values for Click & Collect orders
-                    order.Address = "In-Store Pickup";
-                    order.ShippingCompany = "N/A - Click & Collect";
-                    order.PhoneNumber = PhoneNumber ?? "N/A";
-                    order.RecipientName = RecipientName ?? "In-Store Pickup";
                 }
 
-                // Create order details directly without transaction
-                var orderDetails = cart.CartItems.Select(ci => new OrderDetail
+                // Create a new context and transaction for the checkout process
+                using (var context = new ApplicationDbContext())
+                using (var transaction = context.Database.BeginTransaction())
                 {
-                    CartItemId = ci.Id,
-                    ProductId = ci.ProductId,
-                    Quantity = ci.Quantity,
-                    UnitPrice = ci.Product.Price
-                }).ToList();
-                
-                order.OrderDetails = orderDetails;
-                
-                // Add order to context
-                _context.Orders.Add(order);
-                _context.SaveChanges();
+                    try
+                    {
+                        // Update product stock and sales
+                        foreach (var cartItem in cart.CartItems)
+                        {
+                            var product = context.Products.Find(cartItem.ProductId);
+                            product.Stock -= cartItem.Quantity;
+                            product.Sales += cartItem.Quantity;
+                            
+                            // Determine which shop to update order count for
+                            int shopId;
+                            
+                            if (cartItem.ShopProductId.HasValue)
+                            {
+                                // If this is a specific shop's variant of a product
+                                var shopProduct = context.ShopProducts.Find(cartItem.ShopProductId.Value);
+                                if (shopProduct != null)
+                                {
+                                    // Update the specific shop's stock and order count
+                                    shopId = shopProduct.DukkanId;
+                                    shopProduct.Stock -= cartItem.Quantity;
+                                }
+                                else
+                                {
+                                    // Fallback to original product's shop if ShopProduct not found
+                                    shopId = product.DukkanId ?? 0;
+                                }
+                            }
+                            else
+                            {
+                                // This is a direct purchase from the original shop
+                                shopId = product.DukkanId ?? 0;
+                            }
+                            
+                            // Update shop order count if a valid shop was found
+                            if (shopId > 0)
+                            {
+                                var shop = context.Dukkans.Find(shopId);
+                                if (shop != null)
+                                {
+                                    shop.OrderCount += 1;
+                                }
+                            }
+                        }
+                        
+                        // Create the order
+                        var order = new Order
+                        {
+                            UserId = userId,
+                            CartId = cart.Id,
+                            OrderDate = DateTime.Now,
+                            TotalAmount = cart.CartItems.Sum(ci => ci.Quantity * ci.UnitPrice),
+                            Status = OrderStatus.Pending,
+                            IsClickAndCollect = IsClickAndCollect
+                        };
 
-                // Clean up the cart
-                _context.CartItems.RemoveRange(cart.CartItems);
-                _context.SaveChanges();
+                        // Set shipping details based on order type
+                        if (!IsClickAndCollect)
+                        {
+                            order.Address = Address;
+                            order.ShippingCompany = ShippingCompany;
+                            order.PhoneNumber = PhoneNumber;
+                            order.RecipientName = RecipientName;
+                            order.PaymentMethod = "Credit Card";
+                        }
+                        else
+                        {
+                            // Set default values for Click & Collect orders
+                            order.Address = "In-Store Pickup";
+                            order.ShippingCompany = "N/A - Click & Collect";
+                            order.PhoneNumber = PhoneNumber ?? "N/A";
+                            order.RecipientName = RecipientName ?? "In-Store Pickup";
+                            order.PaymentMethod = "Cash on Pickup";
+                        }
 
-                return Json(new { success = true, message = IsClickAndCollect ? 
-                    "Order placed successfully. You can pick up your items at the store." : 
-                    "Order placed successfully. Your items will be shipped to the provided address." });
+                        context.Orders.Add(order);
+                        context.SaveChanges();
+
+                        // Create order details
+                        foreach (var cartItem in cart.CartItems)
+                        {
+                            var orderDetail = new OrderDetail
+                            {
+                                OrderId = order.Id,
+                                ProductId = cartItem.ProductId,
+                                Quantity = cartItem.Quantity,
+                                UnitPrice = cartItem.UnitPrice,
+                                ShopProductId = cartItem.ShopProductId
+                            };
+                            
+                            context.OrderDetails.Add(orderDetail);
+                        }
+                        context.SaveChanges();
+
+                        // Clean up the cart items in the original context
+                        foreach (var item in _context.CartItems.Where(ci => ci.CartId == cart.Id).ToList())
+                        {
+                            _context.CartItems.Remove(item);
+                        }
+                        _context.SaveChanges();
+
+                        // Commit the transaction
+                        transaction.Commit();
+
+                        return Json(new { success = true, message = IsClickAndCollect ? 
+                            "Order placed successfully. You can pick up your items at the store." : 
+                            "Order placed successfully. Your items will be shipped to the provided address." });
+                    }
+                    catch (Exception ex)
+                    {
+                        // Roll back the transaction in case of error
+                        transaction.Rollback();
+                        throw; // Rethrow to be caught by the outer try-catch
+                    }
+                }
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
+                // Get the complete exception chain
+                string errorDetails = GetFullExceptionMessage(ex);
+                return Json(new { success = false, message = $"Unable to place your order: {errorDetails}" });
             }
+        }
+
+        // Helper method to get the complete exception chain
+        private string GetFullExceptionMessage(Exception ex)
+        {
+            var messages = new System.Text.StringBuilder();
+            var currentEx = ex;
+            
+            while (currentEx != null)
+            {
+                messages.AppendLine(currentEx.Message);
+                currentEx = currentEx.InnerException;
+            }
+            
+            return messages.ToString();
         }
 
         protected override void Dispose(bool disposing)

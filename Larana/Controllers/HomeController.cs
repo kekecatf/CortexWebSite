@@ -24,12 +24,16 @@ namespace Larana.Controllers
             var newProducts = _context.Products
                                       .Where(p => p.IsActive)
                                       .OrderByDescending(p => p.CreatedAt)
+                                      .Include(p => p.Reviews)
+                                      .Include(p => p.Dukkan)
                                       .Take(9)
                                       .ToList();
 
             var bestSellers = _context.Products
                                       .Where(p => p.IsActive)
                                       .OrderByDescending(p => p.Sales)
+                                      .Include(p => p.Reviews)
+                                      .Include(p => p.Dukkan)
                                       .Take(9)
                                       .ToList();
                                       

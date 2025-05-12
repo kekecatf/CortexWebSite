@@ -1,20 +1,20 @@
 ﻿@{
-    ViewBag.Title = "My Account";
+    ViewBag.Title = "Hesabım";
 }
 
 <div class="container">
     <div class="account-wrapper">
-        <h2 class="account-title">My Account</h2>
-        <p class="welcome-message">Welcome back, <strong>@User.Identity.Name</strong></p>
+        <h2 class="account-title">Hesabım</h2>
+        <p class="welcome-message">Tekrar hoş geldiniz, <strong>@User.Identity.Name</strong></p>
         <div class="account-actions">
-            <a href="@Url.Action("Edit", "Account")" class="btn btn-edit">Edit Account</a>
-            <a href="@Url.Action("ViewOrders", "Account")" class="btn btn-orders">View Orders</a>
+            <a href="@Url.Action("Edit", "Account")" class="btn btn-edit">Hesabımı Düzenle</a>
+            <a href="@Url.Action("ViewOrders", "Account")" class="btn btn-orders">Siparişlerimi Görüntüle</a>
         </div>
     </div>
 </div>
 
 <style>
-    /* General container styling */
+    /* Genel konteyner stilleri */
     .container {
         display: flex;
         justify-content: center;
@@ -24,7 +24,7 @@
         padding: 20px;
     }
 
-    /* Account wrapper styling */
+    /* Hesap kapsayıcı stilleri */
     .account-wrapper {
         width: 100%;
         max-width: 450px;
@@ -36,7 +36,7 @@
         border: 1px solid #ddd;
     }
 
-    /* Title styling */
+    /* Başlık stilleri */
     .account-title {
         font-size: 28px;
         font-weight: 700;
@@ -45,14 +45,14 @@
         letter-spacing: 1px;
     }
 
-    /* Welcome message styling */
+    /* Hoşgeldiniz mesajı stilleri */
     .welcome-message {
         font-size: 16px;
         color: #555;
         margin-bottom: 25px;
     }
 
-    /* Button styling */
+    /* Buton stilleri */
     .account-actions .btn {
         display: inline-block;
         width: 80%;
@@ -64,16 +64,16 @@
         padding: 12px 25px;
         font-size: 16px;
         font-weight: bold;
-        text-decoration: none; /* Remove underline */
-        margin-bottom: 15px; /* Space between buttons */
+        text-decoration: none; /* Alt çizgiyi kaldır */
+        margin-bottom: 15px; /* Butonlar arası boşluk */
     }
 
         .account-actions .btn:hover {
             background-color: #0056b3;
-            text-decoration: none; /* Ensure underline is removed on hover */
+            text-decoration: none; /* Üzerine gelindiğinde alt çizginin kaldırıldığından emin ol */
         }
 
-    /* Responsive adjustments */
+    /* Duyarlı ayarlamalar */
     @@media (max-width: 768px) {
         .account-wrapper {
             padding: 30px 20px;

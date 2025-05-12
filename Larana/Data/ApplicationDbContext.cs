@@ -1,3 +1,4 @@
+using System;
 using System.Data.Entity;
 using Larana.Models;
 using Larana.Data;
@@ -21,6 +22,7 @@ namespace Larana.Data
         public DbSet<Role> Roles { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Larana.Models.Review> Reviews { get; set; }
+        public DbSet<Larana.Models.ShopProduct> ShopProducts { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -129,6 +131,7 @@ namespace Larana.Data
             modelBuilder.Entity<Role>().ToTable("Roles", "dbo");
             modelBuilder.Entity<Rating>().ToTable("Ratings", "dbo");
             modelBuilder.Entity<Larana.Models.Review>().ToTable("Reviews", "dbo");
+            modelBuilder.Entity<ShopProduct>().ToTable("ShopProducts", "dbo");
         }
     }
 } 

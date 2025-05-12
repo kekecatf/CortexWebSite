@@ -2,7 +2,7 @@
 
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 
-<h2 class="page-title">All Orders</h2>
+<h2 class="page-title">Tüm Siparişler</h2>
 
 <div class="order-list">
     @foreach (var order in Model)
@@ -10,38 +10,44 @@
 <div class="order-card">
     <div class="order-summary">
         <div class="order-info">
-            <span class="order-id"><strong>Order ID:</strong> <span class="highlight-id">@order.Id</span></span>
-            <span class="order-date"><strong>Date:</strong> <span class="highlight-date">@order.OrderDate.ToString("MM/dd/yyyy")</span></span>
-            <span class="order-status"><strong>Status:</strong> <span class="highlight-status">@order.Status</span></span>
-            <span class="order-amount"><strong>Total:</strong> <span class="highlight-total">@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("C") : "$0.00")</span></span>
+            <span class="order-id"><strong>Sipariş ID:</strong> <span class="highlight-id">@order.Id</span></span>
+            <span class="order-date"><strong>Tarih:</strong> <span class="highlight-date">@order.OrderDate.ToString("dd/MM/yyyy")</span></span>
+            <span class="order-status"><strong>Durum:</strong> <span class="highlight-status">@(order.Status == "Completed" ? "Tamamlandı" : 
+                                                                            order.Status == "Pending" ? "Beklemede" : 
+                                                                            order.Status == "Cancelled" ? "İptal Edildi" : order.Status)</span></span>
+            <span class="order-amount"><strong>Toplam:</strong> <span class="highlight-total">@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("C") : "0.00 TL")</span></span>
             @if (order.IsClickAndCollect)
             {
-                <span class="order-pickup"><strong>Pickup:</strong> <span class="highlight-pickup">Click & Collect</span></span>
+                <span class="order-pickup"><strong>Teslimat:</strong> <span class="highlight-pickup">Mağazadan Teslim</span></span>
             }
         </div>
-        <button class="btn btn-primary toggle-details" data-target="#details-@order.Id">Details</button>
+        <button class="btn btn-primary toggle-details" data-target="#details-@order.Id">Detaylar</button>
     </div>
     <div class="order-details" id="details-@order.Id" style="display: none;">
         <div class="details-container">
-            <h4>Order Details</h4>
+            <h4>Sipariş Detayları</h4>
             <div class="order-recipient">
-                <p><strong>Customer Name:</strong> @order.UserId</p>
+                <p><strong>Müşteri Adı:</strong> @order.UserId</p>
                 @if (order.IsClickAndCollect)
                 {
-                    <p><span class="highlight-pickup"><strong>Click & Collect:</strong> Customer will pick up in store</span></p>
+                    <p><span class="highlight-pickup"><strong>Mağazadan Teslim:</strong> Müşteri mağazadan teslim alacak</span></p>
                 }
                 else
                 {
-                    <p><strong>Recipient Name:</strong> @order.RecipientName</p>
-                    <p><strong>Shipping Company:</strong> @order.ShippingCompany</p>
-                    <p><strong>Address:</strong> @order.Address</p>
-                    <p><strong>Shipping Address:</strong> @order.ShippingAddress</p>
-                    <p><strong>Phone Number:</strong> @order.PhoneNumber</p>
-                    <p><strong>Payment Method:</strong> @order.PaymentMethod</p>
-                    <p><strong>Payment Status:</strong> <span class="highlight-payment-status">@order.PaymentStatus</span></p>
+                    <p><strong>Alıcı Adı:</strong> @order.RecipientName</p>
+                    <p><strong>Kargo Şirketi:</strong> @order.ShippingCompany</p>
+                    <p><strong>Adres:</strong> @order.Address</p>
+                    <p><strong>Kargo Adresi:</strong> @order.ShippingAddress</p>
+                    <p><strong>Telefon Numarası:</strong> @order.PhoneNumber</p>
+                    <p><strong>Ödeme Yöntemi:</strong> @order.PaymentMethod</p>
+                    <p><strong>Ödeme Durumu:</strong> <span class="highlight-payment-status">@(order.PaymentStatus == "Completed" ? "Tamamlandı" : 
+                                                                                                            order.PaymentStatus == "Pending" ? "Beklemede" : 
+                                                                                                            order.PaymentStatus == "Processing" ? "İşleniyor" :
+                                                                                                            order.PaymentStatus == "Failed" ? "Başarısız" :
+                                                                                                            order.PaymentStatus == "Refunded" ? "İade Edildi" : order.PaymentStatus)</span></p>
                 }
             </div>
-            <h4>Products</h4>
+            <h4>Ürünler</h4>
             <div class="product-list">
                 @foreach (var product in order.OrderDetails)
                 {
@@ -50,20 +56,20 @@
     <div class="product-info">
         <span class="product-name">@product.ProductName</span>
         <span class="product-quantity">@product.Quantity x @product.UnitPrice.ToString("C")</span>
-        <span class="product-total"><strong>Subtotal:</strong> @(string.Format("{0:C}", product.Quantity * product.UnitPrice))</span>
+        <span class="product-total"><strong>Ara Toplam:</strong> @(string.Format("{0:C}", product.Quantity * product.UnitPrice))</span>
     </div>
 </div>}
             </div>
 
             <form action="@Url.Action("UpdateOrderStatus", "Admin")" method="post" class="status-form">
                 <input type="hidden" name="orderId" value="@order.Id" />
-                <label for="status-@order.Id" class="status-label">Status:</label>
+                <label for="status-@order.Id" class="status-label">Durum:</label>
                 <select name="newStatus" id="status-@order.Id" class="form-select custom-select">
-                    <option value="Pending" @(order.Status == "Pending" ? "selected" : "")>Pending</option>
-                    <option value="Completed" @(order.Status == "Completed" ? "selected" : "")>Completed</option>
-                    <option value="Cancelled" @(order.Status == "Cancelled" ? "selected" : "")>Cancelled</option>
+                    <option value="Pending" @(order.Status == "Pending" ? "selected" : "")>Beklemede</option>
+                    <option value="Completed" @(order.Status == "Completed" ? "selected" : "")>Tamamlandı</option>
+                    <option value="Cancelled" @(order.Status == "Cancelled" ? "selected" : "")>İptal Edildi</option>
                 </select>
-                <button type="submit" class="btn btn-success custom-update-btn">Update</button>
+                <button type="submit" class="btn btn-success custom-update-btn">Güncelle</button>
             </form>
         </div>
     </div>
@@ -86,11 +92,11 @@
                     details.style.display = "none";
                 });
                 document.querySelectorAll(".toggle-details").forEach(btn => {
-                    btn.textContent = "Details";
+                    btn.textContent = "Detaylar";
                 });
 
                 detailsRow.style.display = isVisible ? "none" : "block";
-                this.textContent = isVisible ? "Details" : "Hide Details";
+                this.textContent = isVisible ? "Detaylar" : "Detayları Gizle";
             });
         });
     });

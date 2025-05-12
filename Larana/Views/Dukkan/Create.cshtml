@@ -1,7 +1,7 @@
 @model Larana.Models.Dukkan
 
 @{
-    ViewBag.Title = "Create Shop";
+    ViewBag.Title = "Mağaza Oluştur";
 }
 
 <div class="container mt-4">
@@ -9,7 +9,7 @@
         <div class="col-md-8 offset-md-2">
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Create a New Shop</h4>
+                    <h4 class="mb-0">Yeni Mağaza Oluştur</h4>
                 </div>
                 <div class="card-body">
                     @using (Html.BeginForm("Create", "Dukkan", FormMethod.Post, new { enctype = "multipart/form-data" }))
@@ -17,49 +17,49 @@
                         @Html.AntiForgeryToken()
 
                         <div class="form-group mb-3">
-                            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label" })
+                            @Html.LabelFor(model => model.Name, "Mağaza Adı", htmlAttributes: new { @class = "control-label" })
                             @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
                             @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
                         </div>
 
                         <div class="form-group mb-3">
-                            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label" })
+                            @Html.LabelFor(model => model.Description, "Açıklama", htmlAttributes: new { @class = "control-label" })
                             @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = 5 })
                             @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
                         </div>
                         
                         <div class="form-group mb-3">
-                            @Html.LabelFor(model => model.Category, htmlAttributes: new { @class = "control-label" })
+                            @Html.LabelFor(model => model.Category, "Kategori", htmlAttributes: new { @class = "control-label" })
                             <select name="Category" class="form-control">
-                                <option value="">Select a Category</option>
-                                <option value="Fashion">Fashion</option>
-                                <option value="Electronics">Electronics</option>
-                                <option value="Home">Home</option>
-                                <option value="Beauty">Beauty</option>
-                                <option value="Books">Books</option>
-                                <option value="Sports">Sports</option>
-                                <option value="Toys">Toys</option>
-                                <option value="Food">Food</option>
-                                <option value="Other">Other</option>
+                                <option value="">Kategori Seçin</option>
+                                <option value="Fashion">Moda</option>
+                                <option value="Electronics">Elektronik</option>
+                                <option value="Home">Ev</option>
+                                <option value="Beauty">Güzellik</option>
+                                <option value="Books">Kitaplar</option>
+                                <option value="Sports">Spor</option>
+                                <option value="Toys">Oyuncak</option>
+                                <option value="Food">Gıda</option>
+                                <option value="Other">Diğer</option>
                             </select>
                             @Html.ValidationMessageFor(model => model.Category, "", new { @class = "text-danger" })
                         </div>
                         
                         <div class="form-group mb-3">
-                            @Html.LabelFor(model => model.Location, htmlAttributes: new { @class = "control-label" })
-                            @Html.EditorFor(model => model.Location, new { htmlAttributes = new { @class = "form-control", placeholder = "e.g. New York, London, etc." } })
+                            @Html.LabelFor(model => model.Location, "Konum", htmlAttributes: new { @class = "control-label" })
+                            @Html.EditorFor(model => model.Location, new { htmlAttributes = new { @class = "form-control", placeholder = "örn. İstanbul, Ankara, vb." } })
                             @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
                         </div>
 
                         <div class="form-group mb-3">
-                            <label for="shopLogo">Shop Logo</label>
+                            <label for="shopLogo">Mağaza Logosu</label>
                             <input type="file" name="shopLogo" id="shopLogo" class="form-control" accept="image/*" />
-                            <small class="form-text text-muted">Upload a logo for your shop (Recommended size: 500x500px)</small>
+                            <small class="form-text text-muted">Mağazanız için bir logo yükleyin (Önerilen boyut: 500x500px)</small>
                         </div>
 
                         <div class="form-group text-center mt-4">
-                            <input type="submit" value="Create Shop" class="btn btn-primary btn-lg" />
-                            <a href="@Url.Action("Index", "Dukkan")" class="btn btn-outline-secondary btn-lg ml-2">Cancel</a>
+                            <input type="submit" value="Mağaza Oluştur" class="btn btn-primary btn-lg" />
+                            <a href="@Url.Action("Index", "Dukkan")" class="btn btn-outline-secondary btn-lg ml-2">İptal</a>
                         </div>
                     }
                 </div>

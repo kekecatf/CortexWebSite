@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2 class="page-title">Manage Product</h2>
+<h2 class="page-title">Ürün Yönetimi</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -22,7 +22,7 @@
 
 <div class="product-container">
     <div class="form-section">
-        <h3>Update Product Details</h3>
+        <h3>Ürün Detaylarını Güncelle</h3>
         @using (Html.BeginForm("EditProduct", "Admin", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
@@ -30,27 +30,33 @@
             <input type="hidden" name="actionType" value="UpdateDetails" />
 
             <div class="form-group">
-                @Html.LabelFor(model => model.Name, "Product Name")
+                @Html.LabelFor(model => model.Name, "Ürün Adı")
                 @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.Name)
             </div>
 
             <div class="form-group">
-                <label for="Brand">Brand (just type a new one to add)</label>
+                <label for="Brand">Marka (yeni eklemek için sadece yazın)</label>
                 <input type="text" name="Brand" id="Brand" class="form-control" value="@Model.Brand" required />
             </div>
 
             <div class="form-group">
-                <label for="Category">Category (just type a new one to add)</label>
+                <label for="Category">Kategori (yeni eklemek için sadece yazın)</label>
                 <input type="text" name="Category" id="Category" class="form-control" value="@Model.Category" required />
             </div>
 
-            <button type="submit" class="btn btn-primary">Update Details</button>
+            <div class="form-group">
+                <label for="Description">Ürün Açıklaması</label>
+                <textarea name="Description" id="Description" class="form-control" rows="6" required placeholder="Ürün özellikleri, boyutları, kullanımı ve diğer önemli bilgileri buraya giriniz.">@Model.Description</textarea>
+                <small class="form-text text-muted">Detaylı bir ürün açıklaması, müşterilerin satın alma kararını olumlu etkiler.</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Detayları Güncelle</button>
         }
     </div>
 
     <div class="form-section">
-        <h3>Update Stock & Price</h3>
+        <h3>Stok ve Fiyat Güncelle</h3>
         @using (Html.BeginForm("EditProduct", "Admin", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
@@ -58,13 +64,13 @@
             <input type="hidden" name="actionType" value="UpdateStockPrice" />
 
             <div class="form-group">
-                @Html.LabelFor(model => model.Stock, "Stock")
+                @Html.LabelFor(model => model.Stock, "Stok")
                 @Html.TextBoxFor(model => model.Stock, new { @class = "form-control", type = "number", min = 0 })
                 @Html.ValidationMessageFor(model => model.Stock)
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.Price, "Price")
+                @Html.LabelFor(model => model.Price, "Fiyat")
                 @Html.TextBoxFor(model => model.Price, new { @class = "form-control", type = "text", value = Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture) })
                 @Html.ValidationMessageFor(model => model.Price)
             </div>
@@ -72,28 +78,28 @@
             <div class="form-group">
                 <div class="custom-control custom-checkbox">
                     @Html.CheckBoxFor(model => model.IsClickAndCollect, new { @class = "custom-control-input" })
-                    @Html.LabelFor(model => model.IsClickAndCollect, "Enable Click & Collect", new { @class = "custom-control-label" })
+                    @Html.LabelFor(model => model.IsClickAndCollect, "Mağazadan Teslim Almayı Etkinleştir", new { @class = "custom-control-label" })
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary">Update Product</button>
+            <button type="submit" class="btn btn-primary">Ürünü Güncelle</button>
         }
     </div>
 
     <div class="form-section">
-        <h3>Sales Information</h3>
-        <p><strong>Total Sales:</strong> @Model.Sales</p>
+        <h3>Satış Bilgileri</h3>
+        <p><strong>Toplam Satış:</strong> @Model.Sales</p>
     </div>
 
     <div class="form-section">
-        <h3>Delete Product</h3>
+        <h3>Ürünü Sil</h3>
         @using (Html.BeginForm("EditProduct", "Admin", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.Id)
             <input type="hidden" name="actionType" value="DeleteProduct" />
 
-            <button type="submit" class="btn btn-danger">Delete Product</button>
+            <button type="submit" class="btn btn-danger">Ürünü Sil</button>
         }
     </div>
 </div>

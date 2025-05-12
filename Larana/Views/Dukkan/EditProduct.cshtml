@@ -1,13 +1,13 @@
 @model Larana.Models.Product
 
 @{
-    ViewBag.Title = "Edit Product";
+    ViewBag.Title = "Ürün Düzenle";
 }
 
 <div class="container mt-4">
     <div class="product-edit-header">
-        <h2>Edit Product - @Model.Name</h2>
-        <p>Shop: @ViewBag.DukkanName</p>
+        <h2>Ürün Düzenle - @Model.Name</h2>
+        <p>Mağaza: @ViewBag.DukkanName</p>
     </div>
 
     @using (Html.BeginForm("EditProduct", "Dukkan", new { id = ViewBag.DukkanId, productId = Model.Id }, FormMethod.Post, new { enctype = "multipart/form-data" }))
@@ -23,7 +23,7 @@
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
             <div class="form-group">
-                @Html.LabelFor(model => model.Name, "Product Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.Name, "Ürün Adı", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", required = "required" } })
                     @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
@@ -31,63 +31,64 @@
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.Description, "Description", htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.Description, "Ürün Açıklaması", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = "4" })
+                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = "6", required = "required", placeholder = "Ürün özellikleri, boyutları, kullanımı ve diğer önemli bilgileri buraya giriniz." })
                     @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                    <small class="form-text text-muted">Detaylı bir ürün açıklaması, müşterilerin satın alma kararını olumlu etkiler.</small>
                 </div>
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.Brand, "Brand", htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.Brand, "Marka", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @if (ViewBag.Brands != null)
                     {
                         <div class="input-group">
-                            @Html.DropDownListFor(model => model.Brand, ViewBag.Brands as SelectList, "-- Select Brand --", new { @class = "form-control", id = "brandDropdown" })
+                            @Html.DropDownListFor(model => model.Brand, ViewBag.Brands as SelectList, "-- Marka Seçin --", new { @class = "form-control", id = "brandDropdown" })
                             <div class="input-group-append">
-                                <button type="button" class="btn btn-outline-secondary" id="newBrandBtn">New Brand</button>
+                                <button type="button" class="btn btn-outline-secondary" id="newBrandBtn">Yeni Marka</button>
                             </div>
                         </div>
                         <div id="newBrandInput" style="display: none; margin-top: 10px;">
-                            <input type="text" id="brandInput" class="form-control" placeholder="Enter new brand name" />
-                            <button type="button" class="btn btn-sm btn-primary mt-2" id="saveBrandBtn">Use This Brand</button>
+                            <input type="text" id="brandInput" class="form-control" placeholder="Yeni marka adını girin" />
+                            <button type="button" class="btn btn-sm btn-primary mt-2" id="saveBrandBtn">Bu Markayı Kullan</button>
                         </div>
                     }
                     else
                     {
-                        @Html.EditorFor(model => model.Brand, new { htmlAttributes = new { @class = "form-control", required = "required", placeholder = "Enter brand name" } })
+                        @Html.EditorFor(model => model.Brand, new { htmlAttributes = new { @class = "form-control", required = "required", placeholder = "Marka adını girin" } })
                     }
                     @Html.ValidationMessageFor(model => model.Brand, "", new { @class = "text-danger" })
                 </div>
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.Category, "Category", htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.Category, "Kategori", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @if (ViewBag.Categories != null)
                     {
                         <div class="input-group">
-                            @Html.DropDownListFor(model => model.Category, ViewBag.Categories as SelectList, "-- Select Category --", new { @class = "form-control", id = "categoryDropdown" })
+                            @Html.DropDownListFor(model => model.Category, ViewBag.Categories as SelectList, "-- Kategori Seçin --", new { @class = "form-control", id = "categoryDropdown" })
                             <div class="input-group-append">
-                                <button type="button" class="btn btn-outline-secondary" id="newCategoryBtn">New Category</button>
+                                <button type="button" class="btn btn-outline-secondary" id="newCategoryBtn">Yeni Kategori</button>
                             </div>
                         </div>
                         <div id="newCategoryInput" style="display: none; margin-top: 10px;">
-                            <input type="text" id="categoryInput" class="form-control" placeholder="Enter new category name" />
-                            <button type="button" class="btn btn-sm btn-primary mt-2" id="saveCategoryBtn">Use This Category</button>
+                            <input type="text" id="categoryInput" class="form-control" placeholder="Yeni kategori adını girin" />
+                            <button type="button" class="btn btn-sm btn-primary mt-2" id="saveCategoryBtn">Bu Kategoriyi Kullan</button>
                         </div>
                     }
                     else
                     {
-                        @Html.EditorFor(model => model.Category, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter category name" } })
+                        @Html.EditorFor(model => model.Category, new { htmlAttributes = new { @class = "form-control", placeholder = "Kategori adını girin" } })
                     }
                     @Html.ValidationMessageFor(model => model.Category, "", new { @class = "text-danger" })
                 </div>
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.Price, "Price", htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.Price, "Fiyat", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control", type = "number", step = "0.01", min = "0.01", required = "required" } })
                     @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
@@ -95,7 +96,7 @@
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.Stock, "Stock", htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.Stock, "Stok", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.EditorFor(model => model.Stock, new { htmlAttributes = new { @class = "form-control", type = "number", min = "0" } })
                     @Html.ValidationMessageFor(model => model.Stock, "", new { @class = "text-danger" })
@@ -106,7 +107,7 @@
                 <div class="col-md-offset-2 col-md-10">
                     <div class="checkbox">
                         <label>
-                            @Html.CheckBoxFor(model => model.IsActive) Active (Visible to customers)
+                            @Html.CheckBoxFor(model => model.IsActive) Aktif (Müşteriler tarafından görülebilir)
                         </label>
                     </div>
                 </div>
@@ -116,14 +117,14 @@
                 <div class="col-md-offset-2 col-md-10">
                     <div class="checkbox">
                         <label>
-                            @Html.CheckBoxFor(model => model.IsClickAndCollect) Is Click & Collect available
+                            @Html.CheckBoxFor(model => model.IsClickAndCollect) Tıkla ve Topla seçeneği mevcut
                         </label>
                     </div>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="control-label col-md-2">Current Image</label>
+                <label class="control-label col-md-2">Mevcut Görsel</label>
                 <div class="col-md-10">
                     @if (!string.IsNullOrEmpty(Model.PhotoPath))
                     {
@@ -131,23 +132,23 @@
                     }
                     else
                     {
-                        <p class="text-muted">No image available</p>
+                        <p class="text-muted">Görsel mevcut değil</p>
                     }
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="control-label col-md-2">Change Image</label>
+                <label class="control-label col-md-2">Görsel Değiştir</label>
                 <div class="col-md-10">
                     <input type="file" name="productImage" id="productImage" class="form-control-file" />
-                    <small class="form-text text-muted">Upload a new photo (optional)</small>
+                    <small class="form-text text-muted">Yeni bir fotoğraf yükleyin (isteğe bağlı)</small>
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Save Changes" class="btn btn-primary" />
-                    <a href="/Dukkan/Products/@ViewBag.DukkanId" class="btn btn-secondary">Back to Products</a>
+                    <input type="submit" value="Değişiklikleri Kaydet" class="btn btn-primary" />
+                    <a href="/Dukkan/Products/@ViewBag.DukkanId" class="btn btn-secondary">Ürünlere Dön</a>
                 </div>
             </div>
         </div>
@@ -192,7 +193,7 @@
     
     <script>
         $(document).ready(function() {
-            // Brand handling
+            // Marka işlemleri
             $("#newBrandBtn").click(function() {
                 $("#newBrandInput").toggle();
             });
@@ -205,7 +206,7 @@
                 }
             });
             
-            // Category handling
+            // Kategori işlemleri
             $("#newCategoryBtn").click(function() {
                 $("#newCategoryInput").toggle();
             });

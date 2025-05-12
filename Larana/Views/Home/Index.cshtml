@@ -1,21 +1,21 @@
 ﻿@{
-    ViewBag.Title = "Home";
+    ViewBag.Title = "Ana Sayfa";
 }
 
 @section meta {
-    <meta name="description" content="Larana - Shop the best from local sellers. Find unique products from our marketplace community.">
-    <meta property="og:title" content="Larana - Marketplace">
-    <meta property="og:description" content="Shop the best from local sellers. Find unique products from our marketplace community.">
+    <meta name="description" content="Larana - Yerel satıcılardan en iyisini keşfedin. Pazaryeri topluluğumuzdan benzersiz ürünler bulun.">
+    <meta property="og:title" content="Larana - Pazaryeri">
+    <meta property="og:description" content="Yerel satıcılardan en iyisini keşfedin. Pazaryeri topluluğumuzdan benzersiz ürünler bulun.">
 }
 
 <!-- Hero Banner Section -->
 <section id="hero-banner">
     <div class="hero-content">
-        <h1>Shop the Best from Local Sellers</h1>
-        <p>Discover unique products from our seller community</p>
+        <h1>Yerel Satıcılardan En İyisini Keşfedin</h1>
+        <p>Satıcı topluluğumuzdan benzersiz ürünleri keşfedin</p>
         <div class="hero-buttons">
-            <a href="@Url.Action("Index", "Dukkan")" class="btn btn-primary btn-lg">Explore Shops</a>
-            <a href="@Url.Action("Index", "Shop")" class="btn btn-outline-light btn-lg">Browse Products</a>
+            <a href="@Url.Action("Index", "Dukkan")" class="btn btn-primary btn-lg">Mağazaları Keşfet</a>
+            <a href="@Url.Action("Index", "Shop")" class="btn btn-outline-light btn-lg">Ürünlere Göz At</a>
         </div>
     </div>
 </section>
@@ -29,14 +29,14 @@
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <select name="searchType" class="form-control search-type">
-                                <option value="products">Products</option>
-                                <option value="shops">Shops</option>
+                                <option value="products">Ürünler</option>
+                                <option value="shops">Mağazalar</option>
                             </select>
                         </div>
-                        <input type="text" name="q" class="form-control" placeholder="What are you looking for today?" aria-label="Search" required>
+                        <input type="text" name="q" class="form-control" placeholder="Bugün ne arıyorsunuz?" aria-label="Ara" required>
                         <div class="input-group-append">
                             <button class="btn btn-primary" type="submit">
-                                <i class="fas fa-search"></i> Search
+                                <i class="fas fa-search"></i> Ara
                             </button>
                         </div>
                     </div>
@@ -48,48 +48,43 @@
 
 <!-- Carousel/Promo Slider Section -->
 <section id="carousel-section" class="container mt-5">
-    <div id="promoCarousel" class="carousel slide shadow" data-ride="carousel">
-        <ol class="carousel-indicators">
-            <li data-target="#promoCarousel" data-slide-to="0" class="active"></li>
-            <li data-target="#promoCarousel" data-slide-to="1"></li>
-            <li data-target="#promoCarousel" data-slide-to="2"></li>
-        </ol>
+    <div id="promoCarousel" class="carousel slide shadow" data-bs-ride="carousel">
         <div class="carousel-inner rounded">
             <div class="carousel-item active">
                 <div class="promo-slide slide-1">
                     <div class="carousel-caption">
-                        <h2>Limited Time Offers</h2>
-                        <p>Check out our exclusive deals from top sellers</p>
-                        <a href="@Url.Action("Index", "Shop", new { category = "featured" })" class="btn btn-outline-light">Shop Now</a>
+                        <h2>Sınırlı Süreli Teklifler</h2>
+                        <p>En iyi satıcılardan özel fırsatlarımıza göz atın</p>
+                        <a href="@Url.Action("Index", "Shop", new { category = "featured" })" class="btn btn-outline-light">Hemen Alışveriş Yap</a>
                     </div>
                 </div>
             </div>
             <div class="carousel-item">
                 <div class="promo-slide slide-2">
                     <div class="carousel-caption">
-                        <h2>Become a Seller</h2>
-                        <p>Join our marketplace and start selling your products today</p>
-                        <a href="@Url.Action("BecomeASeller", "Account")" class="btn btn-outline-light">Learn More</a>
+                        <h2>Satıcı Olun</h2>
+                        <p>Pazaryerimize katılın ve bugün ürünlerinizi satmaya başlayın</p>
+                        <a href="@Url.Action("BecomeASeller", "Account")" class="btn btn-outline-light">Daha Fazla Bilgi</a>
                     </div>
                 </div>
             </div>
             <div class="carousel-item">
                 <div class="promo-slide slide-3">
                     <div class="carousel-caption">
-                        <h2>Free Shipping</h2>
-                        <p>On orders over $50 - Limited time only</p>
-                        <a href="@Url.Action("Index", "Shop")" class="btn btn-outline-light">Start Shopping</a>
+                        <h2>Ücretsiz Kargo</h2>
+                        <p>50 TL üzeri siparişlerde - Sınırlı süre</p>
+                        <a href="@Url.Action("Index", "Shop")" class="btn btn-outline-light">Alışverişe Başla</a>
                     </div>
                 </div>
             </div>
         </div>
-        <a class="carousel-control-prev" href="#promoCarousel" role="button" data-slide="prev">
+        <a class="carousel-control-prev" href="#promoCarousel" role="button" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
+            <span class="visually-hidden">Önceki</span>
         </a>
-        <a class="carousel-control-next" href="#promoCarousel" role="button" data-slide="next">
+        <a class="carousel-control-next" href="#promoCarousel" role="button" data-bs-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
+            <span class="visually-hidden">Sonraki</span>
         </a>
     </div>
 </section>
@@ -97,8 +92,8 @@
 <!-- Featured Products Section -->
 <section id="product-section" class="container mt-5">
     <div class="section-header">
-        <h2>Featured Products</h2>
-        <a href="@Url.Action("Index", "Shop")" class="btn btn-outline-primary btn-sm">View All</a>
+        <h2>Öne Çıkan Ürünler</h2>
+        <a href="@Url.Action("Index", "Shop")" class="btn btn-outline-primary btn-sm">Tümünü Gör</a>
     </div>
     <div class="row products-grid">
         @foreach (var product in ViewBag.NewProducts ?? new List<Larana.Models.Product>())
@@ -121,7 +116,56 @@
                         <div class="product-info">
                             <span class="product-brand">@product.Brand</span>
                             <h5 class="product-name">@product.Name</h5>
-                            <div class="product-price">@string.Format("${0:N2}", product.Price)</div>
+                            
+                            <!-- Product Rating Stars -->
+                            <div class="product-rating mb-2">
+                                @{ 
+                                    decimal avgRating = 0;
+                                    int reviewCount = 0;
+                                    
+                                    if (product.Reviews != null && product.Reviews.Count > 0) 
+                                    {
+                                        var reviewsList = product.Reviews;
+                                        reviewCount = reviewsList.Count;
+                                        var validReviews = new List<Larana.Models.Review>();
+                                        foreach (var review in reviewsList)
+                                        {
+                                            if (review != null)
+                                            {
+                                                validReviews.Add(review);
+                                            }
+                                        }
+                                        int sum = 0;
+                                        foreach (var r in validReviews)
+                                        {
+                                            sum += r.Rating;
+                                        }
+                                        avgRating = reviewCount > 0 ? Math.Round((decimal)sum / reviewCount, 1) : 0;
+                                    }
+                                }
+                                
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= Math.Floor(avgRating))
+                                    {
+                                        <i class="fas fa-star text-warning"></i>
+                                    }
+                                    else if ((decimal)(i - 0.5) <= avgRating)
+                                    {
+                                        <i class="fas fa-star-half-alt text-warning"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="far fa-star text-warning"></i>
+                                    }
+                                }
+                                @if (reviewCount > 0)
+                                {
+                                    <span class="rating-count">@avgRating.ToString("0.0") (@reviewCount)</span>
+                                }
+                            </div>
+                            
+                            <div class="product-price">@string.Format("{0:N2} TL", product.Price)</div>
                         </div>
                     </a>
                 </div>
@@ -133,8 +177,8 @@
 <!-- Best Sellers Section -->
 <section id="best-sellers-section" class="container mt-5 mb-5">
     <div class="section-header">
-        <h2>Best Sellers</h2>
-        <a href="@Url.Action("Index", "Shop", new { sort = "popular" })" class="btn btn-outline-primary btn-sm">View All</a>
+        <h2>En Çok Satanlar</h2>
+        <a href="@Url.Action("Index", "Shop", new { sort = "popular" })" class="btn btn-outline-primary btn-sm">Tümünü Gör</a>
     </div>
     <div class="row products-grid">
         @foreach (var product in ViewBag.BestSellers ?? new List<Larana.Models.Product>())
@@ -157,7 +201,56 @@
                         <div class="product-info">
                             <span class="product-brand">@product.Brand</span>
                             <h5 class="product-name">@product.Name</h5>
-                            <div class="product-price">@string.Format("${0:N2}", product.Price)</div>
+                            
+                            <!-- Product Rating Stars -->
+                            <div class="product-rating mb-2">
+                                @{ 
+                                    decimal avgRating = 0;
+                                    int reviewCount = 0;
+                                    
+                                    if (product.Reviews != null && product.Reviews.Count > 0) 
+                                    {
+                                        var reviewsList = product.Reviews;
+                                        reviewCount = reviewsList.Count;
+                                        var validReviews = new List<Larana.Models.Review>();
+                                        foreach (var review in reviewsList)
+                                        {
+                                            if (review != null)
+                                            {
+                                                validReviews.Add(review);
+                                            }
+                                        }
+                                        int sum = 0;
+                                        foreach (var r in validReviews)
+                                        {
+                                            sum += r.Rating;
+                                        }
+                                        avgRating = reviewCount > 0 ? Math.Round((decimal)sum / reviewCount, 1) : 0;
+                                    }
+                                }
+                                
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= Math.Floor(avgRating))
+                                    {
+                                        <i class="fas fa-star text-warning"></i>
+                                    }
+                                    else if ((decimal)(i - 0.5) <= avgRating)
+                                    {
+                                        <i class="fas fa-star-half-alt text-warning"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="far fa-star text-warning"></i>
+                                    }
+                                }
+                                @if (reviewCount > 0)
+                                {
+                                    <span class="rating-count">@avgRating.ToString("0.0") (@reviewCount)</span>
+                                }
+                            </div>
+                            
+                            <div class="product-price">@string.Format("{0:N2} TL", product.Price)</div>
                         </div>
                     </a>
                 </div>
@@ -169,23 +262,23 @@
 <!-- Popular Shops Section -->
 <section id="popular-shops-section" class="container mt-5 mb-5 pb-4">
     <div class="section-header">
-        <h2>🏆 Popular Shops</h2>
-        <a href="@Url.Action("Index", "Dukkan")" class="btn btn-outline-primary btn-sm">View All Shops</a>
+        <h2>🏆 Popüler Mağazalar</h2>
+        <a href="@Url.Action("Index", "Dukkan")" class="btn btn-outline-primary btn-sm">Tüm Mağazaları Gör</a>
     </div>
     
     @if (ViewBag.PopularShops == null || !(ViewBag.PopularShops as IEnumerable<Larana.Models.Dukkan>).Any())
     {
         <div class="alert alert-info">
-            <p class="mb-0">No shops available yet. <a href="@Url.Action("BecomeASeller", "Account")">Become a seller</a> and be the first!</p>
+            <p class="mb-0">Henüz mağaza bulunmuyor. <a href="@Url.Action("BecomeASeller", "Account")">Satıcı olun</a> ve ilk siz olun!</p>
         </div>
     }
     else
     {
         <!-- Debug info -->
         <div class="alert alert-info mb-4">
-            <p class="mb-0">Found @((ViewBag.PopularShops as IEnumerable<Larana.Models.Dukkan>).Count()) shops to display</p>
+            <p class="mb-0">@((ViewBag.PopularShops as IEnumerable<Larana.Models.Dukkan>).Count()) mağaza gösteriliyor</p>
         </div>
-        <div id="shopsCarousel" class="carousel slide" data-ride="carousel">
+        <div id="shopsCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
                 @{
                     var shopList = ViewBag.PopularShops as IEnumerable<Larana.Models.Dukkan>;
@@ -241,7 +334,7 @@
                                                 </div>
                                                 <div class="text-center">
                                                     <a href="@Url.Action("Details", "Dukkan", new { id = shop.Id })" class="btn btn-primary">
-                                                        <i class="fas fa-store mr-1"></i> Visit Shop
+                                                        <i class="fas fa-store mr-1"></i> Mağazayı Ziyaret Et
                                                     </a>
                                                 </div>
                                             </div>
@@ -255,19 +348,19 @@
             </div>
             @if (shopGroups.Count > 1)
             {
-                <a class="carousel-control-prev shop-carousel-control" href="#shopsCarousel" role="button" data-slide="prev">
+                <a class="carousel-control-prev shop-carousel-control" href="#shopsCarousel" role="button" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
+                    <span class="visually-hidden">Önceki</span>
                 </a>
-                <a class="carousel-control-next shop-carousel-control" href="#shopsCarousel" role="button" data-slide="next">
+                <a class="carousel-control-next shop-carousel-control" href="#shopsCarousel" role="button" data-bs-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
+                    <span class="visually-hidden">Sonraki</span>
                 </a>
                 
                 <ol class="carousel-indicators shop-indicators">
                     @for (int i = 0; i < shopGroups.Count; i++)
                     {
-                        <li data-target="#shopsCarousel" data-slide-to="@i" class="@(i == 0 ? "active" : "")"></li>
+                        <li data-bs-target="#shopsCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")"></li>
                     }
                 </ol>
             }
@@ -460,6 +553,24 @@
         font-size: 1.1rem;
     }
 
+    /* Product rating styles */
+    .product-rating {
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .product-rating i {
+        color: #ffc107;
+        margin-right: 2px;
+    }
+    
+    .rating-count {
+        color: #666;
+        font-size: 0.8rem;
+        margin-left: 5px;
+    }
+
     /* Responsive adjustments */
     @@media (max-width: 767px) {
         .hero-content h1 {
@@ -585,10 +696,8 @@
 @section Scripts {
     <script>
         $(document).ready(function() {
-            // Initialize Bootstrap carousels
-            $('.carousel').carousel({
-                interval: 5000
-            });
+            // Initialize Bootstrap 5 carousels
+            // For Bootstrap 5, we don't need to call .carousel() as they auto-initialize
             
             // Create custom controls for shop carousel in responsive view
             function updateCarouselControls() {

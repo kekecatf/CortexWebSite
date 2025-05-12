@@ -15,9 +15,15 @@ namespace Larana.Controllers
         [Authorize] // User must be logged in to rate
         public ActionResult Add(Rating model)
         {
+            System.Diagnostics.Debug.WriteLine($"Rating attempt: Shop={model.DukkanId}, Value={model.Value}");
+            
             if (!ModelState.IsValid)
             {
-                return RedirectToAction("Details", "Dukkan", new { id = model.DukkanId, error = "Invalid rating data" });
+                var errors = string.Join(", ", ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage));
+                System.Diagnostics.Debug.WriteLine($"Invalid model state: {errors}");
+                return RedirectToAction("Details", "Dukkan", new { id = model.DukkanId, error = "Invalid rating data: " + errors });
             }
 
             try

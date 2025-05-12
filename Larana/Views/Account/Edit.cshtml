@@ -2,7 +2,7 @@
 
 <div class="container">
     <div class="form-wrapper">
-        <h2 class="form-title">Edit Account</h2>
+        <h2 class="form-title">Hesabımı Düzenle</h2>
         @if (ViewBag.Message != null)
         {
             <div class="alert alert-info text-center">
@@ -13,38 +13,38 @@
         {
             @Html.AntiForgeryToken()
             <div class="form-group">
-                @Html.LabelFor(m => m.Username, "Username")
-                @Html.TextBoxFor(m => m.Username, new { @class = "form-control", required = "required", placeholder = "Enter your username" })
+                @Html.LabelFor(m => m.Username, "Kullanıcı Adı")
+                @Html.TextBoxFor(m => m.Username, new { @class = "form-control", required = "required", placeholder = "Kullanıcı adınızı girin" })
             </div>
             <div class="form-group">
-                @Html.LabelFor(m => m.Email, "Email")
-                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", required = "required", placeholder = "Enter your email" })
+                @Html.LabelFor(m => m.Email, "E-posta")
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", required = "required", placeholder = "E-posta adresinizi girin" })
             </div>
             <div class="form-group">
-                @Html.LabelFor(m => m.Address, "Address")
-                @Html.TextBoxFor(m => m.Address, new { @class = "form-control", placeholder = "Enter your address" })
+                @Html.LabelFor(m => m.Address, "Adres")
+                @Html.TextBoxFor(m => m.Address, new { @class = "form-control", placeholder = "Adresinizi girin" })
             </div>
             <div class="form-group">
-                @Html.LabelFor(m => m.PhoneNumber, "Phone Number")
-                @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", placeholder = "Enter your phone number" })
+                @Html.LabelFor(m => m.PhoneNumber, "Telefon Numarası")
+                @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", placeholder = "Telefon numaranızı girin" })
             </div>
             <hr />
-            <h4 class="password-title">Password Update (Optional)</h4>
+            <h4 class="password-title">Şifre Güncelleme (İsteğe Bağlı)</h4>
             <div class="form-group">
-                <label for="currentPassword">Current Password</label>
-                <input type="password" id="currentPassword" name="currentPassword" class="form-control" placeholder="Enter current password">
+                <label for="currentPassword">Mevcut Şifre</label>
+                <input type="password" id="currentPassword" name="currentPassword" class="form-control" placeholder="Mevcut şifrenizi girin">
             </div>
             <div class="form-group">
-                <label for="newPassword">New Password</label>
-                <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="Enter new password">
+                <label for="newPassword">Yeni Şifre</label>
+                <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="Yeni şifrenizi girin">
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+            <button type="submit" class="btn btn-primary btn-block">Değişiklikleri Kaydet</button>
         }
     </div>
 </div>
 
 <style>
-/* Overall container styling */
+/* Genel konteyner stilleri */
 .container {
     display: flex;
     justify-content: center;
@@ -54,7 +54,7 @@
     padding: 20px;
 }
 
-/* Form wrapper styling */
+/* Form kapsayıcı stilleri */
 .form-wrapper {
     width: 100%;
     max-width: 450px;
@@ -64,7 +64,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Form title styling */
+/* Form başlık stilleri */
 .form-title {
     font-size: 28px;
     font-weight: bold;
@@ -73,7 +73,7 @@
     margin-bottom: 20px;
 }
 
-/* Password update title styling */
+/* Şifre güncelleme başlık stilleri */
 .password-title {
     font-size: 18px;
     font-weight: bold;
@@ -82,12 +82,12 @@
     margin-top:10px
 }
 
-/* Form group styling */
+/* Form grup stilleri */
 .form-group {
     margin-bottom: 20px;
 }
 
-/* Input field styling */
+/* Giriş alanı stilleri */
 .form-control {
     width: 100%;
     border: 1px solid #ccc;
@@ -103,7 +103,7 @@
     box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
 }
 
-/* Button styling */
+/* Buton stilleri */
 .btn {
     display: inline-block;
     width: 100%;
@@ -124,7 +124,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Info alert styling */
+/* Bilgi uyarısı stilleri */
 .alert-info {
     background-color: #e3f2fd;
     border: 1px solid #90caf9;
@@ -135,7 +135,7 @@
     text-align: center;
 }
 
-/* Responsive adjustments */
+/* Duyarlı ayarlamalar */
 @@media (max-width: 768px) {
     .form-wrapper {
         padding: 30px 20px;

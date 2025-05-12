@@ -61,32 +61,56 @@ namespace Larana.Controllers
             // Create order details
             foreach (var item in cart.CartItems)
             {
+                decimal unitPrice = item.UnitPrice > 0 ? item.UnitPrice : item.Product.Price;
+                
                 var orderDetail = new OrderDetail
                 {
                     OrderId = order.Id,
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,
-                    UnitPrice = item.Product.Price
+                    UnitPrice = unitPrice,
+                    ShopProductId = item.ShopProductId
                 };
                 
                 db.OrderDetails.Add(orderDetail);
                 
-                // Update product stock
-                var product = db.Products.Find(item.ProductId);
-                if (product != null)
+                // Update stock:
+                // If from ShopProduct, update ShopProduct stock
+                if (item.ShopProductId.HasValue)
                 {
-                    product.Stock -= item.Quantity;
-                    product.Sales += item.Quantity;
-                    product.OrderCount += 1;
-                }
-                
-                // Update shop order count if product belongs to a shop
-                if (product.DukkanId.HasValue)
-                {
-                    var shop = db.Dukkans.Find(product.DukkanId.Value);
-                    if (shop != null)
+                    var shopProduct = db.ShopProducts.Find(item.ShopProductId.Value);
+                    if (shopProduct != null)
                     {
-                        shop.OrderCount += 1;
+                        shopProduct.Stock -= item.Quantity;
+                        shopProduct.Sales += item.Quantity;
+                        
+                        // Update shop order count
+                        var shop = db.Dukkans.Find(shopProduct.DukkanId);
+                        if (shop != null)
+                        {
+                            shop.OrderCount += 1;
+                        }
+                    }
+                }
+                // Otherwise, update main product stock
+                else
+                {
+                    var product = db.Products.Find(item.ProductId);
+                    if (product != null)
+                    {
+                        product.Stock -= item.Quantity;
+                        product.Sales += item.Quantity;
+                        product.OrderCount += 1;
+                        
+                        // Update shop order count if product belongs to a shop
+                        if (product.DukkanId.HasValue)
+                        {
+                            var shop = db.Dukkans.Find(product.DukkanId.Value);
+                            if (shop != null)
+                            {
+                                shop.OrderCount += 1;
+                            }
+                        }
                     }
                 }
             }

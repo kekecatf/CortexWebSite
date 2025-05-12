@@ -1,9 +1,9 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Title = "Create New Category";
+    ViewBag.Title = "Yeni Kategori Oluştur";
 }
 
-<h2 class="text-center mb-4">Create New Category</h2>
+<h2 class="text-center mb-4">Yeni Kategori Oluştur</h2>
 
 @if (TempData["ErrorMessage"] != null)
 {
@@ -19,13 +19,13 @@
                 @using (Html.BeginForm("CreateCategory", "Admin", FormMethod.Post))
                 {
                     <div class="form-group">
-                        <label for="categoryName" class="font-weight-bold">Category Name:</label>
+                        <label for="categoryName" class="font-weight-bold">Kategori Adı:</label>
                         <input type="text" id="categoryName" name="categoryName" class="form-control" required />
                     </div>
                     
                     <div class="mt-4">
-                        <button type="submit" class="btn btn-primary">Create Category</button>
-                        <a href="@Url.Action("Index", "Admin")" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Kategori Oluştur</button>
+                        <a href="@Url.Action("Index", "Admin")" class="btn btn-secondary">İptal</a>
                     </div>
                 }
             </div>

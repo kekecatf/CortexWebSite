@@ -2,30 +2,30 @@
 
 <div class="container">
     <div class="form-wrapper">
-        <h2 class="form-title">Login</h2>
+        <h2 class="form-title">Giriş Yap</h2>
         @ViewBag.Message
         @using (Html.BeginForm("Login", "Account", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
             <div class="form-group">
-                @Html.LabelFor(m => m.Username, "Username")
-                @Html.TextBox("username", null, new { @class = "form-control", placeholder = "Enter Username", required = "required" })
+                @Html.LabelFor(m => m.Username, "Kullanıcı Adı")
+                @Html.TextBox("username", null, new { @class = "form-control", placeholder = "Kullanıcı Adı Girin", required = "required" })
             </div>
             <div class="form-group">
-                @Html.LabelFor(m => m.Password, "Password")
-                @Html.Password("password", null, new { @class = "form-control", placeholder = "Enter Password", required = "required" })
+                @Html.LabelFor(m => m.Password, "Şifre")
+                @Html.Password("password", null, new { @class = "form-control", placeholder = "Şifre Girin", required = "required" })
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Login</button>
+            <button type="submit" class="btn btn-primary btn-block">Giriş Yap</button>
         }
         <div class="text-center mt-3">
-            <a href="@Url.Action("Register", "Account")" class="custom-link">Don't have an account? Register here</a>
+            <a href="@Url.Action("Register", "Account")" class="custom-link">Hesabınız yok mu? Buradan kayıt olun</a>
         </div>
     </div>
 </div>
 
 
 <style>
-    /* Center the container and set max width */
+    /* Konteyneri ortala ve maksimum genişliği ayarla */
 .container {
     display: flex;
     justify-content: center;
@@ -35,7 +35,7 @@
     padding: 20px;
 }
 
-/* Form wrapper styling */
+/* Form kapsayıcı stilleri */
 .form-wrapper {
     width: 100%;
     max-width: 400px;
@@ -45,7 +45,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Form title styling */
+/* Form başlık stilleri */
 .form-title {
     font-size: 24px;
     font-weight: bold;
@@ -54,12 +54,12 @@
     margin-bottom: 20px;
 }
 
-/* Form group styling */
+/* Form grup stilleri */
 .form-group {
     margin-bottom: 15px;
 }
 
-/* Input field styling */
+/* Giriş alanı stilleri */
 .form-control {
     width: 100%;
     border: 1px solid #ddd;
@@ -75,7 +75,7 @@
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
-/* Button styling */
+/* Buton stilleri */
 .btn {
     width: 100%;
     background-color: #007BFF;
@@ -92,7 +92,7 @@
     background-color: #0056b3;
 }
 
-/* Link styling */
+/* Bağlantı stilleri */
 .custom-link {
     color: #007BFF;
     text-decoration: none;
@@ -101,10 +101,10 @@
 
 .custom-link:hover {
     color: #0056b3;
-    text-decoration: none; /* Prevent underline on hover */
+    text-decoration: none; /* Üzerine gelindiğinde alt çizgiyi engelle */
 }
 
-/* Responsive adjustments */
+/* Duyarlı ayarlamalar */
 @@media (max-width: 768px) {
     .form-wrapper {
         max-width: 100%;

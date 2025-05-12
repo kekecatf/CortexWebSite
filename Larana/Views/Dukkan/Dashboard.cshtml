@@ -1,7 +1,7 @@
 @model Larana.Models.Dukkan
 
 @{
-    ViewBag.Title = "Shop Dashboard";
+    ViewBag.Title = "Mağaza Paneli";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
 
@@ -10,15 +10,15 @@
         <div class="card">
             <div class="card-body">
                 <div class="d-flex align-items-center mb-2">
-                    <h4 class="mb-0 flex-grow-1">Dashboard</h4>
+                    <h4 class="mb-0 flex-grow-1">Panel</h4>
                     <span class="badge @(Model.IsPublished ? "bg-success" : "bg-warning") me-2">
-                        @(Model.IsPublished ? "Published" : "Draft")
+                        @(Model.IsPublished ? "Yayında" : "Taslak")
                     </span>
                     <a href="@Url.Action("Edit", "Dukkan", new { id = Model.Id })" class="btn btn-primary btn-sm">
-                        <i class="fas fa-edit"></i> Edit Shop
+                        <i class="fas fa-edit"></i> Mağazayı Düzenle
                     </a>
                 </div>
-                <p class="text-muted">Overview of your shop performance and operations</p>
+                <p class="text-muted">Mağaza performansınızın ve işlemlerinizin genel görünümü</p>
             </div>
         </div>
     </div>
@@ -30,7 +30,7 @@
         <div class="card h-100 border-primary">
             <div class="card-body text-center">
                 <i class="fas fa-shopping-cart fa-2x text-primary mb-3"></i>
-                <h5 class="card-title">Total Orders</h5>
+                <h5 class="card-title">Toplam Siparişler</h5>
                 <h3 class="mb-0">@ViewBag.TotalOrders</h3>
             </div>
         </div>
@@ -39,8 +39,8 @@
         <div class="card h-100 border-success">
             <div class="card-body text-center">
                 <i class="fas fa-money-bill-wave fa-2x text-success mb-3"></i>
-                <h5 class="card-title">Revenue</h5>
-                <h3 class="mb-0">$@ViewBag.TotalRevenue.ToString("0.00")</h3>
+                <h5 class="card-title">Gelir</h5>
+                <h3 class="mb-0">@ViewBag.TotalRevenue.ToString("0.00") TL</h3>
             </div>
         </div>
     </div>
@@ -48,7 +48,7 @@
         <div class="card h-100 border-info">
             <div class="card-body text-center">
                 <i class="fas fa-boxes fa-2x text-info mb-3"></i>
-                <h5 class="card-title">Products</h5>
+                <h5 class="card-title">Ürünler</h5>
                 <h3 class="mb-0">@ViewBag.ProductsCount</h3>
             </div>
         </div>
@@ -57,7 +57,7 @@
         <div class="card h-100 border-warning">
             <div class="card-body text-center">
                 <i class="fas fa-clock fa-2x text-warning mb-3"></i>
-                <h5 class="card-title">Pending Orders</h5>
+                <h5 class="card-title">Bekleyen Siparişler</h5>
                 <h3 class="mb-0">@ViewBag.PendingOrders</h3>
             </div>
         </div>
@@ -69,32 +69,40 @@
     <div class="col-12">
         <div class="card mb-4">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Quick Actions</h5>
+                <h5 class="mb-0">Hızlı İşlemler</h5>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-3 mb-3">
                         <a href="@Url.Action("AddProduct", "Dukkan", new { id = Model.Id })" class="btn btn-outline-primary w-100 h-100 p-3">
                             <i class="fas fa-plus fa-2x mb-2"></i>
-                            <div>Add New Product</div>
+                            <div>Yeni Ürün Ekle</div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="@Url.Action("ExistingProducts", "Dukkan", new { dukkanId = Model.Id })" class="btn btn-outline-success w-100 h-100 p-3">
+                            <i class="fas fa-copy fa-2x mb-2"></i>
+                            <div>Mevcut Ürünleri Ekle</div>
                         </a>
                     </div>
                     <div class="col-md-3 mb-3">
                         <a href="@Url.Action("ManageOrders", "Dukkan", new { id = Model.Id })" class="btn btn-outline-primary w-100 h-100 p-3">
                             <i class="fas fa-truck fa-2x mb-2"></i>
-                            <div>Manage Orders</div>
+                            <div>Siparişleri Yönet</div>
                         </a>
                     </div>
                     <div class="col-md-3 mb-3">
                         <a href="@Url.Action("Profile", "Dukkan", new { id = Model.Id })" class="btn btn-outline-primary w-100 h-100 p-3">
                             <i class="fas fa-store fa-2x mb-2"></i>
-                            <div>Edit Shop Profile</div>
+                            <div>Mağaza Profilini Düzenle</div>
                         </a>
                     </div>
+                </div>
+                <div class="row">
                     <div class="col-md-3 mb-3">
                         <a href="@Url.Action("Details", "Dukkan", new { id = Model.Id })" class="btn btn-outline-primary w-100 h-100 p-3">
                             <i class="fas fa-external-link-alt fa-2x mb-2"></i>
-                            <div>View Shop</div>
+                            <div>Mağazayı Görüntüle</div>
                         </a>
                     </div>
                 </div>
@@ -109,18 +117,18 @@
     <div class="col-md-6">
         <div class="card mb-4">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Recent Orders</h5>
-                <a href="@Url.Action("ManageOrders", "Dukkan", new { id = Model.Id })" class="btn btn-sm btn-light">View All</a>
+                <h5 class="mb-0">Son Siparişler</h5>
+                <a href="@Url.Action("ManageOrders", "Dukkan", new { id = Model.Id })" class="btn btn-sm btn-light">Tümünü Gör</a>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th>Order #</th>
-                                <th>Date</th>
-                                <th>Customer</th>
-                                <th>Status</th>
+                                <th>Sipariş #</th>
+                                <th>Tarih</th>
+                                <th>Müşteri</th>
+                                <th>Durum</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -130,13 +138,15 @@
                                 {
                                     <tr>
                                         <td>@order.Id</td>
-                                        <td>@order.OrderDate.ToString("MM/dd/yyyy")</td>
+                                        <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
                                         <td>@order.User.FirstName @order.User.LastName</td>
                                         <td>
                                             <span class="badge @(order.Status == "Pending" ? "bg-warning" : 
                                                                  order.Status == "Shipped" ? "bg-info" : 
                                                                  order.Status == "Completed" ? "bg-success" : "bg-secondary")">
-                                                @order.Status
+                                                @(order.Status == "Pending" ? "Beklemede" : 
+                                                  order.Status == "Shipped" ? "Gönderildi" : 
+                                                  order.Status == "Completed" ? "Tamamlandı" : order.Status)
                                             </span>
                                         </td>
                                     </tr>
@@ -145,7 +155,7 @@
                             else
                             {
                                 <tr>
-                                    <td colspan="4" class="text-center py-3">No orders yet</td>
+                                    <td colspan="4" class="text-center py-3">Henüz sipariş yok</td>
                                 </tr>
                             }
                         </tbody>
@@ -159,17 +169,17 @@
     <div class="col-md-6">
         <div class="card mb-4">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Best Selling Products</h5>
-                <a href="@Url.Action("ManageProducts", "Dukkan", new { id = Model.Id })" class="btn btn-sm btn-light">Manage Products</a>
+                <h5 class="mb-0">En Çok Satan Ürünler</h5>
+                <a href="@Url.Action("ManageProducts", "Dukkan", new { id = Model.Id })" class="btn btn-sm btn-light">Ürünleri Yönet</a>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th>Product</th>
-                                <th>Sold</th>
-                                <th>Revenue</th>
+                                <th>Ürün</th>
+                                <th>Satılan</th>
+                                <th>Gelir</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -180,14 +190,14 @@
                                     <tr>
                                         <td>@product.Product.Name</td>
                                         <td>@product.TotalSold</td>
-                                        <td>$@product.Revenue.ToString("0.00")</td>
+                                        <td>@product.Revenue.ToString("0.00") TL</td>
                                     </tr>
                                 }
                             }
                             else
                             {
                                 <tr>
-                                    <td colspan="3" class="text-center py-3">No sales data yet</td>
+                                    <td colspan="3" class="text-center py-3">Henüz satış verisi yok</td>
                                 </tr>
                             }
                         </tbody>

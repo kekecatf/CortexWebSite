@@ -1,9 +1,9 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Title = "Create New Brand";
+    ViewBag.Title = "Yeni Marka Oluştur";
 }
 
-<h2 class="text-center mb-4">Create New Brand</h2>
+<h2 class="text-center mb-4">Yeni Marka Oluştur</h2>
 
 @if (TempData["ErrorMessage"] != null)
 {
@@ -19,13 +19,13 @@
                 @using (Html.BeginForm("CreateBrand", "Admin", FormMethod.Post))
                 {
                     <div class="form-group">
-                        <label for="brandName" class="font-weight-bold">Brand Name:</label>
+                        <label for="brandName" class="font-weight-bold">Marka Adı:</label>
                         <input type="text" id="brandName" name="brandName" class="form-control" required />
                     </div>
                     
                     <div class="mt-4">
-                        <button type="submit" class="btn btn-primary">Create Brand</button>
-                        <a href="@Url.Action("Index", "Admin")" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Marka Oluştur</button>
+                        <a href="@Url.Action("Index", "Admin")" class="btn btn-secondary">İptal</a>
                     </div>
                 }
             </div>

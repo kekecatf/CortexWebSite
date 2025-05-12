@@ -12,33 +12,36 @@
             <div class="card dashboard-sidebar">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">@dukkanName</h5>
-                    <p class="small mb-0 text-white-50">Shop Management</p>
+                    <p class="small mb-0 text-white-50">Mağaza Yönetimi</p>
                 </div>
                 <div class="list-group list-group-flush">
                     <a href="@Url.Action("Dashboard", "Dukkan", new { id = dukkanId })" 
                        class="list-group-item list-group-item-action @(activeTab == "dashboard" ? "active" : "")">
-                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                        <i class="fas fa-tachometer-alt me-2"></i> Gösterge Paneli
                     </a>
                     <a href="@Url.Action("Profile", "Dukkan", new { id = dukkanId })" 
                        class="list-group-item list-group-item-action @(activeTab == "profile" ? "active" : "")">
-                        <i class="fas fa-store me-2"></i> Shop Profile
+                        <i class="fas fa-store me-2"></i> Mağaza Profili
                     </a>
                     <a href="@Url.Action("ManageProducts", "Dukkan", new { id = dukkanId })" 
                        class="list-group-item list-group-item-action @(activeTab == "products" ? "active" : "")">
-                        <i class="fas fa-box me-2"></i> Products
+                        <i class="fas fa-box me-2"></i> Ürünleri Yönet
+                    </a>
+                    <a href="@Url.Action("DiagnoseShopProducts", "Dukkan", new { dukkanId = dukkanId })" class="list-group-item list-group-item-action">
+                        <i class="fas fa-exchange-alt me-2"></i> Diğer Mağazalardan Ürünler
                     </a>
                     <a href="@Url.Action("ManageOrders", "Dukkan", new { id = dukkanId })" 
                        class="list-group-item list-group-item-action @(activeTab == "orders" ? "active" : "")">
-                        <i class="fas fa-shopping-cart me-2"></i> Orders
+                        <i class="fas fa-shopping-cart me-2"></i> Siparişler
                     </a>
                     <a href="@Url.Action("Analytics", "Dukkan", new { id = dukkanId })" 
                        class="list-group-item list-group-item-action @(activeTab == "analytics" ? "active" : "")">
-                        <i class="fas fa-chart-bar me-2"></i> Analytics
+                        <i class="fas fa-chart-bar me-2"></i> Analitik
                     </a>
                     <div class="list-group-item">
                         <div class="d-grid gap-2">
                             <a href="@Url.Action("Details", "Dukkan", new { id = dukkanId })" class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-external-link-alt me-2"></i> View Shop
+                                <i class="fas fa-external-link-alt me-2"></i> Mağazayı Görüntüle
                             </a>
                         </div>
                     </div>
@@ -57,27 +60,32 @@
                         <a href="@Url.Action("Dashboard", "Dukkan", new { id = dukkanId })" 
                            class="nav-item nav-link @(activeTab == "dashboard" ? "active" : "")">
                             <i class="fas fa-tachometer-alt"></i>
-                            <span class="d-none d-sm-inline">Dashboard</span>
+                            <span class="d-none d-sm-inline">Panel</span>
                         </a>
                         <a href="@Url.Action("Profile", "Dukkan", new { id = dukkanId })" 
                            class="nav-item nav-link @(activeTab == "profile" ? "active" : "")">
                             <i class="fas fa-store"></i>
-                            <span class="d-none d-sm-inline">Profile</span>
+                            <span class="d-none d-sm-inline">Profil</span>
                         </a>
                         <a href="@Url.Action("ManageProducts", "Dukkan", new { id = dukkanId })" 
                            class="nav-item nav-link @(activeTab == "products" ? "active" : "")">
                             <i class="fas fa-box"></i>
-                            <span class="d-none d-sm-inline">Products</span>
+                            <span class="d-none d-sm-inline">Ürünler</span>
+                        </a>
+                        <a href="@Url.Action("DiagnoseShopProducts", "Dukkan", new { dukkanId = dukkanId })" 
+                           class="nav-item nav-link">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span class="d-none d-sm-inline">Diğer Ürünler</span>
                         </a>
                         <a href="@Url.Action("ManageOrders", "Dukkan", new { id = dukkanId })" 
                            class="nav-item nav-link @(activeTab == "orders" ? "active" : "")">
                             <i class="fas fa-shopping-cart"></i>
-                            <span class="d-none d-sm-inline">Orders</span>
+                            <span class="d-none d-sm-inline">Siparişler</span>
                         </a>
                         <a href="@Url.Action("Analytics", "Dukkan", new { id = dukkanId })" 
                            class="nav-item nav-link @(activeTab == "analytics" ? "active" : "")">
                             <i class="fas fa-chart-bar"></i>
-                            <span class="d-none d-sm-inline">Analytics</span>
+                            <span class="d-none d-sm-inline">Analitik</span>
                         </a>
                     </nav>
                 </div>

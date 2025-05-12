@@ -17,13 +17,37 @@ namespace Larana.Controllers
 
         public ActionResult Index()
         {
-            ViewBag.TotalUsers = db.Users.Count();
-            ViewBag.TotalProducts = productDb.Products.Count();
-            ViewBag.TotalOrders = ordersDb.Orders.Count();
-            ViewBag.TotalRevenue = ordersDb.Orders.Any() ? 
-                ordersDb.Orders.Sum(o => o.TotalAmount ?? 0) : 0;
+            // Kullanıcı giriş yapmış mı kontrol et
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            
+            // Admin rolünde mi kontrol et
+            if (!User.IsInRole("Admin"))
+            {
+                return RedirectToAction("MyAccount", "Account");
+            }
 
-            return View();
+            try
+            {
+                ViewBag.TotalUsers = db.Users.Count();
+                ViewBag.TotalProducts = productDb.Products.Count();
+                ViewBag.TotalOrders = ordersDb.Orders.Count();
+                ViewBag.TotalRevenue = ordersDb.Orders.Any() ? 
+                    ordersDb.Orders.Sum(o => o.TotalAmount ?? 0) : 0;
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                // Hata durumunda logla
+                System.Diagnostics.Debug.WriteLine($"Admin Index Hatası: {ex.Message}");
+                
+                // Kullanıcıya bir hata mesajı göster
+                TempData["ErrorMessage"] = "Bir hata oluştu. Lütfen tekrar deneyin.";
+                return RedirectToAction("MyAccount", "Account");
+            }
         }
 
         public ActionResult CreateUser()

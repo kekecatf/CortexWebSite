@@ -1,15 +1,15 @@
 @model IEnumerable<Larana.Models.Order>
 
 @{
-    ViewBag.Title = "Store Orders";
+    ViewBag.Title = "Mağaza Siparişleri";
 }
 
 <div class="container">
     <div class="store-header">
-        <h1>Store Orders</h1>
+        <h1>Mağaza Siparişleri</h1>
         <div class="store-actions">
             <a href="@Url.Action("Details", "Dukkan", new { id = ViewBag.DukkanId })" class="btn btn-primary">
-                <i class="fas fa-store"></i> Back to Store
+                <i class="fas fa-store"></i> Mağazaya Dön
             </a>
         </div>
     </div>
@@ -24,22 +24,27 @@
     <div class="orders-section">
         <div class="order-filters">
             <select id="status-filter" class="form-control">
-                <option value="">All Statuses</option>
+                <option value="">Tüm Durumlar</option>
                 @foreach (var status in Enum.GetValues(typeof(Larana.Models.OrderStatus)))
                 {
-                    <option value="@status">@status</option>
+                    <option value="@status">@(status.ToString() == "Pending" ? "Beklemede" : 
+                                             status.ToString() == "Processing" ? "İşleniyor" : 
+                                             status.ToString() == "Shipped" ? "Gönderildi" : 
+                                             status.ToString() == "Delivered" ? "Teslim Edildi" : 
+                                             status.ToString() == "Completed" ? "Tamamlandı" : 
+                                             status.ToString() == "Cancelled" ? "İptal Edildi" : status.ToString())</option>
                 }
             </select>
             <select id="delivery-filter" class="form-control">
-                <option value="">All Delivery Types</option>
-                <option value="shipping">Standard Shipping</option>
-                <option value="pickup">Click & Collect</option>
+                <option value="">Tüm Teslimat Türleri</option>
+                <option value="shipping">Standart Kargo</option>
+                <option value="pickup">Tıkla ve Topla</option>
             </select>
             <select id="sort-order" class="form-control">
-                <option value="date-desc">Newest First</option>
-                <option value="date-asc">Oldest First</option>
-                <option value="amount-desc">Highest Amount</option>
-                <option value="amount-asc">Lowest Amount</option>
+                <option value="date-desc">En Yeni</option>
+                <option value="date-asc">En Eski</option>
+                <option value="amount-desc">En Yüksek Tutar</option>
+                <option value="amount-asc">En Düşük Tutar</option>
             </select>
         </div>
 
@@ -52,48 +57,61 @@
                      data-amount="@(order.TotalAmount.HasValue ? order.TotalAmount.Value : 0)"
                      data-delivery="@(order.IsClickAndCollect ? "pickup" : "shipping")">
                     <div class="order-header">
-                        <h3>Order #@order.Id</h3>
-                        <span class="order-date">@order.OrderDate.ToString("MMM dd, yyyy HH:mm")</span>
-                        <span class="order-status @order.Status.ToString().ToLower()">@order.Status</span>
+                        <h3>Sipariş #@order.Id</h3>
+                        <span class="order-date">@order.OrderDate.ToString("dd.MM.yyyy HH:mm")</span>
+                        <span class="order-status @order.Status.ToString().ToLower()">
+                            @(order.Status.ToString() == "Pending" ? "Beklemede" : 
+                             order.Status.ToString() == "Processing" ? "İşleniyor" : 
+                             order.Status.ToString() == "Shipped" ? "Gönderildi" : 
+                             order.Status.ToString() == "Delivered" ? "Teslim Edildi" : 
+                             order.Status.ToString() == "Completed" ? "Tamamlandı" : 
+                             order.Status.ToString() == "Cancelled" ? "İptal Edildi" : order.Status.ToString())
+                        </span>
                         @if (order.IsClickAndCollect)
                         {
-                            <span class="order-delivery pickup">Click & Collect</span>
+                            <span class="order-delivery pickup">Tıkla ve Topla</span>
                         }
                     </div>
                     <div class="order-details">
                         <div class="customer-info">
-                            <h4>Customer Information</h4>
+                            <h4>Müşteri Bilgileri</h4>
                             @if (order.IsClickAndCollect)
                             {
-                                <p><strong>Delivery Method:</strong> <span class="pickup-badge">Click & Collect (In-store Pickup)</span></p>
-                                <p><strong>Customer:</strong> @order.User.Username</p>
+                                <p><strong>Teslimat Yöntemi:</strong> <span class="pickup-badge">Tıkla ve Topla (Mağazadan Teslim)</span></p>
+                                <p><strong>Müşteri:</strong> @order.User.Username</p>
                             }
                             else
                             {
-                                <p><strong>Name:</strong> @order.RecipientName</p>
-                                <p><strong>Phone:</strong> @order.PhoneNumber</p>
-                                <p><strong>Address:</strong> @order.Address</p>
-                                <p><strong>Shipping Address:</strong> @order.ShippingAddress</p>
-                                <p><strong>Shipping:</strong> @order.ShippingCompany</p>
-                                <p><strong>Payment Method:</strong> @order.PaymentMethod</p>
-                                <p><strong>Payment Status:</strong> <span class="payment-status @order.PaymentStatus.ToString().ToLower()">@order.PaymentStatus</span></p>
+                                <p><strong>İsim:</strong> @order.RecipientName</p>
+                                <p><strong>Telefon:</strong> @order.PhoneNumber</p>
+                                <p><strong>Adres:</strong> @order.Address</p>
+                                <p><strong>Kargo Adresi:</strong> @order.ShippingAddress</p>
+                                <p><strong>Kargo:</strong> @order.ShippingCompany</p>
+                                <p><strong>Ödeme Yöntemi:</strong> @order.PaymentMethod</p>
+                                <p><strong>Ödeme Durumu:</strong> <span class="payment-status @order.PaymentStatus.ToString().ToLower()">
+                                    @(order.PaymentStatus.ToString() == "Pending" ? "Beklemede" : 
+                                     order.PaymentStatus.ToString() == "Processing" ? "İşleniyor" : 
+                                     order.PaymentStatus.ToString() == "Completed" ? "Tamamlandı" : 
+                                     order.PaymentStatus.ToString() == "Failed" ? "Başarısız" : 
+                                     order.PaymentStatus.ToString() == "Refunded" ? "İade Edildi" : order.PaymentStatus.ToString())
+                                </span></p>
                             }
                         </div>
                         <div class="order-items">
-                            <h4>Order Items</h4>
+                            <h4>Sipariş Ürünleri</h4>
                             @if(order.OrderDetails == null || !order.OrderDetails.Any())
                             {
-                                <div class="alert alert-warning">No order items found for this order.</div>
+                                <div class="alert alert-warning">Bu sipariş için ürün bulunamadı.</div>
                             }
                             else
                             {
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th>Product</th>
-                                            <th>Quantity</th>
-                                            <th>Price</th>
-                                            <th>Total</th>
+                                            <th>Ürün</th>
+                                            <th>Miktar</th>
+                                            <th>Fiyat</th>
+                                            <th>Toplam</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -107,19 +125,19 @@
                                                     }
                                                     else
                                                     {
-                                                        <span class="text-danger">Product unavailable (ID: @item.ProductId)</span>
+                                                        <span class="text-danger">Ürün mevcut değil (ID: @item.ProductId)</span>
                                                     }
                                                 </td>
                                                 <td>@item.Quantity</td>
-                                                <td>$@item.UnitPrice.ToString("F2")</td>
-                                                <td>$@((item.Quantity * item.UnitPrice).ToString("F2"))</td>
+                                                <td>@item.UnitPrice.ToString("F2") TL</td>
+                                                <td>@((item.Quantity * item.UnitPrice).ToString("F2")) TL</td>
                                             </tr>
                                         }
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <td colspan="3" class="text-right"><strong>Total Amount:</strong></td>
-                                            <td><strong>$@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("F2") : "0.00")</strong></td>
+                                            <td colspan="3" class="text-right"><strong>Toplam Tutar:</strong></td>
+                                            <td><strong>@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("F2") : "0.00") TL</strong></td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -135,7 +153,7 @@
                                 <input type="hidden" name="status" value="@Larana.Models.OrderStatus.Processing" />
                                 <input type="hidden" name="dukkanId" value="@ViewBag.DukkanId" />
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-check"></i> Process Order
+                                    <i class="fas fa-check"></i> İşleme Al
                                 </button>
                             </form>
                         }
@@ -147,7 +165,7 @@
                                 <input type="hidden" name="status" value="@Larana.Models.OrderStatus.Shipped" />
                                 <input type="hidden" name="dukkanId" value="@ViewBag.DukkanId" />
                                 <button type="submit" class="btn btn-info">
-                                    <i class="fas fa-truck"></i> Mark as Shipped
+                                    <i class="fas fa-truck"></i> Gönderildi Olarak İşaretle
                                 </button>
                             </form>
                         }
@@ -159,7 +177,7 @@
                                 <input type="hidden" name="status" value="@Larana.Models.OrderStatus.Delivered" />
                                 <input type="hidden" name="dukkanId" value="@ViewBag.DukkanId" />
                                 <button type="submit" class="btn btn-success">
-                                    <i class="fas fa-check-circle"></i> Mark as Delivered
+                                    <i class="fas fa-check-circle"></i> Teslim Edildi Olarak İşaretle
                                 </button>
                             </form>
                         }
@@ -170,8 +188,8 @@
                                 <input type="hidden" name="orderId" value="@order.Id" />
                                 <input type="hidden" name="status" value="@Larana.Models.OrderStatus.Cancelled" />
                                 <input type="hidden" name="dukkanId" value="@ViewBag.DukkanId" />
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this order?');">
-                                    <i class="fas fa-times"></i> Cancel Order
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Bu siparişi iptal etmek istediğinizden emin misiniz?');">
+                                    <i class="fas fa-times"></i> Siparişi İptal Et
                                 </button>
                             </form>
                         }

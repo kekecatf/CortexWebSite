@@ -1,0 +1,157 @@
+@{
+    ViewBag.Title = "Test ShopProduct Removal";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Test Product Removal</h2>
+    
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3>AJAX Test</h3>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="shopProductId" class="form-label">ShopProduct ID:</label>
+                <input type="number" id="shopProductId" class="form-control" value="1" />
+            </div>
+            
+            <div class="mb-3">
+                <label for="dukkanId" class="form-label">Dukkan ID:</label>
+                <input type="number" id="dukkanId" class="form-control" value="1" />
+            </div>
+            
+            <button type="button" id="testRemoveButton" class="btn btn-danger">
+                Test Remove via AJAX
+            </button>
+            
+            <div id="responseDisplay" class="mt-3 p-3 border bg-light" style="min-height: 100px;">
+                Response will appear here...
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mt-4">
+        <div class="card-header bg-info text-white">
+            <h3>Form POST Test</h3>
+        </div>
+        <div class="card-body">
+            <form method="post" action="@Url.Action("RemoveShopProduct", "Dukkan")">
+                <div class="mb-3">
+                    <label for="formShopProductId" class="form-label">ShopProduct ID:</label>
+                    <input type="number" id="formShopProductId" name="shopProductId" class="form-control" value="1" />
+                </div>
+                
+                <div class="mb-3">
+                    <label for="formDukkanId" class="form-label">Dukkan ID:</label>
+                    <input type="number" id="formDukkanId" name="dukkanId" class="form-control" value="1" />
+                </div>
+                
+                <button type="submit" class="btn btn-warning">
+                    Test Remove via Form POST
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header bg-success text-white">
+            <h3>AJAX Async Test</h3>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="asyncShopProductId" class="form-label">ShopProduct ID:</label>
+                <input type="number" id="asyncShopProductId" class="form-control" value="1" />
+            </div>
+            
+            <div class="mb-3">
+                <label for="asyncDukkanId" class="form-label">Dukkan ID:</label>
+                <input type="number" id="asyncDukkanId" class="form-control" value="1" />
+            </div>
+            
+            <button type="button" id="testAsyncRemoveButton" class="btn btn-success">
+                Test Remove via Async Endpoint
+            </button>
+            
+            <div id="asyncResponseDisplay" class="mt-3 p-3 border bg-light" style="min-height: 100px;">
+                Response will appear here...
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function() {
+            $('#testRemoveButton').click(function() {
+                var shopProductId = $('#shopProductId').val();
+                var dukkanId = $('#dukkanId').val();
+                
+                $('#responseDisplay').html('Sending request...');
+                
+                $.ajax({
+                    url: '@Url.Action("RemoveShopProduct", "Dukkan")',
+                    type: 'POST',
+                    data: {
+                        shopProductId: shopProductId,
+                        dukkanId: dukkanId
+                    },
+                    success: function(response) {
+                        $('#responseDisplay').html(
+                            '<div class="alert alert-' + (response.success ? 'success' : 'danger') + '">' +
+                            '<h4>' + (response.success ? 'Success' : 'Error') + '</h4>' +
+                            '<p>' + (response.message || 'No message') + '</p>' +
+                            '<pre>' + JSON.stringify(response, null, 2) + '</pre>' +
+                            '</div>'
+                        );
+                    },
+                    error: function(xhr, status, error) {
+                        $('#responseDisplay').html(
+                            '<div class="alert alert-danger">' +
+                            '<h4>AJAX Error</h4>' +
+                            '<p>Status: ' + status + '</p>' +
+                            '<p>Error: ' + error + '</p>' +
+                            '<pre>' + xhr.responseText + '</pre>' +
+                            '</div>'
+                        );
+                    }
+                });
+            });
+
+            $('#testAsyncRemoveButton').click(function() {
+                var shopProductId = $('#asyncShopProductId').val();
+                var dukkanId = $('#asyncDukkanId').val();
+                
+                $('#asyncResponseDisplay').html('Sending request to async endpoint...');
+                
+                $.ajax({
+                    url: '@Url.Action("RemoveShopProductAsync", "Dukkan")',
+                    type: 'POST',
+                    data: {
+                        shopProductId: shopProductId,
+                        dukkanId: dukkanId
+                    },
+                    success: function(response) {
+                        $('#asyncResponseDisplay').html(
+                            '<div class="alert alert-' + (response.success ? 'success' : 'danger') + '">' +
+                            '<h4>' + (response.success ? 'Success' : 'Error') + '</h4>' +
+                            '<p>' + (response.message || 'No message') + '</p>' +
+                            '<pre>' + JSON.stringify(response, null, 2) + '</pre>' +
+                            '</div>'
+                        );
+                    },
+                    error: function(xhr, status, error) {
+                        $('#asyncResponseDisplay').html(
+                            '<div class="alert alert-danger">' +
+                            '<h4>AJAX Error</h4>' +
+                            '<p>Status: ' + status + '</p>' +
+                            '<p>Error: ' + error + '</p>' +
+                            '<pre>' + xhr.responseText + '</pre>' +
+                            '</div>'
+                        );
+                    }
+                });
+            });
+        });
+    </script>
+} 

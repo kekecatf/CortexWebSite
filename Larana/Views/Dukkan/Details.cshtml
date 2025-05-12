@@ -34,7 +34,7 @@
                             <i class="far fa-star text-warning"></i>
                         }
                     }
-                    <span class="rating-count">@Model.Rating.ToString("0.0") (@Model.RatingCount @(Model.RatingCount == 1 ? "review" : "reviews"))</span>
+                    <span class="rating-count">@Model.Rating.ToString("0.0") (@Model.RatingCount @(Model.RatingCount == 1 ? "değerlendirme" : "değerlendirme"))</span>
                 </div>
                 
                 <p class="store-description">@Model.Description</p>
@@ -49,15 +49,15 @@
                     {
                         <span class="badge badge-primary mr-2"><i class="fas fa-tag mr-1"></i> @Model.Category</span>
                     }
-                    <span class="badge badge-secondary"><i class="fas fa-clock mr-1"></i> Joined @Model.CreatedAt.ToString("MMM yyyy")</span>
+                    <span class="badge badge-secondary"><i class="fas fa-clock mr-1"></i> Katılım @Model.CreatedAt.ToString("MMM yyyy")</span>
                 </div>
                 
                 @if (isOwner)
                 {
                     <div class="store-actions">
-                        <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-primary">Edit Store</a>
-                        <a href="@Url.Action("Products", new { id = Model.Id })" class="btn btn-success">Manage Products</a>
-                        <a href="@Url.Action("Orders", new { id = Model.Id })" class="btn btn-info">View Orders</a>
+                        <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-primary">Mağazayı Düzenle</a>
+                        <a href="@Url.Action("Products", new { id = Model.Id })" class="btn btn-success">Ürünleri Yönet</a>
+                        <a href="@Url.Action("Orders", new { id = Model.Id })" class="btn btn-info">Siparişleri Görüntüle</a>
                     </div>
                 }
             </div>
@@ -87,49 +87,91 @@
 
     <!-- Products Section -->
     <div class="products-section mb-4">
-        <h2>Products</h2>
-        @if (Model.Products != null && Model.Products.Any())
+        <h2>Ürünler</h2>
+        @if ((Model.Products != null && Model.Products.Any()) || (ViewBag.ShopProducts != null && ((IEnumerable<dynamic>)ViewBag.ShopProducts).Any()))
         {
             <div class="row">
-                @foreach (var product in Model.Products)
+                @if (Model.Products != null)
                 {
-                    <div class="col-md-4 mb-4">
-                        <div class="card product-card">
-                            @if (!string.IsNullOrEmpty(product.PhotoPath))
-                            {
-                                <img src="@Url.Content("~/" + product.PhotoPath)" class="card-img-top" alt="@product.Name">
-                            }
-                            else
-                            {
-                                <img src="~/Content/Images/no-image.png" class="card-img-top" alt="No Image">
-                            }
-                            <div class="card-body">
-                                <h5 class="card-title">@product.Name</h5>
-                                <p class="card-text">@product.Description</p>
-                                <p class="card-text">
-                                    <strong>Price:</strong> $@product.Price.ToString("F2")
-                                </p>
-                                <p class="card-text">
-                                    <strong>Stock:</strong> @product.Stock
-                                </p>
-                                @if (product.Stock > 0)
+                    foreach (var product in Model.Products)
+                    {
+                        <div class="col-md-4 mb-4">
+                            <div class="card product-card">
+                                @if (!string.IsNullOrEmpty(product.PhotoPath))
                                 {
-                                    <a href="@Url.Action("AddToCart", "Cart", new { productId = product.Id })" class="btn btn-primary">Add to Cart</a>
+                                    <img src="@Url.Content("~/" + product.PhotoPath)" class="card-img-top" alt="@product.Name">
                                 }
                                 else
                                 {
-                                    <button class="btn btn-secondary" disabled>Out of Stock</button>
+                                    <img src="~/Content/Images/no-image.png" class="card-img-top" alt="Görsel Yok">
                                 }
+                                <div class="card-body">
+                                    <h5 class="card-title">@product.Name</h5>
+                                    <p class="card-text">@product.Description</p>
+                                    <p class="card-text">
+                                        <strong>Fiyat:</strong> @product.Price.ToString("F2") TL
+                                    </p>
+                                    <p class="card-text">
+                                        <strong>Stok:</strong> @product.Stock
+                                    </p>
+                                    @if (product.Stock > 0)
+                                    {
+                                        <a href="@Url.Action("AddToCart", "Cart", new { productId = product.Id })" class="btn btn-primary">Sepete Ekle</a>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-secondary" disabled>Stokta Yok</button>
+                                    }
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
+                }
+                
+                @* Display products from other stores (via ShopProducts) *@
+                @if (ViewBag.ShopProducts != null)
+                {
+                    foreach (var shopProduct in ViewBag.ShopProducts)
+                    {
+                        var product = shopProduct.Product;
+                        <div class="col-md-4 mb-4">
+                            <div class="card product-card">
+                                @if (!string.IsNullOrEmpty(product.PhotoPath))
+                                {
+                                    <img src="@Url.Content("~/" + product.PhotoPath)" class="card-img-top" alt="@product.Name">
+                                }
+                                else
+                                {
+                                    <img src="~/Content/Images/no-image.png" class="card-img-top" alt="Görsel Yok">
+                                }
+                                <div class="card-body">
+                                    <h5 class="card-title">@product.Name</h5>
+                                    <p class="card-text">@product.Description</p>
+                                    <p class="card-text">
+                                        <strong>Fiyat:</strong> @shopProduct.Price.ToString("F2") TL
+                                    </p>
+                                    <p class="card-text">
+                                        <strong>Stok:</strong> @shopProduct.Stock
+                                    </p>
+                                    @if (shopProduct.Stock > 0)
+                                    {
+                                        <a href="@Url.Action("AddToCart", "Cart", new { productId = product.Id, shopProductId = shopProduct.Id })" class="btn btn-primary">Sepete Ekle</a>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-secondary" disabled>Stokta Yok</button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
                 }
             </div>
         }
         else
         {
             <div class="alert alert-info">
-                No products available in this store.
+                Bu mağazada ürün bulunmamaktadır.
             </div>
         }
     </div>
@@ -138,22 +180,75 @@
     <div class="ratings-section">
         <div class="card">
             <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h3 class="mb-0">Ratings & Reviews</h3>
+                <h3 class="mb-0">Değerlendirmeler & Yorumlar</h3>
                 @if (Request.IsAuthenticated && !isOwner)
                 {
-                    <button class="btn btn-primary" data-toggle="modal" data-target="#rateShopModal">
-                        Rate This Shop
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rateShopModal">
+                        Bu Mağazayı Değerlendir
                     </button>
                 }
             </div>
             <div class="card-body">
                 <div id="ratingsContainer">
-                    <div class="text-center py-3">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="sr-only">Loading...</span>
+                    @if (isOwner)
+                    {
+                        <div id="storeOwnerRatings">
+                            @{
+                                // Get ratings directly from the server for store owners
+                                var db = new Larana.Data.ApplicationDbContext();
+                                var ratings = db.Ratings
+                                    .Where(r => r.DukkanId == Model.Id)
+                                    .OrderByDescending(r => r.CreatedAt)
+                                    .ToList();
+                                
+                                if (ratings.Count == 0)
+                                {
+                                    <div class="text-center py-3">
+                                        <p>Mağazanız için henüz değerlendirme yok.</p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    foreach (var rating in ratings)
+                                    {
+                                        var ratingUser = db.Users.FirstOrDefault(u => u.Id == rating.UserId);
+                                        <div class="review-card">
+                                            <div class="review-header">
+                                                <span class="review-user">@(ratingUser?.Username ?? "Bilinmeyen Kullanıcı")</span>
+                                                <span class="review-date">@rating.CreatedAt.ToString("d")</span>
+                                            </div>
+                                            <div class="review-stars">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    if (i <= rating.Value)
+                                                    {
+                                                        <i class="fas fa-star text-warning"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="far fa-star text-warning"></i>
+                                                    }
+                                                }
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(rating.Comment))
+                                            {
+                                                <div class="review-content">@rating.Comment</div>
+                                            }
+                                        </div>
+                                    }
+                                }
+                            }
                         </div>
-                        <p class="mt-2">Loading reviews...</p>
-                    </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-3">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Yükleniyor...</span>
+                            </div>
+                            <p class="mt-2">Değerlendirmeler yükleniyor...</p>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -167,38 +262,36 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="rateShopModalLabel">Rate @Model.Name</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <h5 class="modal-title" id="rateShopModalLabel">@Model.Name Mağazasını Değerlendir</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 @using (Html.BeginForm("Add", "Rating", FormMethod.Post, new { id = "ratingForm" }))
                 {
                     <div class="modal-body">
                         <input type="hidden" name="DukkanId" value="@Model.Id" />
                         
-                        <div class="form-group">
-                            <label>Your Rating</label>
+                        <div class="form-group mb-3">
+                            <label>Değerlendirmeniz</label>
                             <div class="rating-input">
                                 <div class="star-rating">
                                     @for (int i = 5; i >= 1; i--)
                                     {
                                         <input type="radio" id="star@(i)" name="Value" value="@i" required />
-                                        <label for="star@(i)" title="@i stars"><i class="fas fa-star"></i></label>
+                                        <label for="star@(i)" title="@i yıldız"><i class="fas fa-star"></i></label>
                                     }
                                 </div>
                                 <div class="clearfix"></div>
                             </div>
                         </div>
                         
-                        <div class="form-group">
-                            <label for="Comment">Your Review (Optional)</label>
-                            <textarea class="form-control" id="Comment" name="Comment" rows="3" placeholder="Share your experience with this shop..."></textarea>
+                        <div class="form-group mb-3">
+                            <label for="Comment" class="form-label">Yorumunuz (İsteğe Bağlı)</label>
+                            <textarea class="form-control" id="Comment" name="Comment" rows="3" placeholder="Bu mağaza ile ilgili deneyiminizi paylaşın..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Submit Rating</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-primary">Değerlendirmeyi Gönder</button>
                     </div>
                 }
             </div>
@@ -371,8 +464,16 @@
 @section scripts {
     <script>
         $(document).ready(function() {
-            // Load shop ratings
-            loadRatings();
+            // Initialize modal instance
+            var rateShopModal = new bootstrap.Modal(document.getElementById('rateShopModal'));
+            
+            // Store owner flag to prevent loops
+            var isStoreOwner = @(isOwner ? "true" : "false");
+            
+            // Load shop ratings (only if not store owner)
+            if (!isStoreOwner) {
+                loadRatings();
+            }
             
             // Handle rating form submission
             $("#ratingForm").submit(function(e) {
@@ -383,32 +484,40 @@
                     type: 'POST',
                     data: $(this).serialize(),
                     success: function(response) {
-                        $('#rateShopModal').modal('hide');
+                        // Hide modal with Bootstrap 5 method
+                        rateShopModal.hide();
                         // Reload the page to update the shop's average rating
                         location.reload();
                     },
                     error: function(error) {
-                        alert("Error submitting rating. Please try again.");
+                        alert("Değerlendirme gönderilirken hata oluştu. Lütfen tekrar deneyin.");
                     }
                 });
             });
             
             function loadRatings() {
+                // Check if we're already loading ratings
+                if (window.isLoadingRatings) return;
+                
+                window.isLoadingRatings = true;
+                
                 $.ajax({
                     url: '@Url.Action("Get", "Rating", new { id = Model.Id })',
                     type: 'GET',
                     success: function(data) {
                         displayRatings(data);
+                        window.isLoadingRatings = false;
                     },
                     error: function() {
-                        $("#ratingsContainer").html('<div class="alert alert-danger">Error loading reviews. Please try again.</div>');
+                        $("#ratingsContainer").html('<div class="alert alert-danger">Değerlendirmeler yüklenirken hata oluştu. Lütfen tekrar deneyin.</div>');
+                        window.isLoadingRatings = false;
                     }
                 });
             }
             
             function displayRatings(ratings) {
                 if (ratings.length === 0) {
-                    $("#ratingsContainer").html('<div class="text-center py-3"><p>No reviews yet. Be the first to review this shop!</p></div>');
+                    $("#ratingsContainer").html('<div class="text-center py-3"><p>Henüz değerlendirme yok. İlk değerlendirmeyi yapan siz olun!</p></div>');
                     return;
                 }
                 
@@ -444,7 +553,7 @@
                         <text>
                         if (rating.UserName === '@User.Identity.Name') {
                             html += '  <div class="mt-2">';
-                            html += '    <small><a href="#" class="review-delete" data-id="' + rating.Id + '"><i class="fas fa-trash-alt"></i> Delete</a></small>';
+                            html += '    <small><a href="#" class="review-delete" data-id="' + rating.Id + '"><i class="fas fa-trash-alt"></i> Sil</a></small>';
                             html += '  </div>';
                         }
                         </text>
@@ -463,20 +572,30 @@
             }
             
             function deleteRating(ratingId) {
-                if (confirm("Are you sure you want to delete your review?")) {
+                if (confirm("Değerlendirmenizi silmek istediğinizden emin misiniz?")) {
                     $.ajax({
                         url: '@Url.Action("Delete", "Rating")/' + ratingId,
                         type: 'POST',
                         success: function(response) {
                             if (response.success) {
                                 loadRatings();
-                                location.reload(); // Reload to update average rating
+                                // Don't reload the page, just update the ratings display
+                                // location.reload(); // Reload to update average rating
+                                
+                                // Instead, update the rating display directly
+                                var currentRating = parseFloat('@Model.Rating');
+                                var reviewCount = parseInt('@Model.RatingCount');
+                                if (reviewCount > 0) {
+                                    $(".rating-count").text(currentRating.toFixed(1) + " (" + (reviewCount-1) + " " + ((reviewCount-1) === 1 ? "değerlendirme" : "değerlendirme") + ")");
+                                } else {
+                                    $(".rating-count").text("0.0 (0 değerlendirme)");
+                                }
                             } else {
-                                alert("Error: " + response.message);
+                                alert("Hata: " + response.message);
                             }
                         },
                         error: function() {
-                            alert("Error deleting review. Please try again.");
+                            alert("Değerlendirme silinirken hata oluştu. Lütfen tekrar deneyin.");
                         }
                     });
                 }

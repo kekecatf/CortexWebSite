@@ -1,0 +1,339 @@
+@model List<Larana.Models.Product>
+@{
+    ViewBag.Title = "Diğer Mağazalardan Ürün Ekle";
+    var currentShopId = ViewBag.CurrentShopId;
+    var userShops = ViewBag.UserShops as List<Larana.Models.Dukkan>;
+    var currentShop = userShops?.FirstOrDefault(s => s.Id == currentShopId);
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2>Mağazanıza Ürün Ekleyin</h2>
+            
+            @if (currentShop != null)
+            {
+                <p class="mb-4">Ürün eklediğiniz mağaza: <strong>@currentShop.Name</strong></p>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    <p>Ürün eklemek için bir mağaza seçin:</p>
+                    <select id="shopSelector" class="form-select mt-2">
+                        <option value="">Mağaza seçin...</option>
+                        @foreach (var shop in userShops)
+                        {
+                            <option value="@shop.Id">@shop.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Eklenebilecek Popüler Ürünler</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Ürün</th>
+                                    <th>Orijinal Fiyat</th>
+                                    <th>Satıcı</th>
+                                    <th>Sizin Fiyatınız</th>
+                                    <th>Sizin Stoğunuz</th>
+                                    <th>İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in Model)
+                                {
+                                    <tr data-product-id="@product.Id">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @if (!string.IsNullOrEmpty(product.PhotoPath))
+                                                {
+                                                    <img src="@Url.Content("~/" + product.PhotoPath)" class="product-thumbnail me-2" alt="@product.Name">
+                                                }
+                                                <div>
+                                                    <a href="@Url.Action("Details", "Shop", new { id = product.Id })" target="_blank">@product.Name</a>
+                                                    <small class="d-block text-muted">@product.Brand</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@string.Format("{0:N}", product.Price) TL</td>
+                                        <td>
+                                            @if (product.Dukkan != null)
+                                            {
+                                                <a href="@Url.Action("Details", "Dukkan", new { id = product.DukkanId })">@product.Dukkan.Name</a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Bilinmiyor</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control product-price" data-product-id="@product.Id" value="@product.Price" min="0.01" step="0.01" />
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control product-stock" data-product-id="@product.Id" value="10" min="0" />
+                                        </td>
+                                        <td class="action-cell">
+                                            <button class="btn btn-success add-product-btn" data-product-id="@product.Id" data-shop-id="@currentShopId">
+                                                <i class="fas fa-plus"></i> Mağazaya Ekle
+                                            </button>
+                                            <div class="edit-actions" style="display:none;">
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-primary btn-edit-product">
+                                                        <i class="fas fa-edit"></i> Düzenle
+                                                    </button>
+                                                    <button type="button" class="btn btn-danger btn-remove-product">
+                                                        <i class="fas fa-trash"></i> Kaldır
+                                                    </button>
+                                                </div>
+                                                <div class="edit-fields mt-2" style="display:none;">
+                                                    <div class="input-group mb-2">
+                                                        <span class="input-group-text">Fiyat</span>
+                                                        <input type="number" class="form-control edit-price" min="0.01" step="0.01">
+                                                    </div>
+                                                    <div class="input-group mb-2">
+                                                        <span class="input-group-text">Stok</span>
+                                                        <input type="number" class="form-control edit-stock" min="0">
+                                                    </div>
+                                                    <div class="btn-group">
+                                                        <button class="btn btn-success btn-save-edit">
+                                                            <i class="fas fa-save"></i> Kaydet
+                                                        </button>
+                                                        <button class="btn btn-secondary btn-cancel-edit">
+                                                            <i class="fas fa-times"></i> İptal
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .product-thumbnail {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+    
+    .product-price, .product-stock {
+        width: 100px;
+    }
+    
+    .edit-actions {
+        min-width: 180px;
+    }
+</style>
+
+@section scripts {
+    <script>
+        $(document).ready(function() {
+            // Mağaza seçici değişim olayı
+            $("#shopSelector").change(function() {
+                var shopId = $(this).val();
+                if (shopId) {
+                    window.location.href = '@Url.Action("AddProductFromOthers", "Dukkan")/' + shopId;
+                }
+            });
+            
+            // Ürün ekle butonu tıklama olayı
+            $(".add-product-btn").click(function() {
+                var button = $(this);
+                var row = button.closest('tr');
+                var productId = button.data("product-id");
+                var shopId = button.data("shop-id") || $("#shopSelector").val();
+                
+                if (!shopId) {
+                    alert("Lütfen önce bir mağaza seçin");
+                    return;
+                }
+                
+                var price = $(".product-price[data-product-id='" + productId + "']").val();
+                var stock = $(".product-stock[data-product-id='" + productId + "']").val();
+                
+                if (!price || price <= 0) {
+                    alert("Lütfen geçerli bir fiyat girin");
+                    return;
+                }
+                
+                button.prop("disabled", true).html('<i class="fas fa-spinner fa-spin"></i> Ekleniyor...');
+                
+                $.ajax({
+                    url: '@Url.Action("AddExistingProduct", "Dukkan")',
+                    type: 'POST',
+                    data: {
+                        dukkanId: shopId,
+                        productId: productId,
+                        price: price,
+                        stock: stock,
+                        isClickAndCollect: false
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Ekle butonunu gizle ve düzenleme/kaldırma seçeneklerini göster
+                            button.hide();
+                            
+                            // Düzenleme aksiyonlarını göster
+                            var editActions = row.find('.edit-actions');
+                            editActions.data('shop-product-id', response.shopProductId); // Yeni oluşturulan ShopProduct.Id'yi sakla
+                            editActions.data('price', price);
+                            editActions.data('stock', stock);
+                            editActions.show();
+                            
+                            // Düzenleme alanları için değerleri ayarla
+                            row.find('.edit-price').val(price);
+                            row.find('.edit-stock').val(stock);
+                            
+                            // Satıra başarı stili ekle
+                            row.addClass('table-success');
+                        } else {
+                            alert(response.message || "Ürün eklenirken hata oluştu");
+                            button.prop("disabled", false).html('<i class="fas fa-plus"></i> Mağazaya Ekle');
+                        }
+                    },
+                    error: function() {
+                        alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+                        button.prop("disabled", false).html('<i class="fas fa-plus"></i> Mağazaya Ekle');
+                    }
+                });
+            });
+            
+            // Düzenle butonu tıklama olayı
+            $(document).on('click', '.btn-edit-product', function() {
+                var editActions = $(this).closest('.edit-actions');
+                
+                // Düzenleme alanlarını göster
+                editActions.find('.btn-group').hide();
+                editActions.find('.edit-fields').show();
+            });
+            
+            // İptal butonu tıklama olayı
+            $(document).on('click', '.btn-cancel-edit', function() {
+                var editActions = $(this).closest('.edit-actions');
+                var price = editActions.data('price');
+                var stock = editActions.data('stock');
+                
+                // Alanları orijinal değerlerine sıfırla
+                editActions.find('.edit-price').val(price);
+                editActions.find('.edit-stock').val(stock);
+                
+                // Düzenleme alanlarını gizle, butonları göster
+                editActions.find('.edit-fields').hide();
+                editActions.find('.btn-group').show();
+            });
+            
+            // Kaydet butonu tıklama olayı
+            $(document).on('click', '.btn-save-edit', function() {
+                var editActions = $(this).closest('.edit-actions');
+                var row = $(this).closest('tr');
+                var shopId = $(".add-product-btn", row).data("shop-id") || $("#shopSelector").val();
+                var shopProductId = editActions.data('shop-product-id');
+                var price = editActions.find('.edit-price').val();
+                var stock = editActions.find('.edit-stock').val();
+                
+                if (!price || price <= 0) {
+                    alert("Lütfen geçerli bir fiyat girin");
+                    return;
+                }
+                
+                var saveButton = $(this);
+                saveButton.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Kaydediliyor...');
+                
+                $.ajax({
+                    url: '@Url.Action("UpdateShopProduct", "Dukkan")',
+                    type: 'POST',
+                    data: {
+                        shopProductId: shopProductId,
+                        dukkanId: shopId,
+                        price: price,
+                        stock: stock
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Saklanan değerleri güncelle
+                            editActions.data('price', price);
+                            editActions.data('stock', stock);
+                            
+                            // Düzenleme alanlarını gizle, butonları göster
+                            editActions.find('.edit-fields').hide();
+                            editActions.find('.btn-group').show();
+                            
+                            // Başarı mesajını göster
+                            alert("Ürün başarıyla güncellendi");
+                        } else {
+                            alert(response.message || "Ürün güncellenirken hata oluştu");
+                        }
+                        saveButton.prop('disabled', false).html('<i class="fas fa-save"></i> Kaydet');
+                    },
+                    error: function() {
+                        alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+                        saveButton.prop('disabled', false).html('<i class="fas fa-save"></i> Kaydet');
+                    }
+                });
+            });
+            
+            // Kaldır butonu tıklama olayı
+            $(document).on('click', '.btn-remove-product', function() {
+                if (!confirm("Bu ürünü mağazanızdan kaldırmak istediğinize emin misiniz?")) {
+                    return;
+                }
+                
+                var editActions = $(this).closest('.edit-actions');
+                var row = $(this).closest('tr');
+                var shopId = $(".add-product-btn", row).data("shop-id") || $("#shopSelector").val();
+                var shopProductId = editActions.data('shop-product-id');
+                
+                var removeButton = $(this);
+                removeButton.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Kaldırılıyor...');
+                
+                $.ajax({
+                    url: '@Url.Action("RemoveShopProduct", "Dukkan")',
+                    type: 'POST',
+                    data: {
+                        shopProductId: shopProductId,
+                        dukkanId: shopId
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Satırı sıfırla
+                            editActions.hide();
+                            row.find('.add-product-btn').prop('disabled', false)
+                                .html('<i class="fas fa-plus"></i> Mağazaya Ekle')
+                                .show();
+                            row.removeClass('table-success');
+                            
+                            // Başarı mesajını göster
+                            alert("Ürün başarıyla kaldırıldı");
+                        } else {
+                            alert(response.message || "Ürün kaldırılırken hata oluştu");
+                            removeButton.prop('disabled', false).html('<i class="fas fa-trash"></i> Kaldır');
+                        }
+                    },
+                    error: function() {
+                        alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+                        removeButton.prop('disabled', false).html('<i class="fas fa-trash"></i> Kaldır');
+                    }
+                });
+            });
+        });
+    </script>
+} 

@@ -1,18 +1,21 @@
 @model Larana.Models.Dukkan
 
 @{
-    ViewBag.Title = "Manage Products - " + Model.Name;
+    ViewBag.Title = "Ürünleri Yönet - " + Model.Name;
 }
 
 <div class="container">
     <div class="store-header">
-        <h1>Manage Products - @Model.Name</h1>
+        <h1>Ürünleri Yönet - @Model.Name</h1>
         <div class="store-actions">
             <a href="@Url.Action("AddProduct", "Dukkan", new { id = Model.Id })" class="btn btn-success">
-                <i class="fas fa-plus"></i> Add New Product
+                <i class="fas fa-plus"></i> Yeni Ürün Ekle
+            </a>
+            <a href="@Url.Action("AddProductFromOthers", "Dukkan", new { id = Model.Id })" class="btn btn-success ml-2">
+                <i class="fas fa-clone"></i> Mevcut Ürünleri Ekle
             </a>
             <a href="@Url.Action("Details", "Dukkan", new { id = Model.Id })" class="btn btn-primary">
-                <i class="fas fa-store"></i> Back to Store
+                <i class="fas fa-store"></i> Mağazaya Dön
             </a>
         </div>
     </div>
@@ -27,22 +30,22 @@
     <div class="products-section">
         <div class="product-filters">
             <select id="category-filter" class="form-control">
-                <option value="">All Categories</option>
+                <option value="">Tüm Kategoriler</option>
                 @foreach (var category in Model.Products.Select(p => p.Category).Distinct())
                 {
                     <option value="@category">@category</option>
                 }
             </select>
             <select id="availability-filter" class="form-control">
-                <option value="">All Products</option>
-                <option value="in-stock">In Stock</option>
-                <option value="out-of-stock">Out of Stock</option>
+                <option value="">Tüm Ürünler</option>
+                <option value="in-stock">Stokta</option>
+                <option value="out-of-stock">Stokta Yok</option>
             </select>
             <select id="sort-order" class="form-control">
-                <option value="name">Name</option>
-                <option value="price-asc">Price (Low to High)</option>
-                <option value="price-desc">Price (High to Low)</option>
-                <option value="sales">Sales</option>
+                <option value="name">İsim</option>
+                <option value="price-asc">Fiyat (Düşükten Yükseğe)</option>
+                <option value="price-desc">Fiyat (Yüksekten Düşüğe)</option>
+                <option value="sales">Satışlar</option>
             </select>
         </div>
 
@@ -62,32 +65,85 @@
                         }
                         else
                         {
-                            <img src="~/Content/Images/no-image.png" class="card-img-top" alt="No Image">
+                            <img src="~/Content/Images/no-image.png" class="card-img-top" alt="Resim Yok">
                         }
                         <div class="card-body">
                             <h5 class="card-title">@product.Name</h5>
                             <p class="card-text">@product.Description</p>
                             <p class="card-text">
-                                <strong>Price:</strong> $@product.Price.ToString("F2")
+                                <strong>Fiyat:</strong> @product.Price.ToString("F2") TL
                             </p>
                             <p class="card-text">
-                                <strong>Stock:</strong> @product.Stock
+                                <strong>Stok:</strong> @product.Stock
                             </p>
                             <p class="card-text">
-                                <strong>Sales:</strong> @product.Sales
+                                <strong>Satışlar:</strong> @product.Sales
                             </p>
                             <div class="product-actions">
                                 <a href="@Url.Action("EditProduct", "Dukkan", new { id = Model.Id, productId = product.Id })" class="btn btn-warning">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit"></i> Düzenle
                                 </a>
                                 <button type="button" class="btn btn-danger" 
                                         onclick="deleteProduct(@product.Id, @Model.Id)">
-                                    <i class="fas fa-trash"></i> Delete
+                                    <i class="fas fa-trash"></i> Sil
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
+            }
+            
+            @* Display products from other stores (via ShopProducts) *@
+            @if (ViewBag.ShopProducts != null)
+            {
+                foreach (var shopProduct in ViewBag.ShopProducts)
+                {
+                    var product = shopProduct.Product;
+                    <div class="col-md-4 mb-4 product-card" 
+                         data-category="@product.Category"
+                         data-stock="@(shopProduct.Stock > 0 ? "in-stock" : "out-of-stock")"
+                         data-name="@product.Name"
+                         data-price="@shopProduct.Price"
+                         data-sales="@product.Sales">
+                        <div class="card h-100 shop-product-card">
+                            <div class="added-badge">Başka Mağazadan Eklendi</div>
+                            @if (!string.IsNullOrEmpty(product.PhotoPath))
+                            {
+                                <img src="@product.PhotoPath" class="card-img-top" alt="@product.Name">
+                            }
+                            else
+                            {
+                                <img src="~/Content/Images/no-image.png" class="card-img-top" alt="Resim Yok">
+                            }
+                            <div class="card-body">
+                                <h5 class="card-title">@product.Name</h5>
+                                <p class="card-text">@product.Description</p>
+                                <p class="card-text">
+                                    <strong>Sizin Fiyatınız:</strong> @shopProduct.Price.ToString("F2") TL
+                                </p>
+                                <p class="card-text">
+                                    <strong>Orijinal Fiyat:</strong> @product.Price.ToString("F2") TL
+                                </p>
+                                <p class="card-text">
+                                    <strong>Sizin Stoğunuz:</strong> @shopProduct.Stock
+                                </p>
+                                <p class="card-text">
+                                    <strong>Orijinal Mağaza:</strong> @(product.Dukkan != null ? product.Dukkan.Name : "Bilinmiyor")
+                                </p>
+                                <div class="product-actions">
+                                    <button type="button" class="btn btn-warning" 
+                                            onclick="editShopProduct(@shopProduct.Id, @Model.Id)">
+                                        <i class="fas fa-edit"></i> Düzenle
+                                    </button>
+                                    <button type="button" class="btn btn-danger" 
+                                            onclick="removeShopProduct(@shopProduct.Id, @Model.Id)">
+                                        <i class="fas fa-trash"></i> Kaldır
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
             }
         </div>
     </div>
@@ -152,6 +208,24 @@
     .btn i {
         margin-right: 0.5rem;
     }
+    
+    /* Başka mağazalardan eklenen ürünler için stil */
+    .shop-product-card {
+        border: 2px dashed #007bff;
+        position: relative;
+    }
+    
+    .added-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #007bff;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+    }
 </style>
 
 @section Scripts {
@@ -173,7 +247,7 @@
                     $card.toggle(categoryMatch && availabilityMatch);
                 });
 
-                // Sort products
+                // Ürünleri sırala
                 const $productGrid = $('.product-grid');
                 const $products = $('.product-card').toArray();
 
@@ -200,9 +274,9 @@
 
             $('#category-filter, #availability-filter, #sort-order').on('change', filterProducts);
             
-            // Add function for product deletion
+            // Ürün silme fonksiyonu
             window.deleteProduct = function(productId, dukkanId) {
-                if (confirm('Are you sure you want to delete this product?')) {
+                if (confirm('Bu ürünü silmek istediğinize emin misiniz?')) {
                     $.ajax({
                         url: '@Url.Action("DeleteProduct", "Dukkan")',
                         type: 'POST',
@@ -212,14 +286,70 @@
                         },
                         success: function(response) {
                             if (response.success) {
-                                // Reload page to reflect changes
+                                // Değişiklikleri yansıtmak için sayfayı yenile
                                 location.reload();
                             } else {
-                                alert('Error: ' + response.message);
+                                alert('Hata: ' + response.message);
                             }
                         },
                         error: function() {
-                            alert('An error occurred while deleting the product');
+                            alert('Ürün silinirken bir hata oluştu');
+                        }
+                    });
+                }
+            }
+            
+            // Ürünü bu mağazadan kaldırma fonksiyonu (orijinal ürünü silmeden)
+            window.removeShopProduct = function(shopProductId, dukkanId) {
+                if (confirm('Bu ürünü mağazanızdan kaldırmak istediğinize emin misiniz? Bu işlem orijinal ürünü silmeyecektir.')) {
+                    $.ajax({
+                        url: '@Url.Action("RemoveShopProduct", "Dukkan")',
+                        type: 'POST',
+                        data: {
+                            shopProductId: shopProductId,
+                            dukkanId: dukkanId
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Değişiklikleri yansıtmak için sayfayı yenile
+                                location.reload();
+                            } else {
+                                alert('Hata: ' + response.message);
+                            }
+                        },
+                        error: function() {
+                            alert('Ürün kaldırılırken bir hata oluştu');
+                        }
+                    });
+                }
+            }
+            
+            // Mağaza ürününü düzenleme fonksiyonu
+            window.editShopProduct = function(shopProductId, dukkanId) {
+                // Şimdilik basit bir prompt tabanlı düzenleme uygulayacağız
+                const newPrice = prompt('Yeni fiyat girin:');
+                const newStock = prompt('Yeni stok miktarı girin:');
+                
+                if (newPrice && newStock) {
+                    $.ajax({
+                        url: '@Url.Action("EditShopProduct", "Dukkan")',
+                        type: 'POST',
+                        data: {
+                            shopProductId: shopProductId,
+                            dukkanId: dukkanId,
+                            price: newPrice,
+                            stock: newStock
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Değişiklikleri yansıtmak için sayfayı yenile
+                                location.reload();
+                            } else {
+                                alert('Hata: ' + response.message);
+                            }
+                        },
+                        error: function() {
+                            alert('Ürün güncellenirken bir hata oluştu');
                         }
                     });
                 }

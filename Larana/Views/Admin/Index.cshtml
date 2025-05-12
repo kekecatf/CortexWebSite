@@ -3,7 +3,7 @@
 }
 
 <div class="admin-dashboard">
-    <h2 class="page-title">Admin Dashboard</h2>
+    <h2 class="page-title">Yönetici Paneli</h2>
 
     @if (TempData["SuccessMessage"] != null)
     {
@@ -21,53 +21,53 @@
 
     <div class="dashboard-stats">
         <div class="stat-card">
-            <h3>Total Shops</h3>
+            <h3>Toplam Mağaza</h3>
             <p class="stat-number">@ViewBag.TotalShops</p>
         </div>
         <div class="stat-card">
-            <h3>Total Products</h3>
+            <h3>Toplam Ürün</h3>
             <p class="stat-number">@ViewBag.TotalProducts</p>
         </div>
         <div class="stat-card">
-            <h3>Total Orders</h3>
+            <h3>Toplam Sipariş</h3>
             <p class="stat-number">@ViewBag.TotalOrders</p>
         </div>
         <div class="stat-card">
-            <h3>Total Revenue</h3>
+            <h3>Toplam Gelir</h3>
             <p class="stat-number">@ViewBag.TotalRevenue.ToString("C")</p>
         </div>
     </div>
 
     <div class="admin-menu">
         <div class="menu-section">
-            <h3>Shop Management</h3>
-            <a href="@Url.Action("Index", "Dukkan")" class="btn btn-primary">Manage Shops</a>
-            <a href="@Url.Action("Create", "Dukkan")" class="btn btn-success">Create New Shop</a>
+            <h3>Mağaza Yönetimi</h3>
+            <a href="@Url.Action("Index", "Dukkan")" class="btn btn-primary">Mağazaları Yönet</a>
+            <a href="@Url.Action("Create", "Dukkan")" class="btn btn-success">Yeni Mağaza Oluştur</a>
         </div>
 
         <div class="menu-section">
-            <h3>Product Management</h3>
-            <a href="@Url.Action("AddProduct", "Admin")" class="btn btn-primary">Add New Product</a>
-            <a href="@Url.Action("CreateBrand", "Admin")" class="btn btn-success">Create New Brand</a>
-            <a href="@Url.Action("CreateCategory", "Admin")" class="btn btn-info">Create New Category</a>
-            <button id="edit-product-btn" class="btn btn-warning">Edit Product</button>
+            <h3>Ürün Yönetimi</h3>
+            <a href="@Url.Action("AddProduct", "Admin")" class="btn btn-primary">Yeni Ürün Ekle</a>
+            <a href="@Url.Action("CreateBrand", "Admin")" class="btn btn-success">Yeni Marka Oluştur</a>
+            <a href="@Url.Action("CreateCategory", "Admin")" class="btn btn-info">Yeni Kategori Oluştur</a>
+            <button id="edit-product-btn" class="btn btn-warning">Ürün Düzenle</button>
         </div>
 
         <div class="menu-section">
-            <h3>User Management</h3>
-            <a href="@Url.Action("CreateUser", "Admin")" class="btn btn-primary">Create Admin User</a>
-            <a href="@Url.Action("ManageUsers", "Admin")" class="btn btn-info">Manage Users</a>
+            <h3>Kullanıcı Yönetimi</h3>
+            <a href="@Url.Action("CreateUser", "Admin")" class="btn btn-primary">Yönetici Kullanıcı Oluştur</a>
+            <a href="@Url.Action("ManageUsers", "Admin")" class="btn btn-info">Kullanıcıları Yönet</a>
         </div>
 
         <div class="menu-section">
-            <h3>Order Management</h3>
-            <a href="@Url.Action("Orders", "Admin")" class="btn btn-primary">View All Orders</a>
+            <h3>Sipariş Yönetimi</h3>
+            <a href="@Url.Action("Orders", "Admin")" class="btn btn-primary">Tüm Siparişleri Görüntüle</a>
         </div>
     </div>
 
     <div id="edit-product-container" style="display: none; margin-top: 20px; text-align: center;">
-        <input type="number" id="product-id-input" class="form-control" placeholder="Enter Product ID" style="max-width: 300px; margin: 10px auto; display: inline-block;" />
-        <button id="go-to-edit-product" class="btn btn-success">Go to Edit Product</button>
+        <input type="number" id="product-id-input" class="form-control" placeholder="Ürün ID'sini Girin" style="max-width: 300px; margin: 10px auto; display: inline-block;" />
+        <button id="go-to-edit-product" class="btn btn-success">Ürün Düzenlemeye Git</button>
     </div>
 </div>
 
@@ -204,7 +204,7 @@
             if (productId) {
                 window.location.href = `/Admin/EditProduct/${productId}`;
             } else {
-                alert("Please enter a valid product ID.");
+                alert("Lütfen geçerli bir ürün ID'si girin.");
             }
         });
     });

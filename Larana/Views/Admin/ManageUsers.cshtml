@@ -364,7 +364,7 @@
         const currentUserId = @currentUserId;
         console.log("Mevcut kullanıcı ID:", currentUserId);
         
-        // Edit User
+        // Kullanıcı Düzenleme
         const editButtons = document.querySelectorAll('.edit-user-btn');
         const editModal = $('#editUserModal');
         const editUserId = document.getElementById('editUserId');
@@ -421,14 +421,14 @@
                 editUserType.value = role;
                 editIsActive.checked = isActive;
                 
-                // Check if editing own account (admin)
+                // Kendi hesabını düzenlediğini kontrol et (yönetici)
                 if (id === currentUserId) {
-                    // Disable role and status fields for admin editing own account
+                    // Yöneticinin kendi hesabı için rol ve durum alanlarını devre dışı bırak
                     userTypeFormGroup.style.display = 'none';
                     isActiveFormGroup.style.display = 'none';
                     adminEditWarning.classList.remove('d-none');
                 } else {
-                    // Enable all fields for other users
+                    // Diğer kullanıcılar için tüm alanları etkinleştir
                     userTypeFormGroup.style.display = 'block';
                     isActiveFormGroup.style.display = 'block';
                     adminEditWarning.classList.add('d-none');
@@ -478,7 +478,7 @@
             });
         });
 
-        // Delete User
+        // Kullanıcı Silme
         const deleteButtons = document.querySelectorAll('.delete-user-btn');
         const deleteModal = $('#deleteUserModal');
         const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
@@ -490,13 +490,13 @@
 
         deleteButtons.forEach(button => {
             button.addEventListener('click', function () {
-                // Skip if button is disabled (for admin's own account)
+                // Buton devre dışı bırakılmışsa atla (yöneticinin kendi hesabı için)
                 if (this.hasAttribute('disabled')) return;
                 
                 const row = this.closest('tr');
                 userIdToDelete = parseInt(row.getAttribute('data-id'));
                 
-                // Ensure ID is a valid integer
+                // ID'nin geçerli bir tam sayı olduğundan emin ol
                 if (!isNaN(userIdToDelete) && userIdToDelete > 0) {
                     // Hata mesajını gizle
                     deleteErrorMsg.classList.add('d-none');

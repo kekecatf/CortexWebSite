@@ -1,0 +1,123 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Access - Manage Other Products</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #d9534f;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 0;
+            background-color: #d9534f;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .alert {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Manage Products From Other Stores</h1>
+        
+        <div class="alert">
+            <strong>Important:</strong> This is a direct access page to manage products that you've imported from other stores.
+        </div>
+        
+        <p>Click any of the buttons below to access the management page:</p>
+        
+        <div>
+            <a href="@Url.Action("OtherProducts", "Dukkan", new { id = ViewBag.DukkanId })" class="btn">
+                MANAGE PRODUCTS FROM OTHER STORES
+            </a>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <p>You can also use these direct links:</p>
+            <ul>
+                <li><a href="/Dukkan/OtherProducts/@ViewBag.DukkanId">Direct Link 1</a></li>
+                <li><a href="/Dukkan/other/@ViewBag.DukkanId">Direct Link 2</a></li>
+                <li><a href="@Url.Action("DiagnoseShopProducts", "Dukkan", new { dukkanId = ViewBag.DukkanId })">Diagnostic Link</a></li>
+            </ul>
+        </div>
+        
+        <hr>
+        
+        <div style="margin-top: 20px;">
+            <h3>Debug Information</h3>
+            <p>Your store ID: <strong>@ViewBag.DukkanId</strong></p>
+            <p>Current time: <strong>@DateTime.Now</strong></p>
+            
+            <div id="dbStatus">Checking database status...</div>
+        </div>
+    </div>
+    
+    <script>
+        // Console logging to verify script execution
+        console.log("DirectPage loaded successfully");
+        console.log("Store ID from ViewBag: @ViewBag.DukkanId");
+        
+        // Check database connectivity
+        fetch('/Dukkan/CheckShopProducts/@ViewBag.DukkanId')
+            .then(response => response.json())
+            .then(data => {
+                console.log("Database check result:", data);
+                
+                var statusDiv = document.getElementById('dbStatus');
+                if (data.success) {
+                    statusDiv.innerHTML = '<div style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin-top: 10px;">' +
+                        '<strong>Database connection successful!</strong><br>' +
+                        'Store exists: ' + data.storeExists + '<br>' +
+                        'Products from other stores: ' + data.productCount + '<br>' +
+                        (data.productCount > 0 ? 'Sample product ID: ' + data.products[0].id : '') +
+                        '</div>';
+                } else {
+                    statusDiv.innerHTML = '<div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-top: 10px;">' +
+                        '<strong>Database error:</strong><br>' + data.error +
+                        '</div>';
+                }
+            })
+            .catch(error => {
+                console.error("Error checking database:", error);
+                document.getElementById('dbStatus').innerHTML = 
+                    '<div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-top: 10px;">' +
+                    '<strong>Error checking database:</strong><br>' + error +
+                    '</div>';
+            });
+        
+        // Display an alert to be extra visible
+        window.onload = function() {
+            alert("Direct Access Page Loaded. Your store ID is: @ViewBag.DukkanId");
+        };
+    </script>
+</body>
+</html> 

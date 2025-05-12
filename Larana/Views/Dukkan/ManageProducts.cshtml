@@ -5,12 +5,57 @@
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
 
+<!-- Direct Button for Products From Other Stores -->
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-danger">
+            <div class="d-flex align-items-center">
+                <div class="flex-shrink-0 me-3">
+                    <i class="fas fa-exclamation-triangle fa-3x"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h3 class="mb-1">PRODUCTS FROM OTHER STORES</h3>
+                    <p class="mb-2">Click the button below to manage products from other stores - update prices, stock levels, or remove them:</p>
+                    <a href="@Url.Action("OtherProducts", "Dukkan", new { id = Model.Id })" class="btn btn-danger btn-lg">
+                        <i class="fas fa-external-link-alt me-2"></i> MANAGE PRODUCTS FROM OTHER STORES
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Special Alert for Products from Other Stores -->
+<div class="alert alert-warning mb-4">
+    <div class="d-flex align-items-center">
+        <div class="flex-shrink-0 me-3">
+            <i class="fas fa-exclamation-circle fa-2x"></i>
+        </div>
+        <div class="flex-grow-1">
+            <h4 class="alert-heading">Want to remove products from other stores?</h4>
+            <p class="mb-0">To stop selling products you've added from other stores, please use our dedicated page:</p>
+            <a href="@Url.Action("DiagnoseShopProducts", "Dukkan", new { dukkanId = Model.Id })" class="btn btn-warning mt-2">
+                <i class="fas fa-exchange-alt me-2"></i> Manage Products From Other Stores
+            </a>
+        </div>
+    </div>
+</div>
+
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
                 <div class="d-flex align-items-center mb-2">
                     <h4 class="mb-0 flex-grow-1">Manage Products</h4>
+                    <a href="@Url.Action("OtherProducts", "Dukkan", new { id = Model.Id })" class="btn btn-danger btn-sm me-2">
+                        <i class="fas fa-exchange-alt"></i> Products From Other Stores
+                    </a>
+                    <a href="@Url.Action("DiagnoseShopProducts", "Dukkan", new { dukkanId = Model.Id })" class="btn btn-warning btn-sm me-2">
+                        <i class="fas fa-tools"></i> Manage Products From Other Stores
+                    </a>
+                    <a href="@Url.Action("ExistingProducts", "Dukkan", new { dukkanId = Model.Id })" class="btn btn-primary btn-sm me-2">
+                        <i class="fas fa-search"></i> Browse Catalog
+                    </a>
                     <a href="@Url.Action("AddProduct", "Dukkan", new { id = Model.Id })" class="btn btn-success btn-sm">
                         <i class="fas fa-plus"></i> Add New Product
                     </a>
@@ -48,6 +93,27 @@
             <option value="stock-asc">Stock (Low to High)</option>
             <option value="stock-desc">Stock (High to Low)</option>
         </select>
+    </div>
+</div>
+
+<!-- Special Area for Products From Other Stores -->
+<div class="row mt-4 mb-4">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h3 class="text-primary mb-1">Products Added From Other Stores</h3>
+                        <p class="mb-0">Manage products you've added from other stores - update prices, stock levels, or remove them.</p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                        <a href="@Url.Action("OtherProducts", "Dukkan", new { id = Model.Id })" class="btn btn-primary btn-lg">
+                            <i class="fas fa-external-link-alt me-2"></i> Manage Other Store Products
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -138,6 +204,192 @@
     </div>
 </div>
 
+<!-- Products From Other Stores -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Products Added From Other Stores</h5>
+            </div>
+            <div class="card-body p-0">
+                @{
+                    var shopProducts = ViewBag.ShopProducts as List<Larana.Models.ShopProduct>;
+                    
+                    // Debug information
+                    if (shopProducts == null)
+                    {
+                        <div class="alert alert-warning m-3">
+                            <strong>Debug:</strong> ViewBag.ShopProducts is null
+                        </div>
+                    }
+                    else 
+                    {
+                        <div class="alert alert-info m-3">
+                            <strong>Debug:</strong> Found @shopProducts.Count ShopProducts
+                            @if (shopProducts.Count > 0)
+                            {
+                                <ul>
+                                @foreach (var sp in shopProducts)
+                                {
+                                    <li>
+                                        ID: @sp.Id - ProductID: @sp.ProductId - 
+                                        Name: @(sp.Product?.Name ?? "NULL PRODUCT") - 
+                                        Price: @sp.Price - Stock: @sp.Stock
+                                    </li>
+                                }
+                                </ul>
+                            }
+                            <a href="@Url.Action("DiagnoseShopProducts", "Dukkan", new { dukkanId = ViewBag.DukkanId })" 
+                               class="btn btn-sm btn-secondary">
+                                Go to Diagnostic Page
+                            </a>
+                        </div>
+                    }
+                }
+                
+                @if (shopProducts != null && shopProducts.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Product Name</th>
+                                    <th>Original Store</th>
+                                    <th>Your Price</th>
+                                    <th>Stock</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var shopProduct in shopProducts)
+                                {
+                                    <tr>
+                                        <td class="align-middle">
+                                            @if (shopProduct.Product != null && !string.IsNullOrEmpty(shopProduct.Product.ImageUrl))
+                                            {
+                                                <img src="@shopProduct.Product.ImageUrl" alt="@shopProduct.Product.Name" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;" />
+                                            }
+                                            else
+                                            {
+                                                <img src="~/Content/images/no-image.png" alt="No Image" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;" />
+                                            }
+                                        </td>
+                                        <td class="align-middle">
+                                            @if (shopProduct.Product != null)
+                                            {
+                                                <a href="@Url.Action("Details", "Shop", new { id = shopProduct.ProductId })">
+                                                    @shopProduct.Product.Name
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-danger">Unknown Product</span>
+                                            }
+                                        </td>
+                                        <td class="align-middle">
+                                            @if (shopProduct.Product?.Dukkan != null)
+                                            {
+                                                <a href="@Url.Action("Details", "Dukkan", new { id = shopProduct.Product.DukkanId })">
+                                                    @shopProduct.Product.Dukkan.Name
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-warning">Unknown</span>
+                                            }
+                                        </td>
+                                        <td class="align-middle">$@shopProduct.Price.ToString("0.00")</td>
+                                        <td class="align-middle">@shopProduct.Stock</td>
+                                        <td class="align-middle">
+                                            <div class="d-flex">
+                                                <button type="button" 
+                                                        class="btn btn-danger remove-shop-product" 
+                                                        data-id="@shopProduct.Id" 
+                                                        data-dukkan="@ViewBag.DukkanId"
+                                                        data-product="@(shopProduct.Product?.Name ?? "Unknown Product")">
+                                                    <i class="fas fa-trash-alt"></i> Remove From Your Store
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info m-3">
+                        <p>You haven't added any products from other stores yet.</p>
+                        <a href="@Url.Action("AddExistingProducts", "Dukkan", new { id = ViewBag.DukkanId })" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Add Products From Other Stores
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Shop Product Modal -->
+<div class="modal fade" id="editShopProductModal" tabindex="-1" aria-labelledby="editShopProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="editShopProductModalLabel">Edit Product From Other Store</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editShopProductId">
+                <div class="mb-3">
+                    <label for="editShopProductName" class="form-label">Product Name</label>
+                    <input type="text" class="form-control" id="editShopProductName" readonly>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <label for="editShopProductPrice" class="form-label">Your Price ($)</label>
+                            <input type="number" class="form-control" id="editShopProductPrice" min="0" step="0.01">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <label for="editShopProductStock" class="form-label">Your Stock</label>
+                            <input type="number" class="form-control" id="editShopProductStock" min="0" step="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveShopProductEdit">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Remove Shop Product Confirmation Modal -->
+<div class="modal fade" id="removeShopProductModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Remove Product</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove <strong id="removeShopProductName"></strong> from your store?</p>
+                <p class="text-danger">This will only remove the product from your store, not delete the original product.</p>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="removeShopProductId">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmRemoveShopProduct">Remove</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Quick Edit Modal -->
 <div class="modal fade" id="quickEditModal" tabindex="-1" aria-labelledby="quickEditModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -204,6 +456,34 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Show a floating notification about products from other stores 
+            createFloatingNotification();
+            
+            // Function to create floating notification
+            function createFloatingNotification() {
+                var $notification = $('<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">' +
+                    '<div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">' +
+                    '<div class="toast-header bg-warning">' +
+                    '<strong class="me-auto text-dark"><i class="fas fa-bell"></i> Important Notice</strong>' +
+                    '<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>' +
+                    '</div>' +
+                    '<div class="toast-body">' +
+                    'To remove products from other stores, please click here:' +
+                    '<div class="mt-2 pt-2 border-top">' +
+                    '<a href="@Url.Action("RemoveProducts", "Dukkan", new { id = Model.Id })" class="btn btn-danger btn-sm">Remove Products From Other Stores</a>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>');
+                
+                $('body').append($notification);
+                
+                // Allow the toast to be dismissed
+                $notification.find('.btn-close').click(function() {
+                    $notification.remove();
+                });
+            }
+            
             // Drag and drop functionality
             var productList = document.getElementById('productList');
             if (productList) {
@@ -420,6 +700,93 @@
                         showToast('Error', 'An error occurred while deleting the product', 'error');
                     }
                 });
+            });
+            
+            // Edit Shop Product
+            $('.edit-shop-product-btn').click(function() {
+                var shopProductId = $(this).data('id');
+                var name = $(this).data('name');
+                var price = $(this).data('price');
+                var stock = $(this).data('stock');
+                
+                $('#editShopProductId').val(shopProductId);
+                $('#editShopProductName').val(name);
+                $('#editShopProductPrice').val(price);
+                $('#editShopProductStock').val(stock);
+                
+                var editShopProductModal = new bootstrap.Modal(document.getElementById('editShopProductModal'));
+                editShopProductModal.show();
+            });
+            
+            // Save Shop Product Edit
+            $('#saveShopProductEdit').click(function() {
+                var shopProductId = $('#editShopProductId').val();
+                var price = $('#editShopProductPrice').val();
+                var stock = $('#editShopProductStock').val();
+                
+                $.ajax({
+                    url: '@Url.Action("EditShopProduct", "Dukkan")',
+                    type: 'POST',
+                    data: {
+                        shopProductId: shopProductId,
+                        dukkanId: @Model.Id,
+                        price: price,
+                        stock: stock
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Update the row in the table
+                            var row = $('tr.shop-product-row[data-id="' + shopProductId + '"]');
+                            row.data('price', price);
+                            row.data('stock', stock);
+                            row.find('td:eq(3)').text('$' + parseFloat(price).toFixed(2));
+                            row.find('td:eq(4) span').text(stock);
+                            row.find('td:eq(4) span').removeClass('text-success text-danger').addClass(stock > 0 ? 'text-success' : 'text-danger');
+                            
+                            // Close the modal and show success message
+                            bootstrap.Modal.getInstance(document.getElementById('editShopProductModal')).hide();
+                            showToast('Success', 'Product updated successfully', 'success');
+                        } else {
+                            showToast('Error', 'Failed to update product', 'error');
+                        }
+                    },
+                    error: function() {
+                        showToast('Error', 'An error occurred while updating the product', 'error');
+                    }
+                });
+            });
+            
+            // Remove Shop Product
+            $('.remove-shop-product').click(function() {
+                var shopProductId = $(this).data('id');
+                var dukkanId = $(this).data('dukkan');
+                var productName = $(this).data('product');
+                
+                if (confirm('Are you sure you want to remove ' + productName + ' from your store?')) {
+                    console.log('Sending request to remove ShopProduct: ID=' + shopProductId + ', DukkanId=' + dukkanId);
+                    
+                    $.ajax({
+                        url: '@Url.Action("RemoveShopProductAsync", "Dukkan")',
+                        type: 'POST',
+                        data: {
+                            shopProductId: shopProductId,
+                            dukkanId: dukkanId
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                alert('Product removed successfully via async endpoint!');
+                                location.reload();
+                            } else {
+                                alert('Error: ' + (response.message || 'Failed to remove product'));
+                                console.log('Error details:', response);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.log('Error details:', xhr, status, error);
+                            alert('An error occurred while removing the product: ' + status);
+                        }
+                    });
+                }
             });
             
             // Toast notification helper

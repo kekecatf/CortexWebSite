@@ -99,7 +99,10 @@ namespace Larana.Controllers
 
         public ActionResult LoadMoreProducts(int page = 1, int pageSize = 12, string[] category = null, string[] brand = null, decimal? minPrice = null, decimal? maxPrice = null, int? shop = null, bool? clickAndCollect = null, string sort = "newest")
         {
-            var products = _context.Products.Include("Dukkan").AsQueryable();
+            var products = _context.Products
+                .Include("Dukkan")
+                .Include("Reviews")
+                .AsQueryable();
 
             // Filter by shop if specified
             if (shop.HasValue)
@@ -160,14 +163,105 @@ namespace Larana.Controllers
             product.ViewCount += 1;
             _context.SaveChanges();
 
-            // Sıralanmış yorumları ViewBag içine ekle
-            if (product.Reviews != null && product.Reviews.Any())
+            // Fetch product sellers/prices from ShopProducts
+            var shopProducts = _context.ShopProducts
+                .Include("Dukkan")
+                .Where(sp => sp.ProductId == id && sp.DukkanId != product.DukkanId && sp.Dukkan.IsActive)
+                .ToList();
+            
+            ViewBag.ShopProducts = shopProducts;
+            
+            // Always initialize empty lists for the ViewBag properties to avoid null references
+            ViewBag.OwnerShops = new List<Larana.Models.Dukkan>();
+            
+            // If user is authenticated, check if they are a seller and get their shops
+            if (User.Identity.IsAuthenticated)
             {
-                ViewBag.SortedReviews = product.Reviews.OrderByDescending(r => r.CreatedAt).ToList();
+                // Debug user roles 
+                // var roles = System.Web.Security.Roles.GetRolesForUser(User.Identity.Name);
+                // ViewBag.UserRoles = string.Join(", ", roles);
+                ViewBag.UserRoles = User.IsInRole("Seller") ? "Seller" : "Not a seller";
+                
+                bool isSeller = User.IsInRole("Seller");
+                ViewBag.IsSeller = isSeller;
+                
+                if (isSeller)
+                {
+                    var userId = GetCurrentUserId();
+                    var userShops = _context.Dukkans
+                        .Where(d => d.OwnerId == userId && d.IsActive)
+                        .ToList();
+                    
+                    // Filter out shops that already sell this product
+                    var existingShopProductIds = _context.ShopProducts
+                        .Where(sp => sp.ProductId == id)
+                        .Select(sp => sp.DukkanId)
+                        .ToList();
+                    
+                    if (product.DukkanId.HasValue)
+                    {
+                        existingShopProductIds.Add(product.DukkanId.Value);
+                    }
+                    
+                    userShops = userShops
+                        .Where(s => !existingShopProductIds.Contains(s.Id))
+                        .ToList();
+                    
+                    ViewBag.OwnerShops = userShops;
+                    
+                    // Check if user is the owner of this product's shop
+                    bool isProductShopOwner = false;
+                    if (product.DukkanId.HasValue)
+                    {
+                        var productShop = _context.Dukkans.Find(product.DukkanId.Value);
+                        isProductShopOwner = productShop != null && productShop.OwnerId == userId;
+                    }
+                    
+                    // Set a flag to control whether to show the "Sell in your shop" option
+                    ViewBag.CanSellInOwnShop = !isProductShopOwner && userShops.Count > 0;
+                }
+            }
+
+            // Get sorted reviews and add to ViewBag
+            if (product.Reviews != null && product.Reviews.Count > 0)
+            {
+                var sortedReviews = product.Reviews.OrderByDescending(r => r.CreatedAt).ToList();
+                
+                // Get purchase information for each review
+                var reviewUserIds = sortedReviews.Select(r => r.UserId).Distinct().ToList();
+                
+                // Load all relevant order details in a single query for better performance
+                var orderDetails = _context.OrderDetails
+                    .Include("ShopProduct.Dukkan")
+                    .Include("Order") // Explicitly include Order to ensure it's loaded
+                    .Where(od => od.ProductId == id && od.Order != null) // Filter out null Orders first
+                    .ToList()
+                    .Where(od => reviewUserIds.Contains(od.Order.UserId)) // Further filtering after loading
+                    .ToList();
+                
+                // Create a Dictionary for purchase info - add safety checks
+                Dictionary<int, OrderDetail> purchaseInfoByUser = new Dictionary<int, OrderDetail>();
+                
+                foreach (var userId in reviewUserIds)
+                {
+                    // Find the most recent order for this user and product
+                    var userOrders = orderDetails
+                        .Where(od => od.Order.UserId == userId)
+                        .OrderByDescending(od => od.Order.OrderDate);
+                        
+                    if (userOrders.Any())
+                    {
+                        purchaseInfoByUser[userId] = userOrders.First();
+                    }
+                }
+                
+                ViewBag.PurchaseInfoByUser = purchaseInfoByUser;
+                ViewBag.SortedReviews = sortedReviews;
             }
             else
             {
                 ViewBag.SortedReviews = new List<Larana.Models.Review>();
+                ViewBag.PurchaseInfoByUser = new Dictionary<int, Larana.Models.OrderDetail>();
             }
 
             var relatedProducts = _context.Products
@@ -296,9 +390,10 @@ namespace Larana.Controllers
         public ActionResult SearchProducts(string query)
         {
             var products = string.IsNullOrWhiteSpace(query)
-                ? _context.Products.Include("Dukkan").ToList()
+                ? _context.Products.Include("Dukkan").Include("Reviews").ToList()
                 : _context.Products
                     .Include("Dukkan")
+                    .Include("Reviews")
                     .Where(p => p.Name.Contains(query) || p.Category.Contains(query) || p.Brand.Contains(query))
                     .ToList();
 
@@ -345,6 +440,8 @@ namespace Larana.Controllers
             {
                 // Search for products (default)
                 var products = _context.Products
+                    .Include("Dukkan")
+                    .Include("Reviews")
                     .Where(p => p.Name.Contains(q) || 
                                (p.Description != null && p.Description.Contains(q)) ||
                                 p.Category.Contains(q) || 
@@ -487,6 +584,73 @@ namespace Larana.Controllers
             _context.SaveChanges();
             TempData["Message"] = "Shop updated successfully!";
             return RedirectToAction("Details", "Dukkan", new { id = shop.Id });
+        }
+
+        // New action to handle adding to cart from other sellers
+        [HttpPost]
+        [Authorize]
+        public ActionResult AddToCartFromSeller(int shopProductId, int quantity = 1)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Json(new { success = false, message = "Please login to add items to cart" });
+            }
+
+            var userId = GetCurrentUserId();
+            if (userId == -1)
+            {
+                return Json(new { success = false, message = "Please login to add items to cart" });
+            }
+
+            // Get the ShopProduct record
+            var shopProduct = _context.ShopProducts
+                .Include("Product")
+                .FirstOrDefault(sp => sp.Id == shopProductId);
+                
+            if (shopProduct == null)
+            {
+                return Json(new { success = false, message = "Product not found" });
+            }
+            
+            if (shopProduct.Stock < quantity)
+            {
+                return Json(new { success = false, message = "Not enough stock available" });
+            }
+
+            var cart = _context.Carts.FirstOrDefault(c => c.UserId == userId);
+            if (cart == null)
+            {
+                cart = new Cart { UserId = userId, CreatedAt = DateTime.Now };
+                _context.Carts.Add(cart);
+                _context.SaveChanges();
+            }
+
+            // Create special cart item that references the shop product
+            var cartItem = _context.CartItems
+                .FirstOrDefault(ci => ci.CartId == cart.Id && ci.ProductId == shopProduct.ProductId && ci.ShopProductId == shopProductId);
+
+            if (cartItem == null)
+            {
+                cartItem = new CartItem
+                {
+                    CartId = cart.Id,
+                    ProductId = shopProduct.ProductId,
+                    ShopProductId = shopProductId, // Store the specific shop product ID
+                    Quantity = quantity,
+                    UnitPrice = shopProduct.Price // Use the shop's specific price
+                };
+                _context.CartItems.Add(cartItem);
+            }
+            else
+            {
+                cartItem.Quantity += quantity;
+            }
+
+            // Update ShopProduct stock
+            shopProduct.Stock -= quantity;
+
+            _context.SaveChanges();
+            return Json(new { success = true, message = "Product added to cart successfully." });
         }
 
         protected override void Dispose(bool disposing)

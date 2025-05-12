@@ -49,11 +49,17 @@ namespace Larana.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult BecomeASeller(string shopName, string shopDescription)
+        public ActionResult BecomeASeller(string shopName, string shopDescription, bool agreeTerms = false)
         {
             if (string.IsNullOrWhiteSpace(shopName))
             {
                 ModelState.AddModelError("", "Shop name is required.");
+                return View();
+            }
+            
+            if (!agreeTerms)
+            {
+                ModelState.AddModelError("", "You must agree to the seller terms and conditions.");
                 return View();
             }
 
@@ -142,14 +148,17 @@ namespace Larana.Controllers
                     1,
                     user.Username,
                     DateTime.Now,
-                    DateTime.Now.AddMinutes(30),
-                    false,
+                    DateTime.Now.AddHours(24), // Increase timeout
+                    true, // isPersistent - cookie kalıcı olsun
                     user.Roles,
-                    FormsAuthentication.FormsCookiePath
+                    "/"  // Cookie yolu kök dizini olarak ayarla
                 );
 
                 string encryptedTicket = FormsAuthentication.Encrypt(ticket);
                 var cookie = new System.Web.HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
+                cookie.HttpOnly = true; // XSS koruması
+                cookie.Path = "/"; // Kök dizinden itibaren geçerli
+                cookie.Expires = DateTime.Now.AddHours(24); // Cookie süresini ayarla
                 Response.Cookies.Add(cookie);
 
                 if (user.UserType == UserType.Admin)
@@ -188,7 +197,7 @@ namespace Larana.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Register(User model, bool IsSeller = false, string ShopName = null, string ShopDescription = null)
+        public ActionResult Register(User model, bool IsSeller = false, string ShopName = null, string ShopDescription = null, bool AgreeTerms = false)
         {
             if (ModelState.IsValid)
             {
@@ -202,6 +211,13 @@ namespace Larana.Controllers
                 if (db.Users.Any(u => u.Email == model.Email))
                 {
                     ModelState.AddModelError("Email", "This email is already registered.");
+                    return View(model);
+                }
+                
+                // Verify terms agreement for sellers
+                if (IsSeller && !AgreeTerms)
+                {
+                    ModelState.AddModelError("", "You must agree to the seller terms and conditions to register as a seller.");
                     return View(model);
                 }
 

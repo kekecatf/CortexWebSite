@@ -2,68 +2,101 @@
 
 <div class="container">
     <div class="form-wrapper">
-        <h2 class="form-title">Register</h2>
+        <h2 class="form-title">Kayıt Ol</h2>
         @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id = "registerForm" }))
         {
             @Html.AntiForgeryToken()
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
             <div class="form-group">
-                @Html.LabelFor(m => m.Username)
-                @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "Enter Username" })
+                @Html.LabelFor(m => m.Username, "Kullanıcı Adı")
+                @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "Kullanıcı Adı Girin" })
                 @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(m => m.Email)
-                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Enter Email" })
+                @Html.LabelFor(m => m.Email, "E-posta")
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "E-posta Adresinizi Girin" })
                 @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(m => m.Password)
-                @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Enter Password" })
+                @Html.LabelFor(m => m.Password, "Şifre")
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Şifre Girin" })
                 @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(m => m.Address)
-                @Html.TextBoxFor(m => m.Address, new { @class = "form-control", placeholder = "Enter Address" })
+                @Html.LabelFor(m => m.Address, "Adres")
+                @Html.TextBoxFor(m => m.Address, new { @class = "form-control", placeholder = "Adresinizi Girin" })
                 @Html.ValidationMessageFor(m => m.Address, "", new { @class = "text-danger" })
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(m => m.PhoneNumber)
-                @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", placeholder = "Enter Phone Number" })
+                @Html.LabelFor(m => m.PhoneNumber, "Telefon Numarası")
+                @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", placeholder = "Telefon Numaranızı Girin" })
                 @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
             </div>
 
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" id="isSeller" name="IsSeller" value="true" /> Register as a Seller
+                        <input type="checkbox" id="isSeller" name="IsSeller" value="true" /> Satıcı olarak kaydol
                     </label>
                 </div>
             </div>
 
             <div id="shopSection" style="display: none;">
                 <div class="shop-form-section">
-                    <h4>Shop Information</h4>
+                    <h4>Mağaza Bilgileri</h4>
                     <div class="form-group">
-                        <label for="ShopName">Shop Name</label>
-                        <input type="text" class="form-control" id="ShopName" name="ShopName" placeholder="Enter Shop Name">
+                        <label for="ShopName">Mağaza Adı</label>
+                        <input type="text" class="form-control" id="ShopName" name="ShopName" placeholder="Mağaza Adını Girin">
                     </div>
                     <div class="form-group">
-                        <label for="ShopDescription">Shop Description</label>
-                        <textarea class="form-control" id="ShopDescription" name="ShopDescription" rows="3" placeholder="Enter Shop Description"></textarea>
+                        <label for="ShopDescription">Mağaza Açıklaması</label>
+                        <textarea class="form-control" id="ShopDescription" name="ShopDescription" rows="3" placeholder="Mağaza Açıklaması Girin"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="terms-container">
+                            <h5>Satıcı Hesabı Oluşturma Şartları</h5>
+                            <div class="terms-content">
+                                <p>Lütfen aşağıdaki şartları dikkatlice okuyunuz. Satıcı hesabı oluşturduğunuzda bu şartları kabul etmiş sayılırsınız.</p>
+                                
+                                <h6>1. Sorumluluk</h6>
+                                <p>Satıcı hesabınız üzerinden gerçekleştireceğiniz tüm ürün listeleme, satış, sipariş yönetimi ve müşteri iletişimlerinden tamamen siz sorumlu olacaksınız. Platform, bu süreçlerde oluşabilecek sorunlardan sorumlu tutulamaz.</p>
+                                
+                                <h6>2. Ürün İçeriği</h6>
+                                <p>Platforma eklediğiniz tüm ürünler yasalara uygun olmalı, alıcıyı yanıltıcı bilgi içermemelidir. Yasa dışı, topluluk kurallarına aykırı ya da telif hakkı ihlali içeren içerikler derhal kaldırılır ve hesabınız askıya alınabilir.</p>
+                                
+                                <h6>3. Komisyon ve Ücretler</h6>
+                                <p>Platformda yapılan satışlardan belirlenen oranlarda komisyon alınacaktır. Güncel komisyon oranları ve olası ek hizmet ücretleri tarafınıza ayrıca bildirilecektir.</p>
+                                
+                                <h6>4. Hesap Güvenliği</h6>
+                                <p>Satıcı hesabınızın şifre ve erişim bilgileri sizin sorumluluğunuzdadır. Hesabınızda gerçekleşen işlemler size ait kabul edilir.</p>
+                                
+                                <h6>5. Hesabın Askıya Alınması veya Kapatılması</h6>
+                                <p>Platform kurallarına uymadığınız takdirde hesabınız uyarı yapılmaksızın geçici veya kalıcı olarak askıya alınabilir.</p>
+                                
+                                <h6>6. Şartlarda Değişiklik</h6>
+                                <p>Bu şartlar zaman zaman güncellenebilir. Değişiklikler size e-posta yoluyla bildirilecek olup, satıcı hesabınızı kullanmaya devam etmeniz durumunda yeni şartları kabul ettiğiniz varsayılacaktır.</p>
+                            </div>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="agreeTerms" name="AgreeTerms" value="true" required /> 
+                                Yukarıdaki şartları okudum ve kabul ediyorum
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block">Register</button>
+            <button type="submit" class="btn btn-primary btn-block">Kayıt Ol</button>
         }
         <div class="text-center mt-3">
-            <a href="@Url.Action("Login", "Account")" class="custom-link">Already have an account? Login here</a>
+            <a href="@Url.Action("Login", "Account")" class="custom-link">Zaten hesabınız var mı? Buradan giriş yapın</a>
         </div>
     </div>
 </div>
@@ -72,12 +105,22 @@
     @Scripts.Render("~/bundles/jqueryval")
     <script>
         $(document).ready(function() {
-            // Toggle shop section visibility
+            // Mağaza bölümü görünürlüğünü değiştir
             $("#isSeller").change(function() {
                 if($(this).is(":checked")) {
                     $("#shopSection").slideDown();
                 } else {
                     $("#shopSection").slideUp();
+                    // Satıcı seçeneği işaretli değilse şartları işaretlemeyi kaldır
+                    $("#agreeTerms").prop("checked", false);
+                }
+            });
+            
+            // Form gönderimini doğrula
+            $("#registerForm").submit(function(e) {
+                if ($("#isSeller").is(":checked") && !$("#agreeTerms").is(":checked")) {
+                    alert("Satıcı olarak kaydolmak için satıcı şartlarını ve koşullarını kabul etmelisiniz.");
+                    e.preventDefault();
                 }
             });
         });
@@ -85,6 +128,7 @@
 }
 
 <style>
+    /* Konteyneri ortala ve maksimum genişliği ayarla */
     .container {
         display: flex;
         justify-content: center;
@@ -94,6 +138,7 @@
         padding: 20px;
     }
 
+    /* Form kapsayıcı stilleri */
     .form-wrapper {
         width: 100%;
         max-width: 400px;
@@ -103,6 +148,7 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Form başlık stilleri */
     .form-title {
         font-size: 24px;
         font-weight: bold;
@@ -111,10 +157,12 @@
         margin-bottom: 20px;
     }
 
+    /* Form grup stilleri */
     .form-group {
         margin-bottom: 15px;
     }
 
+    /* Giriş alanı stilleri */
     .form-control {
         width: 100%;
         border: 1px solid #ddd;
@@ -129,6 +177,7 @@
         box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
     }
 
+    /* Buton stilleri */
     .btn-primary {
         background-color: #007BFF;
         color: white;
@@ -144,6 +193,7 @@
         background-color: #0056b3;
     }
 
+    /* Hata metni stilleri */
     .text-danger {
         color: #dc3545;
         font-size: 12px;
@@ -151,6 +201,7 @@
         display: block;
     }
 
+    /* Bağlantı stilleri */
     .custom-link {
         color: #007BFF;
         text-decoration: none;
@@ -160,6 +211,7 @@
         text-decoration: underline;
     }
 
+    /* Mağaza form bölümü stilleri */
     .shop-form-section {
         background-color: #f8f9fa;
         border-radius: 5px;
@@ -172,5 +224,31 @@
         color: #007BFF;
         margin-top: 0;
         margin-bottom: 15px;
+    }
+    
+    /* Şartlar konteyneri stilleri */
+    .terms-container {
+        background-color: #f5f5f5;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 10px;
+    }
+    
+    /* Şartlar içeriği stilleri */
+    .terms-content {
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 10px;
+        background-color: #fff;
+        border: 1px solid #eee;
+        border-radius: 3px;
+        margin-bottom: 10px;
+    }
+    
+    .terms-content h6 {
+        font-weight: bold;
+        margin-top: 10px;
+        margin-bottom: 5px;
     }
 </style>

@@ -1,7 +1,7 @@
 @model Larana.Models.Dukkan
 
 @{
-    ViewBag.Title = "Edit Shop";
+    ViewBag.Title = "Mağaza Düzenle";
 }
 
 <div class="container mt-4">
@@ -9,7 +9,7 @@
         <div class="col-md-8 offset-md-2">
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Edit Shop</h4>
+                    <h4 class="mb-0">Mağaza Düzenle</h4>
                 </div>
                 <div class="card-body">
                     @using (Html.BeginForm("Edit", "Dukkan", FormMethod.Post, new { enctype = "multipart/form-data" }))
@@ -20,79 +20,79 @@
                         @Html.HiddenFor(model => model.CreatedAt)
 
                         <div class="form-group mb-3">
-                            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label" })
+                            @Html.LabelFor(model => model.Name, "Mağaza Adı", htmlAttributes: new { @class = "control-label" })
                             @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
                             @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
                         </div>
 
                         <div class="form-group mb-3">
-                            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label" })
+                            @Html.LabelFor(model => model.Description, "Açıklama", htmlAttributes: new { @class = "control-label" })
                             @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = 5 })
                             @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
                         </div>
                         
                         <div class="form-group mb-3">
-                            @Html.LabelFor(model => model.Category, htmlAttributes: new { @class = "control-label" })
+                            @Html.LabelFor(model => model.Category, "Kategori", htmlAttributes: new { @class = "control-label" })
                             <select name="Category" class="form-control">
-                                <option value="">Select a Category</option>
-                                <option value="Fashion" @(Model.Category == "Fashion" ? "selected" : "")>Fashion</option>
-                                <option value="Electronics" @(Model.Category == "Electronics" ? "selected" : "")>Electronics</option>
-                                <option value="Home" @(Model.Category == "Home" ? "selected" : "")>Home</option>
-                                <option value="Beauty" @(Model.Category == "Beauty" ? "selected" : "")>Beauty</option>
-                                <option value="Books" @(Model.Category == "Books" ? "selected" : "")>Books</option>
-                                <option value="Sports" @(Model.Category == "Sports" ? "selected" : "")>Sports</option>
-                                <option value="Toys" @(Model.Category == "Toys" ? "selected" : "")>Toys</option>
-                                <option value="Food" @(Model.Category == "Food" ? "selected" : "")>Food</option>
-                                <option value="Other" @(Model.Category == "Other" ? "selected" : "")>Other</option>
+                                <option value="">Kategori Seçin</option>
+                                <option value="Fashion" @(Model.Category == "Fashion" ? "selected" : "")>Moda</option>
+                                <option value="Electronics" @(Model.Category == "Electronics" ? "selected" : "")>Elektronik</option>
+                                <option value="Home" @(Model.Category == "Home" ? "selected" : "")>Ev</option>
+                                <option value="Beauty" @(Model.Category == "Beauty" ? "selected" : "")>Güzellik</option>
+                                <option value="Books" @(Model.Category == "Books" ? "selected" : "")>Kitaplar</option>
+                                <option value="Sports" @(Model.Category == "Sports" ? "selected" : "")>Spor</option>
+                                <option value="Toys" @(Model.Category == "Toys" ? "selected" : "")>Oyuncak</option>
+                                <option value="Food" @(Model.Category == "Food" ? "selected" : "")>Gıda</option>
+                                <option value="Other" @(Model.Category == "Other" ? "selected" : "")>Diğer</option>
                             </select>
                             @Html.ValidationMessageFor(model => model.Category, "", new { @class = "text-danger" })
                         </div>
                         
                         <div class="form-group mb-3">
-                            @Html.LabelFor(model => model.Location, htmlAttributes: new { @class = "control-label" })
-                            @Html.EditorFor(model => model.Location, new { htmlAttributes = new { @class = "form-control", placeholder = "e.g. New York, London, etc." } })
+                            @Html.LabelFor(model => model.Location, "Konum", htmlAttributes: new { @class = "control-label" })
+                            @Html.EditorFor(model => model.Location, new { htmlAttributes = new { @class = "form-control", placeholder = "örn. İstanbul, Ankara, vb." } })
                             @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
                         </div>
                         
                         if (User.IsInRole("Admin"))
                         {
                             <div class="form-group mb-3">
-                                @Html.LabelFor(model => model.Rating, htmlAttributes: new { @class = "control-label" })
+                                @Html.LabelFor(model => model.Rating, "Değerlendirme", htmlAttributes: new { @class = "control-label" })
                                 @Html.EditorFor(model => model.Rating, new { htmlAttributes = new { @class = "form-control", min = "0", max = "5", step = "0.1", type = "number" } })
                                 @Html.ValidationMessageFor(model => model.Rating, "", new { @class = "text-danger" })
-                                <small class="text-muted">Rating value between 0 and 5</small>
+                                <small class="text-muted">0 ile 5 arasında bir değerlendirme puanı</small>
                             </div>
                         }
 
                         <div class="form-group mb-3">
-                            <label for="shopLogo">Shop Logo</label>
+                            <label for="shopLogo">Mağaza Logosu</label>
                             <input type="file" name="shopLogo" id="shopLogo" class="form-control" accept="image/*" />
-                            <small class="form-text text-muted">Upload a new logo for your shop (Recommended size: 500x500px)</small>
+                            <small class="form-text text-muted">Mağazanız için yeni bir logo yükleyin (Önerilen boyut: 500x500px)</small>
                         </div>
                         
                         if (!string.IsNullOrEmpty(Model.LogoPath))
                         {
                             <div class="form-group mb-3">
-                                <label>Current Logo</label>
+                                <label>Mevcut Logo</label>
                                 <div>
-                                    <img src="@Model.LogoPath" alt="Current Shop Logo" class="img-thumbnail" style="max-height: 200px;" />
+                                    <img src="@Model.LogoPath" alt="Mevcut Mağaza Logosu" class="img-thumbnail" style="max-height: 200px;" />
                                 </div>
                             </div>
                         }
 
                         <div class="form-group mb-3">
-                            @Html.LabelFor(model => model.IsActive, "Shop Status", htmlAttributes: new { @class = "control-label" })
+                            @Html.LabelFor(model => model.IsActive, "Mağaza Durumu", htmlAttributes: new { @class = "control-label" })
                             <div class="form-check">
                                 @Html.CheckBoxFor(model => model.IsActive, new { @class = "form-check-input" })
                                 <label class="form-check-label" for="IsActive">
-                                    Active (visible to customers)
+                                    Aktif (müşteriler tarafından görülebilir)
                                 </label>
                             </div>
                         </div>
 
                         <div class="form-group text-center mt-4">
-                            <input type="submit" value="Save Changes" class="btn btn-primary btn-lg" />
-                            <a href="@Url.Action("Details", "Dukkan", new { id = Model.Id })" class="btn btn-outline-secondary btn-lg ml-2">Cancel</a>
+                            <input type="submit" value="Değişiklikleri Kaydet" class="btn btn-primary btn-lg" />
+                            <a href="@Url.Action("Details", "Dukkan", new { id = Model.Id })" class="btn btn-outline-secondary btn-lg ml-2">İptal</a>
                         </div>
                     }
                 </div>

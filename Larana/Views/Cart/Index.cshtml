@@ -1,11 +1,11 @@
 ﻿@model Larana.Models.Cart
 
 <div class="cart-container">
-    <h1 class="cart-title">My Cart</h1>
+    <h1 class="cart-title">Sepetim</h1>
     @if (!Model.CartItems.Any())
     {
         <div class="empty-cart-message">
-            Your cart is empty.
+            Sepetiniz boş.
         </div>
     }
     else
@@ -13,17 +13,17 @@
         <table class="table cart-table">
             <thead>
                 <tr>
-                    <th>Product</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Total</th>
-                    <th>Action</th>
+                    <th>Ürün</th>
+                    <th>Adet</th>
+                    <th>Fiyat</th>
+                    <th>Toplam</th>
+                    <th>İşlem</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model.CartItems)
                 {
-                    <tr class="cart-item" data-id="@item.ProductId" data-price="@item.Product.Price" data-click-collect="@item.Product.IsClickAndCollect.ToString().ToLower()">
+                    <tr class="cart-item" data-id="@item.ProductId" data-price="@item.UnitPrice" data-click-collect="@item.Product.IsClickAndCollect.ToString().ToLower()">
                         <td>
                             <a href="@Url.Action("Details", "Shop", new { id = item.ProductId })" class="product-cell-link">
                                 <div class="cart-product-content">
@@ -32,7 +32,7 @@
                                     @if (item.Product.IsClickAndCollect)
                                     {
                                         <span class="click-collect-badge">
-                                            <i class="fas fa-shopping-bag"></i> Click & Collect Available
+                                            <i class="fas fa-shopping-bag"></i> Tıkla & Topla Mevcut
                                         </span>
                                     }
                                 </div>
@@ -45,38 +45,38 @@
                                 <button type="button" class="quantity-btn quantity-increase">+</button>
                             </div>
                         </td>
-                        <td class="item-price">@item.Product.Price.ToString("C")</td>
-                        <td class="item-total">@((item.Quantity * item.Product.Price).ToString("C"))</td>
+                        <td class="item-price">@item.UnitPrice.ToString("C")</td>
+                        <td class="item-total">@((item.Quantity * item.UnitPrice).ToString("C"))</td>
                         <td>
-                            <button class="btn btn-danger btn-remove" onclick="removeFromCart(@item.ProductId)">Remove</button>
+                            <button class="btn btn-danger btn-remove" onclick="removeFromCart(@item.ProductId)">Kaldır</button>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
 
-        <h3 class="cart-total">Total: <span id="cart-total-amount">@Model.CartItems.Sum(ci => ci.Quantity * ci.Product.Price).ToString("C")</span></h3>
+        <h3 class="cart-total">Toplam: <span id="cart-total-amount">@Model.CartItems.Sum(ci => ci.Quantity * ci.UnitPrice).ToString("C")</span></h3>
         <div class="text-right">
-            <button class="btn btn-success btn-checkout" onclick="toggleCheckoutForm()">Checkout</button>
+            <button class="btn btn-success btn-checkout" onclick="toggleCheckoutForm()">Ödeme Yap</button>
         </div>
 
         <div id="checkout-form" class="checkout-form-container" style="display: none;">
-            <h3 class="checkout-form-title">Checkout Details</h3>
+            <h3 class="checkout-form-title">Ödeme Bilgileri</h3>
             <form id="checkoutForm">
                 <div class="form-group" id="click-collect-option">
                     <div class="click-collect-container">
                         <input type="checkbox" id="IsClickAndCollect" name="IsClickAndCollect" value="true" />
                         <label for="IsClickAndCollect">
-                            <i class="fas fa-shopping-bag"></i> Use Click & Collect
-                            <span class="click-collect-info">(In-store pickup)</span>
+                            <i class="fas fa-shopping-bag"></i> Tıkla & Topla Kullan
+                            <span class="click-collect-info">(Mağazadan Teslim)</span>
                         </label>
                         <p class="click-collect-description">
-                            Choose Click & Collect to pick up your order in-store. Only products marked as "Click & Collect Available" are eligible.
+                            Siparişinizi mağazadan teslim almak için Tıkla & Topla'yı seçin. Sadece "Tıkla & Topla Mevcut" işaretli ürünler bu seçenek için uygundur.
                         </p>
                         <div id="click-collect-eligible" class="click-collect-eligible hidden">
-                            <p class="eligible-title">These products are eligible for Click & Collect:</p>
+                            <p class="eligible-title">Bu ürünler Tıkla & Topla için uygundur:</p>
                             <ul id="eligible-products" class="eligible-products-list">
-                                <!-- Filled by JavaScript -->
+                                <!-- JavaScript ile doldurulacak -->
                             </ul>
                         </div>
                     </div>
@@ -84,12 +84,12 @@
 
                 <div id="shipping-details">
                     <div class="form-group">
-                        <label for="RecipientName">Recipient Name:</label>
+                        <label for="RecipientName">Alıcı Adı:</label>
                         <input type="text" id="RecipientName" name="RecipientName" class="form-control" required />
                     </div>
 
                     <div class="form-group">
-                        <label for="ShippingCompany">Shipping Company:</label>
+                        <label for="ShippingCompany">Kargo Şirketi:</label>
                         <select id="ShippingCompany" name="ShippingCompany" class="form-control" required>
                             <option value="Aras Kargo">Aras Kargo</option>
                             <option value="Yurtiçi Kargo">Yurtiçi Kargo</option>
@@ -98,36 +98,36 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="Address">Address:</label>
+                        <label for="Address">Adres:</label>
                         <input type="text" id="Address" name="Address" class="form-control" value="@ViewBag.Address" required />
                     </div>
 
                     <div class="form-group">
-                        <label for="PhoneNumber">Phone Number:</label>
+                        <label for="PhoneNumber">Telefon Numarası:</label>
                         <input type="tel" id="PhoneNumber" name="PhoneNumber" class="form-control" value="@ViewBag.PhoneNumber" required />
                     </div>
 
                     <div class="form-group">
-                        <label for="CardholderName">Cardholder Name:</label>
+                        <label for="CardholderName">Kart Sahibinin Adı:</label>
                         <input type="text" id="CardholderName" name="CardholderName" class="form-control" required />
                     </div>
 
                     <div class="form-group">
-                        <label for="CardInfo">Card Number:</label>
-                        <input type="text" id="CardInfo" name="CardInfo" class="form-control" placeholder="1234-5678-9876-5432" required />
+                        <label for="CardInfo">Kart Numarası:</label>
+                        <input type="text" id="CardInfo" name="CardInfo" class="form-control" placeholder="1234-5678-9012-3456" maxlength="19" required />
                     </div>
 
                     <div class="form-group">
-                        <label for="ExpirationDate">Expiration Date:</label>
-                        <input type="text" id="ExpirationDate" name="ExpirationDate" class="form-control" placeholder="MM/YY" required />
+                        <label for="ExpirationDate">Son Kullanma Tarihi:</label>
+                        <input type="text" id="ExpirationDate" name="ExpirationDate" class="form-control" placeholder="AA/YY" maxlength="5" required />
                     </div>
 
                     <div class="form-group">
                         <label for="CVV">CVV:</label>
-                        <input type="text" id="CVV" name="CVV" class="form-control" placeholder="123" required />
+                        <input type="text" id="CVV" name="CVV" class="form-control" placeholder="123" maxlength="3" required />
                     </div>
 
-                    <button type="button" class="btn btn-primary" onclick="submitCheckout()">Submit</button>
+                    <button type="button" class="btn btn-primary" onclick="submitCheckout()">Siparişi Tamamla</button>
                 </div>
             </form>
         </div>
@@ -143,14 +143,14 @@ function removeFromCart(productId) {
         data: { productId: productId },
         success: function (response) {
             if (response.success) {
-                alert("The product has been successfully removed from your cart.");
+                alert("Ürün sepetinizden başarıyla kaldırıldı.");
                 location.reload();
             } else {
-                alert("Unable to remove the product: " + response.message);
+                alert("Ürün kaldırılamadı: " + response.message);
             }
         },
         error: function () {
-            alert("An error occurred while removing the product. Please try again later.");
+            alert("Ürünü kaldırırken bir hata oluştu. Lütfen daha sonra tekrar deneyin.");
         }
     });
 }
@@ -162,18 +162,18 @@ function updateQuantity(productId, quantity) {
         data: { productId: productId, quantity: quantity },
         success: function (response) {
             if (response.success) {
-                // Update the item total
+                // Ürün toplamını güncelle
                 const row = $(`.cart-item[data-id="${productId}"]`);
                 row.find('.item-total').text(response.itemTotal);
                 
-                // Update the cart total
+                // Sepet toplamını güncelle
                 $('#cart-total-amount').text(response.cartTotal);
             } else {
-                alert("Unable to update quantity: " + response.message);
+                alert("Miktar güncellenemedi: " + response.message);
             }
         },
         error: function () {
-            alert("An error occurred while updating the quantity. Please try again later.");
+            alert("Miktarı güncellerken bir hata oluştu. Lütfen daha sonra tekrar deneyin.");
         }
     });
 }
@@ -202,10 +202,10 @@ $(document).ready(function() {
     });
     
     // Handle direct input changes
-    $('.quantity-input').change(function() {
+    $('.quantity-input').on('change', function() {
         let value = parseInt($(this).val());
         
-        // Validate input
+        // Validate quantity
         if (isNaN(value) || value < 1) {
             value = 1;
         } else if (value > 99) {
@@ -216,212 +216,216 @@ $(document).ready(function() {
         const productId = $(this).closest('.cart-item').data('id');
         updateQuantity(productId, value);
     });
+    
+    // Process click & collect checkbox
+    $('#IsClickAndCollect').on('change', function() {
+        const isChecked = $(this).is(':checked');
+        
+        if (isChecked) {
+            // Show eligible products
+            const eligibleProducts = [];
+            $('.cart-item').each(function() {
+                const isEligible = $(this).data('click-collect') === 'true';
+                if (isEligible) {
+                    const productName = $(this).find('.cart-product-content span:first').text();
+                    eligibleProducts.push(productName);
+                }
+            });
+            
+            if (eligibleProducts.length > 0) {
+                $('#eligible-products').empty();
+                eligibleProducts.forEach(name => {
+                    $('#eligible-products').append(`<li><i class="fas fa-check text-success"></i> ${name}</li>`);
+                });
+                $('#click-collect-eligible').removeClass('hidden');
+            } else {
+                alert("Sepetinizde Tıkla & Topla için uygun ürün bulunmamaktadır.");
+                $(this).prop('checked', false);
+                $('#click-collect-eligible').addClass('hidden');
+            }
+        } else {
+            $('#click-collect-eligible').addClass('hidden');
+        }
+    });
 });
 
 function toggleCheckoutForm() {
-    const form = document.getElementById("checkout-form");
-    form.style.display = form.style.display === "none" ? "block" : "none";
-    
-    // Initialize Click & Collect functionality when form is opened
-    if (form.style.display === "block") {
-        initClickAndCollect();
-    }
-}
-
-function initClickAndCollect() {
-    // Get all cart items
-    const cartItems = document.querySelectorAll('.cart-item');
-    let hasClickAndCollectProducts = false;
-    const eligibleProducts = [];
-    
-    // Check if any products are eligible for Click & Collect
-    cartItems.forEach(item => {
-        const isClickCollect = item.getAttribute('data-click-collect') === 'true';
-        const productId = item.getAttribute('data-id');
-        const productName = item.querySelector('.cart-product-content span').textContent;
-        
-        if (isClickCollect) {
-            hasClickAndCollectProducts = true;
-            eligibleProducts.push({ id: productId, name: productName });
-        }
-    });
-    
-    // If no products are Click & Collect eligible, hide the option
-    const clickCollectOption = document.getElementById('click-collect-option');
-    if (!hasClickAndCollectProducts) {
-        clickCollectOption.style.display = 'none';
-        return;
-    }
-    
-    // Show eligible products
-    const eligibleContainer = document.getElementById('click-collect-eligible');
-    const eligibleList = document.getElementById('eligible-products');
-    
-    eligibleList.innerHTML = '';
-    eligibleProducts.forEach(product => {
-        const li = document.createElement('li');
-        li.textContent = product.name;
-        eligibleList.appendChild(li);
-    });
-    
-    // Toggle Click & Collect details when checkbox is clicked
-    const checkbox = document.getElementById('IsClickAndCollect');
-    const shippingDetails = document.getElementById('shipping-details');
-    
-    checkbox.addEventListener('change', function() {
-        if (this.checked) {
-            eligibleContainer.classList.remove('hidden');
-            // Make address fields optional when Click & Collect is selected
-            document.getElementById('Address').required = false;
-            document.getElementById('ShippingCompany').required = false;
-        } else {
-            eligibleContainer.classList.add('hidden');
-            // Make address fields required again
-            document.getElementById('Address').required = true;
-            document.getElementById('ShippingCompany').required = true;
-        }
-    });
+    $('#checkout-form').slideToggle();
 }
 
 function submitCheckout() {
-    // Show loading state
-    const submitButton = document.querySelector('.btn-primary');
-    const originalText = submitButton.innerHTML;
-    submitButton.innerHTML = 'Processing...';
-    submitButton.disabled = true;
+    // Validate form
+    const formData = {
+        RecipientName: $('#RecipientName').val(),
+        ShippingCompany: $('#ShippingCompany').val(),
+        Address: $('#Address').val(),
+        PhoneNumber: $('#PhoneNumber').val(),
+        CardholderName: $('#CardholderName').val(),
+        CardInfo: $('#CardInfo').val(),
+        ExpirationDate: $('#ExpirationDate').val(),
+        CVV: $('#CVV').val(),
+        IsClickAndCollect: $('#IsClickAndCollect').is(':checked')
+    };
     
     // Clear previous error messages
-    document.querySelectorAll('.checkout-error').forEach(el => el.remove());
+    $('.form-error').remove();
     
-    const isClickAndCollect = document.getElementById('IsClickAndCollect') && 
-                              document.getElementById('IsClickAndCollect').checked;
-                              
-    const formData = {
-        RecipientName: document.getElementById("RecipientName").value,
-        ShippingCompany: document.getElementById("ShippingCompany").value,
-        Address: document.getElementById("Address").value,
-        PhoneNumber: document.getElementById("PhoneNumber").value,
-        CardholderName: document.getElementById("CardholderName").value,
-        CardInfo: document.getElementById("CardInfo").value,
-        ExpirationDate: document.getElementById("ExpirationDate").value,
-        CVV: document.getElementById("CVV").value,
-        IsClickAndCollect: isClickAndCollect
-    };
-
-    // Client-side validation
+    // Validate form
     let isValid = true;
     
+    function showFieldError(fieldId, message) {
+        $('#' + fieldId).after(`<span class="text-danger form-error">${message}</span>`);
+        $('#' + fieldId).addClass('is-invalid');
+    }
+    
     if (!formData.RecipientName.trim()) {
-        showFieldError("RecipientName", "Please enter the recipient's name.");
+        showFieldError("RecipientName", "Lütfen alıcı adını giriniz.");
         isValid = false;
     }
     
-    if (!isClickAndCollect) {
+    if (!formData.IsClickAndCollect) {
         // Only validate shipping details if not using Click & Collect
         if (!formData.ShippingCompany.trim()) {
-            showFieldError("ShippingCompany", "Please select a shipping company.");
+            showFieldError("ShippingCompany", "Lütfen bir kargo şirketi seçiniz.");
             isValid = false;
         }
         if (!formData.Address.trim()) {
-            showFieldError("Address", "Please provide your delivery address.");
+            showFieldError("Address", "Lütfen teslimat adresinizi giriniz.");
             isValid = false;
         }
     }
     
     if (!formData.PhoneNumber.trim()) {
-        showFieldError("PhoneNumber", "Please provide your phone number.");
+        showFieldError("PhoneNumber", "Lütfen telefon numaranızı giriniz.");
         isValid = false;
     }
     
     if (!formData.CardholderName.trim()) {
-        showFieldError("CardholderName", "Please provide the cardholder's name.");
+        showFieldError("CardholderName", "Lütfen kart sahibinin adını giriniz.");
         isValid = false;
     }
     
-    if (!formData.CardInfo.trim() || !/^\d{16}$/.test(formData.CardInfo.replace(/-/g, ""))) {
-        showFieldError("CardInfo", "Please provide a valid 16-digit card number.");
+    // Kart numarası validasyonu - format olarak 1234-5678-1234-5678 şeklinde
+    const cardNumber = formData.CardInfo.replace(/-/g, ""); // Tireleri kaldır
+    if (!formData.CardInfo.trim() || !/^\d{4}-\d{4}-\d{4}-\d{4}$/.test(formData.CardInfo)) {
+        showFieldError("CardInfo", "Lütfen geçerli bir 16 haneli kart numarası giriniz.");
         isValid = false;
     }
     
+    // Son kullanma tarihi validasyonu - format olarak MM/YY
     if (!formData.ExpirationDate.trim() || !/^\d{2}\/\d{2}$/.test(formData.ExpirationDate)) {
-        showFieldError("ExpirationDate", "Please provide a valid expiration date in MM/YY format.");
+        showFieldError("ExpirationDate", "Lütfen geçerli bir son kullanma tarihi giriniz (AA/YY).");
         isValid = false;
     }
     
+    // CVV validasyonu
     if (!formData.CVV.trim() || !/^\d{3}$/.test(formData.CVV)) {
-        showFieldError("CVV", "Please provide a valid 3-digit CVV code.");
+        showFieldError("CVV", "Lütfen geçerli bir CVV kodu giriniz.");
         isValid = false;
     }
     
     if (!isValid) {
-        submitButton.innerHTML = originalText;
-        submitButton.disabled = false;
         return;
     }
-
-    // Add a short timeout to ensure the UI has time to update
-    setTimeout(() => {
-        $.ajax({
-            url: '@Url.Action("Checkout", "Cart")',
-            type: 'POST',
-            data: formData,
-            timeout: 30000, // 30 second timeout
-            success: function (response) {
-                if (response.success) {
-                    showSuccessMessage("Your order has been successfully placed. Thank you for shopping with us!");
-                    // Redirect after a short delay to show the success message
-                    setTimeout(() => {
-                        window.location.href = '@Url.Action("Index", "Cart")';
-                    }, 2000);
-                } else {
-                    showErrorMessage("Unable to place your order: " + response.message);
-                    submitButton.innerHTML = originalText;
-                    submitButton.disabled = false;
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                if (textStatus === "timeout") {
-                    showErrorMessage("The checkout request timed out. Please try again.");
-                } else {
-                    showErrorMessage("An error occurred while completing your checkout. Please try again later. Error: " + errorThrown);
-                }
+    
+    // Submit order
+    const submitButton = document.querySelector('.btn-primary');
+    const originalText = submitButton.innerHTML;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İşleniyor...';
+    submitButton.disabled = true;
+    
+    function showSuccessMessage(message) {
+        const container = document.querySelector('.cart-container');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success mt-3';
+        alertDiv.innerHTML = message;
+        container.prepend(alertDiv);
+    }
+    
+    function showErrorMessage(message) {
+        const container = document.querySelector('.cart-container');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger mt-3';
+        alertDiv.innerHTML = message;
+        container.prepend(alertDiv);
+    }
+    
+    $.ajax({
+        url: '@Url.Action("Checkout", "Cart")',
+        type: 'POST',
+        data: formData,
+        timeout: 10000,
+        success: function (response) {
+            if (response.success) {
+                showSuccessMessage("Siparişiniz başarıyla oluşturuldu. Alışverişiniz için teşekkür ederiz!");
+                // Redirect after a short delay to show the success message
+                setTimeout(() => {
+                    window.location.href = '@Url.Action("Index", "Cart")';
+                }, 2000);
+            } else {
+                showErrorMessage("Siparişiniz oluşturulamadı: " + response.message);
                 submitButton.innerHTML = originalText;
                 submitButton.disabled = false;
             }
-        });
-    }, 500);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            if (textStatus === "timeout") {
+                showErrorMessage("Ödeme işlemi zaman aşımına uğradı. Lütfen tekrar deneyin.");
+            } else {
+                showErrorMessage("Ödeme işlemi sırasında bir hata oluştu: " + errorThrown);
+            }
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        }
+    });
 }
 
-function showFieldError(fieldId, message) {
-    const field = document.getElementById(fieldId);
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'checkout-error';
-    errorDiv.textContent = message;
-    field.parentNode.appendChild(errorDiv);
-    field.classList.add('field-error');
-}
-
-function showErrorMessage(message) {
-    const checkoutForm = document.getElementById('checkout-form');
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'alert alert-danger';
-    errorDiv.textContent = message;
-    checkoutForm.prepend(errorDiv);
+// Kart numarası formatlaması
+$('#CardInfo').on('input', function() {
+    let value = $(this).val().replace(/\D/g, ''); // Sadece rakamları al
     
-    // Scroll to the error message
-    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function showSuccessMessage(message) {
-    const checkoutForm = document.getElementById('checkout-form');
-    const successDiv = document.createElement('div');
-    successDiv.className = 'alert alert-success';
-    successDiv.textContent = message;
-    checkoutForm.prepend(successDiv);
+    if (value.length > 16) {
+        value = value.substr(0, 16); // Maximum 16 rakam
+    }
     
-    // Scroll to the success message
-    successDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
+    // 4'lü gruplara böl
+    let formatted = '';
+    for (let i = 0; i < value.length; i++) {
+        if (i > 0 && i % 4 === 0) {
+            formatted += '-';
+        }
+        formatted += value[i];
+    }
+    
+    $(this).val(formatted);
+});
+
+// Son kullanma tarihi formatlaması
+$('#ExpirationDate').on('input', function() {
+    let value = $(this).val().replace(/\D/g, ''); // Sadece rakamları al
+    
+    if (value.length > 4) {
+        value = value.substr(0, 4); // Maximum 4 rakam
+    }
+    
+    // MM/YY formatı
+    if (value.length > 2) {
+        value = value.substr(0, 2) + '/' + value.substr(2);
+    }
+    
+    $(this).val(value);
+});
+
+// CVV formatlaması - sadece rakam girişine izin ver
+$('#CVV').on('input', function() {
+    let value = $(this).val().replace(/\D/g, ''); // Sadece rakamları al
+    
+    if (value.length > 3) {
+        value = value.substr(0, 3); // Maximum 3 rakam
+    }
+    
+    $(this).val(value);
+});
 </script>
 
 <style>
