@@ -45,11 +45,11 @@
             <p class="mb-0">Farklı anahtar kelimeler kullanmayı deneyin veya 
                 @if (ViewBag.SearchType == "shops")
                 {
-                    <a href="@Url.Action("Index", "Dukkan")">mağaza rehberimize</a> göz atın
+                    @:<a href="@Url.Action("Index", "Dukkan")">mağaza rehberimize</a> göz atın
                 }
                 else
                 {
-                    <a href="@Url.Action("Index", "Shop")">ürün kataloğumuza</a> göz atın
+                    @:<a href="@Url.Action("Index", "Shop")">ürün kataloğumuza</a> göz atın
                 }
             </p>
         </div>
