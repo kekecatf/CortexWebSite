@@ -32,7 +32,7 @@
                                     @if (item.Product.IsClickAndCollect)
                                     {
                                         <span class="click-collect-badge">
-                                            <i class="fas fa-shopping-bag"></i> Tıkla & Topla Mevcut
+                                            <i class="fas fa-shopping-bag"></i> Gel&Al Mevcut
                                         </span>
                                     }
                                 </div>
@@ -67,14 +67,14 @@
                     <div class="click-collect-container">
                         <input type="checkbox" id="IsClickAndCollect" name="IsClickAndCollect" value="true" />
                         <label for="IsClickAndCollect">
-                            <i class="fas fa-shopping-bag"></i> Tıkla & Topla Kullan
+                            <i class="fas fa-shopping-bag"></i> Gel&Al Kullan
                             <span class="click-collect-info">(Mağazadan Teslim)</span>
                         </label>
                         <p class="click-collect-description">
-                            Siparişinizi mağazadan teslim almak için Tıkla & Topla'yı seçin. Sadece "Tıkla & Topla Mevcut" işaretli ürünler bu seçenek için uygundur.
+                            Siparişinizi mağazadan teslim almak için Gel&Al'ı seçin. Sadece "Gel&Al Mevcut" işaretli ürünler bu seçenek için uygundur.
                         </p>
                         <div id="click-collect-eligible" class="click-collect-eligible hidden">
-                            <p class="eligible-title">Bu ürünler Tıkla & Topla için uygundur:</p>
+                            <p class="eligible-title">Bu ürünler Gel&Al için uygundur:</p>
                             <ul id="eligible-products" class="eligible-products-list">
                                 <!-- JavaScript ile doldurulacak -->
                             </ul>
@@ -239,7 +239,7 @@ $(document).ready(function() {
                 });
                 $('#click-collect-eligible').removeClass('hidden');
             } else {
-                alert("Sepetinizde Tıkla & Topla için uygun ürün bulunmamaktadır.");
+                alert("Sepetinizde Gel&Al için uygun ürün bulunmamaktadır.");
                 $(this).prop('checked', false);
                 $('#click-collect-eligible').addClass('hidden');
             }

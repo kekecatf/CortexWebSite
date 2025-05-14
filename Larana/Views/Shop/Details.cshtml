@@ -24,6 +24,15 @@
                 }
             </h4>
         </div>
+        @if (Model.IsClickAndCollect)
+        {
+            <div class="click-collect-info">
+                <span class="click-collect-badge-large">
+                    <i class="fas fa-shopping-bag"></i> Gel&Al
+                </span>
+                <span class="click-collect-description">Bu ürün mağazadan teslim alınabilir</span>
+            </div>
+        }
         <h4 class="product-stock" id="stock-count">Stok: @Model.Stock</h4>
 
         <!-- Price Comparison Section -->
@@ -206,7 +215,21 @@
                             var orderDetail = purchaseInfoByUser[review.UserId];
                             if (orderDetail.ShopProductId > 0 && orderDetail.ShopProduct?.Dukkan != null)
                             {
-                                <div class="bought-from-tag">satın alındığı yer: @orderDetail.ShopProduct.Dukkan.Name</div>
+                                <div class="bought-from-tag">
+                                    satın alındığı yer: <strong>@orderDetail.ShopProduct.Dukkan.Name</strong>
+                                </div>
+                            }
+                            else if (orderDetail.ProductId > 0 && orderDetail.Product?.Dukkan != null)
+                            {
+                                <div class="bought-from-tag">
+                                    satın alındığı yer: <strong>@orderDetail.Product.Dukkan.Name</strong>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="bought-from-tag">
+                                    satın alındığı yer: <strong>Larana</strong>
+                                </div>
                             }
                         }
                     }
@@ -797,6 +820,24 @@
         color: #333;
     }
     
+    .bought-from-tag {
+        display: inline-block;
+        margin-top: 10px;
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 4px;
+        padding: 4px 8px;
+        font-size: 12px;
+        color: #6c757d;
+    }
+    
+    .bought-from-tag:before {
+        content: "\f07a";
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        margin-right: 5px;
+    }
+    
     .no-reviews {
         text-align: center;
         padding: 20px;
@@ -902,6 +943,41 @@
         border-bottom: 2px solid #f0f0f0;
         padding-bottom: 10px;
     }
+
+    .click-collect-badge {
+        display: inline-block;
+        background-color: #6f42c1;
+        color: white;
+        font-size: 0.75em;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-top: 5px;
+        font-weight: bold;
+    }
+    
+    .click-collect-badge-large {
+        display: inline-block;
+        background-color: #6f42c1;
+        color: white;
+        font-size: 1em;
+        padding: 4px 12px;
+        border-radius: 6px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    
+    .click-collect-info {
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .click-collect-description {
+        color: #666;
+        font-size: 0.9em;
+    }
 </style>
 
 @section Scripts {
@@ -950,7 +1026,7 @@
                         </div>
                         <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="is-click-collect">
-                            <label class="form-check-label" for="is-click-collect">Tıkla & Topla Etkinleştir</label>
+                            <label class="form-check-label" for="is-click-collect">Gel&Al Mevcut</label>
                         </div>
                     </form>
                 </div>

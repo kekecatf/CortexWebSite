@@ -15,9 +15,13 @@
                 <div class="order-summary">
                     <span class="order-id"><strong>Sipariş No:</strong> <span class="highlight-id">@order.Id</span></span>
                     <span class="order-date"><strong>Tarih:</strong> <span class="highlight-date">@order.OrderDate.ToString("dd/MM/yyyy")</span></span>
-                    <span class="order-status"><strong>Durum:</strong> <span class="highlight-status @order.Status">@(order.Status == "Completed" ? "Tamamlandı" : 
-                                                                            order.Status == "Pending" ? "Beklemede" : 
-                                                                            order.Status == "Cancelled" ? "İptal Edildi" : order.Status)</span></span>
+                    <span class="order-status"><strong>Durum:</strong> <span class="highlight-status @order.Status">@(order.Status == Larana.Models.OrderStatus.Completed ? "Tamamlandı" : 
+                                                                            order.Status == Larana.Models.OrderStatus.Pending ? "Beklemede" : 
+                                                                            order.Status == Larana.Models.OrderStatus.Cancelled ? "İptal Edildi" : 
+                                                                            order.Status == Larana.Models.OrderStatus.Processing ? "İşleniyor" :
+                                                                            order.Status == Larana.Models.OrderStatus.Shipped ? "Kargoya Verildi" :
+                                                                            order.Status == Larana.Models.OrderStatus.Delivered ? "Teslim Edildi" :
+                                                                            order.Status.ToString())</span></span>
                     <span class="order-total"><strong>Toplam:</strong> <span class="highlight-total">@string.Format("{0:C}", order.TotalAmount)</span></span>
                 </div>
                 <button class="btn btn-primary toggle-details" data-target="#details-@order.Id">Detaylar</button>
@@ -32,11 +36,12 @@
                             <p><strong>Teslimat Adresi:</strong> @order.ShippingAddress</p>
                             <p><strong>Telefon Numarası:</strong> @order.PhoneNumber</p>
                             <p><strong>Ödeme Yöntemi:</strong> @order.PaymentMethod</p>
-                            <p><strong>Ödeme Durumu:</strong> <span class="highlight-payment-status @order.PaymentStatus">@(order.PaymentStatus == "Completed" ? "Tamamlandı" : 
-                                                                                                            order.PaymentStatus == "Pending" ? "Beklemede" : 
-                                                                                                            order.PaymentStatus == "Processing" ? "İşleniyor" :
-                                                                                                            order.PaymentStatus == "Failed" ? "Başarısız" :
-                                                                                                            order.PaymentStatus == "Refunded" ? "İade Edildi" : order.PaymentStatus)</span></p>
+                            <p><strong>Ödeme Durumu:</strong> <span class="highlight-payment-status @order.PaymentStatus">@(order.PaymentStatus == Larana.Models.PaymentStatus.Completed ? "Tamamlandı" : 
+                                                                                                            order.PaymentStatus == Larana.Models.PaymentStatus.Pending ? "Beklemede" : 
+                                                                                                            order.PaymentStatus == Larana.Models.PaymentStatus.Processing ? "İşleniyor" :
+                                                                                                            order.PaymentStatus == Larana.Models.PaymentStatus.Failed ? "Başarısız" :
+                                                                                                            order.PaymentStatus == Larana.Models.PaymentStatus.Refunded ? "İade Edildi" : 
+                                                                                                            order.PaymentStatus.ToString())</span></p>
                         </div>
                         <h4 class="details-title">Ürünler</h4>
                         <div class="product-list">
@@ -48,6 +53,7 @@
                                             <strong>Ürün:</strong>
                                             <span class="product-link">@detail.ProductName</span>
                                         </p>
+                                        <p class="product-seller"><strong>Satıcı:</strong> @(detail.SellerName ?? "Larana")</p>
                                         <p class="product-quantity"><strong>Adet:</strong> @detail.Quantity</p>
                                         <p class="product-price"><strong>Birim Fiyat:</strong> @string.Format("{0:C}", detail.UnitPrice)</p>
                                         <p class="product-subtotal"><strong>Ara Toplam:</strong> @string.Format("{0:C}", detail.Quantity * detail.UnitPrice)</p>
@@ -259,6 +265,11 @@
     .product-name {
         font-weight: bold;
         color: #007bff;
+    }
+
+    .product-seller {
+        color: #6c757d;
+        font-size: 0.9rem;
     }
 
     .details-title {

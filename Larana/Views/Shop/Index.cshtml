@@ -51,7 +51,7 @@
                 <div>
                     <input type="checkbox" name="clickAndCollect" value="true" id="click-collect-filter" 
                            @(ViewBag.ClickAndCollect != null && ViewBag.ClickAndCollect ? "checked" : "") />
-                    <label for="click-collect-filter">Tıkla & Topla Mevcut</label>
+                    <label for="click-collect-filter">Gel&Al Mevcut</label>
                 </div>
 
                 <h5>Sıralama</h5>
@@ -149,7 +149,7 @@ $(document).ready(function () {
                                     <h5>${product.Name}</h5>
                                     <h4>${product.Price} TL</h4>
                                     ${product.DukkanName ? `<span class="shop-name"><i class="fas fa-store"></i> ${product.DukkanName}</span>` : ''}
-                                    ${product.IsClickAndCollect ? `<span class="click-collect-badge"><i class="fas fa-shopping-bag"></i> Tıkla & Topla</span>` : ''}
+                                    ${product.IsClickAndCollect ? `<span class="click-collect-badge"><i class="fas fa-shopping-bag"></i> Gel&Al</span>` : ''}
                                 </div>
                             </a>
                         </div>
