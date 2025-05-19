@@ -21,29 +21,33 @@ namespace Larana.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        [StringLength(50)]
+        [Required(ErrorMessage = "Kullanıcı adı zorunludur.")]
+        [StringLength(50, ErrorMessage = "Kullanıcı adı en fazla 50 karakter olabilir.")]
         public string Username { get; set; }
 
-        [Required]
-        [StringLength(100)]
+        [Required(ErrorMessage = "E-posta adresi zorunludur.")]
+        [StringLength(100, ErrorMessage = "E-posta adresi en fazla 100 karakter olabilir.")]
+        [EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi giriniz.")]
         public string Email { get; set; }
         
-        [StringLength(50)]
+        [StringLength(50, ErrorMessage = "Ad en fazla 50 karakter olabilir.")]
         public string FirstName { get; set; }
         
-        [StringLength(50)]
+        [StringLength(50, ErrorMessage = "Soyad en fazla 50 karakter olabilir.")]
         public string LastName { get; set; }
 
-        [Required]
-        [StringLength(50)]
+        [Required(ErrorMessage = "Şifre zorunludur.")]
+        [StringLength(50, ErrorMessage = "Şifre en fazla 50 karakter olabilir.")]
         public string Password { get; set; }
 
         [StringLength(50)]
         public string PasswordSalt { get; set; }
 
         public string Address { get; set; }
+        
+        [Phone(ErrorMessage = "Geçerli bir telefon numarası giriniz.")]
         public string PhoneNumber { get; set; }
+        
         public DateTime CreatedAt { get; set; }
         public DateTime? LastLoginDate { get; set; }
         public bool IsActive { get; set; }

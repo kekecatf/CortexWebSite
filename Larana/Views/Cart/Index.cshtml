@@ -23,7 +23,7 @@
             <tbody>
                 @foreach (var item in Model.CartItems)
                 {
-                    <tr class="cart-item" data-id="@item.ProductId" data-price="@item.UnitPrice" data-click-collect="@item.Product.IsClickAndCollect.ToString().ToLower()">
+                    <tr class="cart-item" data-id="@item.ProductId" data-price="@item.UnitPrice" data-click-collect="@(item.Product.IsClickAndCollect ? 1 : 0)">
                         <td>
                             <a href="@Url.Action("Details", "Shop", new { id = item.ProductId })" class="product-cell-link">
                                 <div class="cart-product-content">
@@ -224,11 +224,16 @@ $(document).ready(function() {
         if (isChecked) {
             // Show eligible products
             const eligibleProducts = [];
+            const nonEligibleProducts = [];
+            
             $('.cart-item').each(function() {
-                const isEligible = $(this).data('click-collect') === 'true';
+                const isEligible = $(this).data('click-collect') === 1;
+                const productName = $(this).find('.cart-product-content span:first').text();
+                
                 if (isEligible) {
-                    const productName = $(this).find('.cart-product-content span:first').text();
                     eligibleProducts.push(productName);
+                } else {
+                    nonEligibleProducts.push(productName);
                 }
             });
             
@@ -238,15 +243,64 @@ $(document).ready(function() {
                     $('#eligible-products').append(`<li><i class="fas fa-check text-success"></i> ${name}</li>`);
                 });
                 $('#click-collect-eligible').removeClass('hidden');
+                
+                // Sadece kargo şirketi ve adres alanlarını gizle
+                $('#ShippingCompany').closest('.form-group').hide();
+                $('#Address').closest('.form-group').hide();
+                $('#ShippingCompany').prop('required', false); 
+                $('#Address').prop('required', false);
+                
+                // Eğer uygun olmayan ürünler varsa uyarı göster
+                if (nonEligibleProducts.length > 0) {
+                    const warningMsg = "Dikkat! Aşağıdaki ürünler Gel&Al için uygun değildir ve normal kargo ile teslim edilecektir: " + 
+                                     nonEligibleProducts.join(", ");
+                    alert(warningMsg);
+                }
             } else {
-                alert("Sepetinizde Gel&Al için uygun ürün bulunmamaktadır.");
+                alert("Sepetinizde Gel&Al için uygun ürün bulunmamaktadır. Lütfen ürün detay sayfasından 'Gel&Al Mevcut' yazısına sahip ürünleri ekleyin.");
                 $(this).prop('checked', false);
                 $('#click-collect-eligible').addClass('hidden');
             }
         } else {
             $('#click-collect-eligible').addClass('hidden');
+            // Sadece kargo şirketi ve adres alanlarını göster
+            $('#ShippingCompany').closest('.form-group').show();
+            $('#Address').closest('.form-group').show();
+            $('#ShippingCompany').prop('required', true); 
+            $('#Address').prop('required', true);
         }
     });
+    
+    // Sayfa yüklendiğinde başlangıç durumunu ayarla
+    // Gel&Al checkbox'ının başlangıç durumunu kontrol et
+    if ($('#IsClickAndCollect').is(':checked')) {
+        // Sadece kargo şirketi ve adres alanlarını gizle
+        $('#ShippingCompany').closest('.form-group').hide();
+        $('#Address').closest('.form-group').hide();
+        $('#ShippingCompany').prop('required', false); 
+        $('#Address').prop('required', false);
+    }
+    
+    // Tüm form alanlarına placeholder ve açıklama ekleme
+    $('#CardholderName').attr('placeholder', 'Kart üzerindeki ad soyad');
+    
+    // Sayfa yüklendiğinde sepetteki ürünleri kontrol et
+    const hasEligibleProduct = checkEligibleProducts();
+    if (!hasEligibleProduct) {
+        $('#click-collect-option').hide();
+    }
+    
+    // Sepetteki ürünlerin Gel&Al uygunluğunu kontrol et
+    function checkEligibleProducts() {
+        let hasEligible = false;
+        $('.cart-item').each(function() {
+            if ($(this).data('click-collect') === 1) {
+                hasEligible = true;
+                return false; // döngüden çık
+            }
+        });
+        return hasEligible;
+    }
 });
 
 function toggleCheckoutForm() {
@@ -257,8 +311,6 @@ function submitCheckout() {
     // Validate form
     const formData = {
         RecipientName: $('#RecipientName').val(),
-        ShippingCompany: $('#ShippingCompany').val(),
-        Address: $('#Address').val(),
         PhoneNumber: $('#PhoneNumber').val(),
         CardholderName: $('#CardholderName').val(),
         CardInfo: $('#CardInfo').val(),
@@ -267,8 +319,15 @@ function submitCheckout() {
         IsClickAndCollect: $('#IsClickAndCollect').is(':checked')
     };
     
+    // Gel&Al seçili değilse kargo bilgilerini ekle
+    if (!formData.IsClickAndCollect) {
+        formData.ShippingCompany = $('#ShippingCompany').val();
+        formData.Address = $('#Address').val();
+    }
+    
     // Clear previous error messages
     $('.form-error').remove();
+    $('.is-invalid').removeClass('is-invalid');
     
     // Validate form
     let isValid = true;
@@ -278,48 +337,50 @@ function submitCheckout() {
         $('#' + fieldId).addClass('is-invalid');
     }
     
-    if (!formData.RecipientName.trim()) {
+    // Her durumda doğrulanması gereken alanlar
+    if (!formData.RecipientName || !formData.RecipientName.trim()) {
         showFieldError("RecipientName", "Lütfen alıcı adını giriniz.");
         isValid = false;
     }
     
+    if (!formData.PhoneNumber || !formData.PhoneNumber.trim()) {
+        showFieldError("PhoneNumber", "Lütfen telefon numaranızı giriniz.");
+        isValid = false;
+    }
+    
+    // Gel&Al seçili değilse kargo alanlarını doğrula
     if (!formData.IsClickAndCollect) {
-        // Only validate shipping details if not using Click & Collect
-        if (!formData.ShippingCompany.trim()) {
+        if (!formData.ShippingCompany || !formData.ShippingCompany.trim()) {
             showFieldError("ShippingCompany", "Lütfen bir kargo şirketi seçiniz.");
             isValid = false;
         }
-        if (!formData.Address.trim()) {
+        
+        if (!formData.Address || !formData.Address.trim()) {
             showFieldError("Address", "Lütfen teslimat adresinizi giriniz.");
             isValid = false;
         }
     }
     
-    if (!formData.PhoneNumber.trim()) {
-        showFieldError("PhoneNumber", "Lütfen telefon numaranızı giriniz.");
-        isValid = false;
-    }
-    
-    if (!formData.CardholderName.trim()) {
+    if (!formData.CardholderName || !formData.CardholderName.trim()) {
         showFieldError("CardholderName", "Lütfen kart sahibinin adını giriniz.");
         isValid = false;
     }
     
     // Kart numarası validasyonu - format olarak 1234-5678-1234-5678 şeklinde
     const cardNumber = formData.CardInfo.replace(/-/g, ""); // Tireleri kaldır
-    if (!formData.CardInfo.trim() || !/^\d{4}-\d{4}-\d{4}-\d{4}$/.test(formData.CardInfo)) {
+    if (!formData.CardInfo || !formData.CardInfo.trim() || !/^\d{4}-\d{4}-\d{4}-\d{4}$/.test(formData.CardInfo)) {
         showFieldError("CardInfo", "Lütfen geçerli bir 16 haneli kart numarası giriniz.");
         isValid = false;
     }
     
     // Son kullanma tarihi validasyonu - format olarak MM/YY
-    if (!formData.ExpirationDate.trim() || !/^\d{2}\/\d{2}$/.test(formData.ExpirationDate)) {
+    if (!formData.ExpirationDate || !formData.ExpirationDate.trim() || !/^\d{2}\/\d{2}$/.test(formData.ExpirationDate)) {
         showFieldError("ExpirationDate", "Lütfen geçerli bir son kullanma tarihi giriniz (AA/YY).");
         isValid = false;
     }
     
     // CVV validasyonu
-    if (!formData.CVV.trim() || !/^\d{3}$/.test(formData.CVV)) {
+    if (!formData.CVV || !formData.CVV.trim() || !/^\d{3}$/.test(formData.CVV)) {
         showFieldError("CVV", "Lütfen geçerli bir CVV kodu giriniz.");
         isValid = false;
     }
@@ -786,5 +847,52 @@ $('#CVV').on('input', function() {
             overflow-x: auto;
             white-space: nowrap;
         }
+    }
+
+    /* Gel&Al Badge */
+    .gel-al-badge {
+        display: inline-flex;
+        align-items: center;
+        background-color: #6f42c1;
+        color: white;
+        border-radius: 4px;
+        padding: 3px 8px;
+        font-weight: bold;
+        margin-left: 8px;
+        font-size: 12px;
+    }
+    
+    /* Payment Methods */
+    .payment-section {
+        margin-top: 20px;
+        border-top: 1px solid #ddd;
+        padding-top: 15px;
+    }
+    
+    .payment-section-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    
+    .form-control.is-invalid {
+        border-color: #dc3545;
+        background-color: #fff8f8;
+    }
+
+    /* İsProcessing sırasında loader gösterimi */
+    .spinner-border {
+        display: inline-block;
+        width: 1.5rem;
+        height: 1.5rem;
+        vertical-align: middle;
+        border: 0.2em solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: spinner-border 0.75s linear infinite;
+    }
+
+    @@keyframes spinner-border {
+        to { transform: rotate(360deg); }
     }
 </style>

@@ -3,7 +3,12 @@
 <div class="container">
     <div class="form-wrapper">
         <h2 class="form-title">Giriş Yap</h2>
-        @ViewBag.Message
+        @if (!string.IsNullOrEmpty(ViewBag.Message))
+        {
+            <div class="error-message">
+                @ViewBag.Message
+            </div>
+        }
         @using (Html.BeginForm("Login", "Account", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
@@ -33,6 +38,17 @@
     min-height: 80vh;
     margin: 0 auto;
     padding: 20px;
+}
+
+/* Hata mesajı stili */
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+    border: 1px solid #f5c6cb;
 }
 
 /* Form kapsayıcı stilleri */

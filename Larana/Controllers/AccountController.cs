@@ -53,13 +53,13 @@ namespace Larana.Controllers
         {
             if (string.IsNullOrWhiteSpace(shopName))
             {
-                ModelState.AddModelError("", "Shop name is required.");
+                ModelState.AddModelError("", "Mağaza adı gereklidir.");
                 return View();
             }
             
             if (!agreeTerms)
             {
-                ModelState.AddModelError("", "You must agree to the seller terms and conditions.");
+                ModelState.AddModelError("", "Satıcı şartlarını ve koşullarını kabul etmelisiniz.");
                 return View();
             }
 
@@ -118,7 +118,7 @@ namespace Larana.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "An error occurred. Please try again.");
+                ModelState.AddModelError("", "Bir hata oluştu. Lütfen tekrar deneyin.");
                 // Log the error
                 System.Diagnostics.Debug.WriteLine($"BecomeASeller error: {ex.Message}");
                 return View();
@@ -132,7 +132,7 @@ namespace Larana.Controllers
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
-                ViewBag.Message = "Please enter both username and password.";
+                ViewBag.Message = "Lütfen kullanıcı adı ve şifrenizi giriniz.";
                 return View();
             }
 
@@ -178,7 +178,7 @@ namespace Larana.Controllers
             }
             else
             {
-                ViewBag.Message = "Invalid Username or Password";
+                ViewBag.Message = "Geçersiz kullanıcı adı veya şifre";
                 return View();
             }
         }
@@ -204,20 +204,20 @@ namespace Larana.Controllers
                 // Check if username or email already exists
                 if (db.Users.Any(u => u.Username == model.Username))
                 {
-                    ModelState.AddModelError("Username", "This username is already taken.");
+                    ModelState.AddModelError("Username", "Bu kullanıcı adı zaten alınmış.");
                     return View(model);
                 }
 
                 if (db.Users.Any(u => u.Email == model.Email))
                 {
-                    ModelState.AddModelError("Email", "This email is already registered.");
+                    ModelState.AddModelError("Email", "Bu e-posta adresi zaten kayıtlı.");
                     return View(model);
                 }
                 
                 // Verify terms agreement for sellers
                 if (IsSeller && !AgreeTerms)
                 {
-                    ModelState.AddModelError("", "You must agree to the seller terms and conditions to register as a seller.");
+                    ModelState.AddModelError("", "Satıcı olarak kaydolmak için şartları ve koşulları kabul etmelisiniz.");
                     return View(model);
                 }
 
@@ -245,7 +245,7 @@ namespace Larana.Controllers
                     {
                         if (string.IsNullOrWhiteSpace(ShopName))
                         {
-                            ModelState.AddModelError("", "Shop name is required for seller accounts.");
+                            ModelState.AddModelError("", "Satıcı hesapları için mağaza adı gereklidir.");
                             db.Users.Remove(user);
                             db.SaveChanges();
                             return View(model);
@@ -268,7 +268,7 @@ namespace Larana.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "An error occurred during registration. Please try again.");
+                    ModelState.AddModelError("", "Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.");
                     // Log the error for debugging
                     System.Diagnostics.Debug.WriteLine($"Registration error: {ex.Message}");
                 }
@@ -310,10 +310,11 @@ namespace Larana.Controllers
 
             try
             {
-                if (!string.IsNullOrWhiteSpace(currentPassword) && !user.ValidatePassword(currentPassword))
+                // Verify current password
+                if (!string.IsNullOrEmpty(currentPassword) && !user.ValidatePassword(currentPassword))
                 {
-                    ModelState.AddModelError("", "Current password is incorrect.");
-                    return View(updatedUser);
+                    ModelState.AddModelError("", "Mevcut şifre yanlış.");
+                    return View(user);
                 }
 
                 // Update user information
@@ -323,10 +324,11 @@ namespace Larana.Controllers
 
                 if (!string.IsNullOrWhiteSpace(updatedUser.Username) && updatedUser.Username != user.Username)
                 {
+                    // Check if the new username is already taken
                     if (db.Users.Any(u => u.Username == updatedUser.Username))
                     {
-                        ModelState.AddModelError("Username", "This username is already taken.");
-                        return View(updatedUser);
+                        ModelState.AddModelError("Username", "Bu kullanıcı adı zaten alınmış.");
+                        return View(user);
                     }
                     user.Username = updatedUser.Username;
                     FormsAuthentication.SetAuthCookie(user.Username, false);
@@ -342,7 +344,7 @@ namespace Larana.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "An error occurred while updating your information. Please try again.");
+                ModelState.AddModelError("", "Bilgileriniz güncellenirken bir hata oluştu. Lütfen tekrar deneyin.");
                 // Log the exception
                 System.Diagnostics.Debug.WriteLine($"Profile update error: {ex.Message}");
             }

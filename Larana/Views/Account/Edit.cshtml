@@ -3,22 +3,36 @@
 <div class="container">
     <div class="form-wrapper">
         <h2 class="form-title">Hesabımı Düzenle</h2>
+        
+        @if (!ViewData.ModelState.IsValid && ViewData.ModelState[""].Errors.Count > 0)
+        {
+            <div class="error-message">
+                @foreach (var error in ViewData.ModelState[""].Errors)
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
+        
         @if (ViewBag.Message != null)
         {
             <div class="alert alert-info text-center">
                 @ViewBag.Message
             </div>
         }
+        
         @using (Html.BeginForm("Edit", "Account", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
             <div class="form-group">
                 @Html.LabelFor(m => m.Username, "Kullanıcı Adı")
                 @Html.TextBoxFor(m => m.Username, new { @class = "form-control", required = "required", placeholder = "Kullanıcı adınızı girin" })
+                @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
             </div>
             <div class="form-group">
                 @Html.LabelFor(m => m.Email, "E-posta")
                 @Html.TextBoxFor(m => m.Email, new { @class = "form-control", required = "required", placeholder = "E-posta adresinizi girin" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
             </div>
             <div class="form-group">
                 @Html.LabelFor(m => m.Address, "Adres")
@@ -52,6 +66,28 @@
     min-height: 100vh;
     margin: 0;
     padding: 20px;
+}
+
+/* Hata mesajı stili */
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+    border: 1px solid #f5c6cb;
+}
+
+.error-message p {
+    margin: 5px 0;
+}
+
+.text-danger {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
 }
 
 /* Form kapsayıcı stilleri */

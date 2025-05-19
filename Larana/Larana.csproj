@@ -110,8 +110,7 @@
     <Content Include="Global.asax" />
     <Content Include="img\bg-img.jpg" />
     <Content Include="img\cart-icon.png" />
-    <Content Include="img\icon1.png" />
-    <Content Include="img\logo.png" />
+    <Content Include="img\logo2.png" />
     <Content Include="img\pay\pay.png" />
     <None Include="scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="img\products\b1.jpg" />
